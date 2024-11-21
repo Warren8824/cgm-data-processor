@@ -1,4 +1,5 @@
 asttokens==2.4.1
+-e git+https://github.com/Warren8824/cgm-data-processor.git@b2e66e1a91d101bc93db236244d188f8fe5d3e08#egg=cgm_data_processor
 decorator==5.1.1
 exceptiongroup==1.2.2
 executing==2.1.0
