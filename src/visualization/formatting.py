@@ -1,3 +1,8 @@
+from typing import Dict
+import pandas as pd
+from IPython.display import display
+
+
 def format_gaps_output(gaps_data):
     """
     Pretty-prints the gaps data in a Jupyter Notebook.
@@ -8,7 +13,6 @@ def format_gaps_output(gaps_data):
     Returns:
         None
     """
-    from IPython.display import display  # For better display in Jupyter Notebook
 
     # Extract data from the dictionary
     total_gaps = gaps_data.get('total_gaps', 0)

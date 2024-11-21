@@ -1,3 +1,9 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import ast
+from typing import Tuple
+
+
 def analyse_insulin_over_time(df):
     # Create a copy of the dataframe with monthly periods
     df_monthly = df.copy()

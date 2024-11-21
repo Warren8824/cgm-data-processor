@@ -1,5 +1,6 @@
-from typing import DataFrame
 import pandas as pd
+import json
+from typing import DataFrame
 
 
 def clean_classify_insulin(df):

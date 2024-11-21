@@ -1,3 +1,7 @@
+import pandas as pd
+from typing import Dict
+
+
 def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict:
     """
     Analyzes gaps in glucose readings with detailed information about largest gaps.

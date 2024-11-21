@@ -1,3 +1,8 @@
+import pandas as pd
+from typing import DataFrame
+from datetime import datetime
+
+
 def align_diabetes_data(
         bg_df: pd.DataFrame,
         carb_df: pd.DataFrame,

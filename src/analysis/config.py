@@ -1,9 +1,16 @@
+import pandas as pd
+from typing import Dict
+from enum import Enum
+from dataclasses import dataclass
+
+
 class MealQuality(Enum):
     """Enum for meal analysis quality categories"""
     CLEAN = "Clean"          # No gaps
     USABLE = "Usable"        # Small gaps only, ≤10% missing
     BORDERLINE = "Borderline"  # Medium gaps, ≤20% missing
     UNUSABLE = "Unusable"    # Large gaps or >20% missing
+
 
 @dataclass
 class MealAnalysisConfig:
