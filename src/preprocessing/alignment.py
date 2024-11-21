@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import DataFrame
+from typing import Dict
 from datetime import datetime
 
 
