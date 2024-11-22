@@ -42,22 +42,22 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
         go.Indicator(
             mode="gauge+number+delta",
             value=data_completeness,
-            title={'text': "Data Completeness"},
+            title={'text': "Data Completeness - >90% Target"},
             number={'suffix': "%"},
             gauge={
                 'axis': {'range': [0, 100]},
                 'steps': [
-                    {'range': [0, 70], 'color': "lightgray"},
-                    {'range': [70, 90], 'color': "gray"},
-                    {'range': [90, 100], 'color': "darkblue"}
+                    {'range': [0, 70], 'color': "red"},
+                    {'range': [70, 90], 'color': "orange"},
+                    {'range': [90, 100], 'color': "lightgray"}
                 ],
                 'threshold': {
-                    'line': {'color': "red", 'width': 4},
+                    'line': {'color': "lightgreen", 'width': 5},
                     'thickness': 0.75,
-                    'value': 95
+                    'value': 90
                 }
             },
-            delta={'reference': 95}
+            delta={'reference': 90}
         ),
         row=1, col=1
     )
@@ -72,17 +72,17 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
             gauge={
                 'axis': {'range': [0, 100]},
                 'steps': [
-                    {'range': [0, 60], 'color': "lightgray"},
-                    {'range': [60, 80], 'color': "gray"},
-                    {'range': [80, 100], 'color': "darkblue"}
+                    {'range': [0, 60], 'color': "red"},
+                    {'range': [60, 80], 'color': "orange"},
+                    {'range': [80, 100], 'color': "lightgray"}
                 ],
                 'threshold': {
-                    'line': {'color': "red", 'width': 4},
+                    'line': {'color': "lightgreen", 'width': 5},
                     'thickness': 0.75,
-                    'value': 90
+                    'value': 80
                 }
             },
-            delta={'reference': 90}
+            delta={'reference': 80}
         ),
         row=1, col=2
     )
@@ -97,17 +97,17 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
             gauge={
                 'axis': {'range': [0, 10]},  # Assuming we want <5% interpolation
                 'steps': [
-                    {'range': [0, 2], 'color': "darkblue"},
-                    {'range': [2, 5], 'color': "gray"},
-                    {'range': [5, 10], 'color': "lightgray"}
+                    {'range': [0, 2], 'color': "lightgray"},
+                    {'range': [2, 5], 'color': "orange"},
+                    {'range': [5, 10], 'color': "red"}
                 ],
                 'threshold': {
-                    'line': {'color': "red", 'width': 4},
+                    'line': {'color': "red", 'width': 5},
                     'thickness': 0.75,
-                    'value': 5
+                    'value': 2
                 }
             },
-            delta={'reference': 5}
+            delta={'reference': 2, 'decreasing': {'color': "green"}}  # Makes lower values "positive/good"
         ),
         row=2, col=1
     )
@@ -122,9 +122,9 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
             gauge={
                 'axis': {'range': [0, 15]},  # Assuming we want gaps <10 mins
                 'steps': [
-                    {'range': [0, 5], 'color': "darkblue"},
-                    {'range': [5, 10], 'color': "gray"},
-                    {'range': [10, 15], 'color': "lightgray"}
+                    {'range': [0, 5], 'color': "lightgray"},
+                    {'range': [5, 10], 'color': "orange"},
+                    {'range': [10, 15], 'color': "red"}
                 ],
                 'threshold': {
                     'line': {'color': "red", 'width': 4},
@@ -132,7 +132,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
                     'value': 10
                 }
             },
-            delta={'reference': 10}
+            delta={'reference': 10, 'decreasing': {'color': "green"}}  # Makes lower values "positive/good"
         ),
         row=2, col=2
     )
@@ -150,7 +150,6 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
         showlegend=False,
         height=800,
         width=1200,
-        template="plotly_dark",
         margin=dict(l=50, r=50)
     )
 
