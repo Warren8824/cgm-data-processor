@@ -1,19 +1,24 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from typing import Dict, Optional
+from typing import Optional
+import os
 
 
-def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
+def create_quality_dashboard(
+    df: pd.DataFrame,
+    save_path: str = "img/dashboard.png"
+) -> None:
     """
-    Creates an interactive dashboard showing key data quality metrics.
+    Creates a dashboard showing key data quality metrics and saves it as a PNG.
 
     Args:
-        df: Processed DataFrame containing glucose, meal and insulin data
+        df: Processed DataFrame containing glucose, meal, and insulin data
             Must have columns: mg_dl, meal_quality, interpolated, gap_duration_mins
+        save_path: File path to save the dashboard PNG image
 
     Returns:
-        Plotly Figure object containing the dashboard
+        None
     """
     # Calculate metrics
     total_readings = len(df)
@@ -37,7 +42,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
                         "Interpolation Rate", "Average Gap Duration")
     )
 
-    # Add Data Completeness gauge
+    # Add gauges
     fig.add_trace(
         go.Indicator(
             mode="gauge+number+delta",
@@ -61,8 +66,6 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
         ),
         row=1, col=1
     )
-
-    # Add Usable Meals gauge
     fig.add_trace(
         go.Indicator(
             mode="gauge+number+delta",
@@ -86,8 +89,6 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
         ),
         row=1, col=2
     )
-
-    # Add Interpolation Rate gauge
     fig.add_trace(
         go.Indicator(
             mode="gauge+number+delta",
@@ -95,7 +96,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
             title={'text': "Interpolation Rate"},
             number={'suffix': "%"},
             gauge={
-                'axis': {'range': [0, 10]},  # Assuming we want <5% interpolation
+                'axis': {'range': [0, 10]},
                 'steps': [
                     {'range': [0, 2], 'color': "lightgray"},
                     {'range': [2, 5], 'color': "orange"},
@@ -107,12 +108,10 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
                     'value': 2
                 }
             },
-            delta={'reference': 2, 'decreasing': {'color': "green"}}  # Makes lower values "positive/good"
+            delta={'reference': 2, 'decreasing': {'color': "green"}}
         ),
         row=2, col=1
     )
-
-    # Add Average Gap Duration gauge
     fig.add_trace(
         go.Indicator(
             mode="gauge+number+delta",
@@ -120,7 +119,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
             title={'text': "Avg Gap Duration"},
             number={'suffix': " min"},
             gauge={
-                'axis': {'range': [0, 15]},  # Assuming we want gaps <10 mins
+                'axis': {'range': [0, 15]},
                 'steps': [
                     {'range': [0, 5], 'color': "lightgray"},
                     {'range': [5, 10], 'color': "orange"},
@@ -132,7 +131,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
                     'value': 10
                 }
             },
-            delta={'reference': 10, 'decreasing': {'color': "green"}}  # Makes lower values "positive/good"
+            delta={'reference': 10, 'decreasing': {'color': "green"}}
         ),
         row=2, col=2
     )
@@ -153,4 +152,7 @@ def create_quality_dashboard(df: pd.DataFrame) -> go.Figure:
         margin=dict(l=50, r=50)
     )
 
-    return fig
+    # Save as PNG
+    fig.write_image(save_path)
+
+    print(f"Dashboard saved as {os.path.abspath(save_path)}")
