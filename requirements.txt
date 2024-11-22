@@ -1,11 +1,12 @@
 asttokens==2.4.1
--e git+https://github.com/Warren8824/cgm-data-processor.git@b2e66e1a91d101bc93db236244d188f8fe5d3e08#egg=cgm_data_processor
+-e git+https://github.com/Warren8824/cgm-data-processor.git@8dff15f5a6738e6ac91d6ca7bd597562894cfd54#egg=cgm_data_processor
 decorator==5.1.1
 exceptiongroup==1.2.2
 executing==2.1.0
 greenlet==3.1.1
 ipython==8.29.0
 jedi==0.19.2
+kaleido==0.2.1
 matplotlib-inline==0.1.7
 numpy==2.1.3
 pandas==2.2.3
