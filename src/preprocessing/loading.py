@@ -23,6 +23,8 @@ class XDrip:
         df = pd.read_sql_table(table, con=self.engine)
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         df.set_index('timestamp', inplace=True)
+        # Drop rows where the index (timestamp) is duplicated
+        df = df[~df.index.duplicated(keep='first')]
 
         return df
 

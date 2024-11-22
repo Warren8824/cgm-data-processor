@@ -16,6 +16,9 @@ def clean_classify_insulin(df):
     # Keep only rows where insulin is > 0.0 units
     df_clean = df_clean[df_clean['insulin'] > 0.0]
 
+    # Drop rows where the index (timestamp) is duplicated
+    df_clean = df_clean[~df_clean.index.duplicated(keep='first')]
+
     # Initialize bolus and basal columns with 0
     df_clean['bolus'] = 0.0
     df_clean['basal'] = 0.0
@@ -63,12 +66,18 @@ def clean_classify_carbs(df):
     # Keep only rows where carbs is >= 1.0 grams
     df_clean = df_clean[df_clean['carbs'] >= 1.0]
 
+    # Drop rows where the index (timestamp) is duplicated
+    df = df[~df.index.duplicated(keep='first')]
+
     return df_clean
 
 
 def clean_glucose(df):
     # Create copy to avoid altering original dataframe
     clean_df = df.copy()
+
+    # Drop rows where the index (timestamp) is duplicated
+    clean_df = clean_df[~clean_df.index.duplicated(keep='first')]
 
     # Rename the 'calculated_value' column to 'mg_dl'
     clean_df.rename(columns={'calculated_value': 'mg_dl'}, inplace=True)
