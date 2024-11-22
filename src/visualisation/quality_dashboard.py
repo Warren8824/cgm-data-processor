@@ -7,7 +7,7 @@ import os
 
 def create_quality_dashboard(
     df: pd.DataFrame,
-    save_path: str = "img/dashboard.png"
+    save_path: str = "img/data_quality_dashboard.png"
 ) -> None:
     """
     Creates a dashboard showing key data quality metrics and saves it as a PNG.
@@ -128,7 +128,7 @@ def create_quality_dashboard(
                 'threshold': {
                     'line': {'color': "red", 'width': 4},
                     'thickness': 0.75,
-                    'value': 10
+                    'value': 5
                 }
             },
             delta={'reference': 10, 'decreasing': {'color': "green"}}
@@ -155,4 +155,4 @@ def create_quality_dashboard(
     # Save as PNG
     fig.write_image(save_path)
 
-    print(f"Dashboard saved as {os.path.abspath(save_path)}")
+    print("Data Quality Dashboard saved")
