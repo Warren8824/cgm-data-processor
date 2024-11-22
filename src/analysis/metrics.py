@@ -2,7 +2,7 @@ import pandas as pd
 from typing import Dict, Optional
 
 
-def display_detailed_metrics(df: pd.DataFrame) -> Dict:
+def display_quality_metrics(df: pd.DataFrame) -> Dict:
     """
     Calculates and returns detailed quality metrics.
 
