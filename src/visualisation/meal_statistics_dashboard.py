@@ -43,8 +43,8 @@ def create_meal_statistics_dashboard(
             gauge={
                 'axis': {'range': [0, max(50, total_meals)]},
                 'steps': [
-                    {'range': [0, total_meals * 0.3], 'color': "red"},
-                    {'range': [total_meals * 0.3, total_meals * 0.7], 'color': "orange"},
+                    {'range': [0, total_meals * 0.5], 'color': "red"},
+                    {'range': [total_meals * 0.5, total_meals * 0.75], 'color': "orange"},
                     {'range': [total_meals * 0.7, total_meals], 'color': "lightgray"}
                 ]
             }
@@ -61,8 +61,8 @@ def create_meal_statistics_dashboard(
                 'axis': {'range': [0, 100]},
                 'steps': [
                     {'range': [0, 50], 'color': "red"},
-                    {'range': [50, 80], 'color': "orange"},
-                    {'range': [80, 100], 'color': "lightgray"}
+                    {'range': [50, 90], 'color': "orange"},
+                    {'range': [90, 100], 'color': "lightgray"}
                 ]
             }
         ),
