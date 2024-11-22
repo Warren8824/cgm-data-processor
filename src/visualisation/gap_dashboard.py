@@ -86,7 +86,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                             fill_color='paleturquoise',
                             align='left'),
                 cells=dict(values=[
-                    ["Mean Gap (minutes)", "Median Gap (minutes)", "Standard Deviation", "Min Gap (minutes)", "Max Gap (minutes)"],
+                    ["Mean Gap (minutes)", "25% Quantile (minutes)", "Median Gap (minutes)", "75% Quantile (minute)", "Standard Deviation", "Min Gap (minutes)", "Max Gap (minutes)"],
                     [mean_gap, q1_gap, median_gap, q3_gap, std_dev_gap, min_gap, max_gap]
                 ])
             ),
