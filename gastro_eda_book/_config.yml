@@ -1,8 +1,8 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: My sample book
-author: The Jupyter Book Community
+title: Gastro_eda_book
+author: Warren Bebbington
 logo: logo.png
 
 # Force re-execution of notebooks on each build.
@@ -30,3 +30,14 @@ repository:
 html:
   use_issues_button: true
   use_repository_button: true
+
+# Sphinx Config
+sphinx:
+  extra_extensions:
+    - sphinx-hoverxref
+  config:
+    hoverxref_role_types:
+      ref: tooltip
+    hoverxref_roles: ["ref", "doc", "numref"]
+    hoverxref_intersphinx: true
+    hoverxref_auto_ref: true
