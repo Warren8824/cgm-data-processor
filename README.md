@@ -5,7 +5,7 @@
 
 ## Overview
 
-XGastro-EDA is an open-source toolkit for analyzing Continuous Glucose Monitoring (CGM) data from xDrip+, with a focus on comprehensive data quality assessment and preparation for advanced analysis, including future gastroparesis screening capabilities. This tool helps Type 1 diabetics leverage their existing CGM data for deeper insights.
+XGastro-EDA is an open-source toolkit for analyzing Continuous Glucose Monitoring (CGM) data from xDrip+, with a focus on comprehensive data quality assessment and preparation for advanced analysis, including future data visualisations and statistical analysis, gastroparesis screening capabilities, MDI regime optimisation capabilities and more. This tool helps Type 1 diabetics leverage their existing CGM data for deeper insights.
 
 ## 🌟 Key Features
 
@@ -24,7 +24,9 @@ XGastro-EDA is an open-source toolkit for analyzing Continuous Glucose Monitorin
 - Quality scoring for meal entries
 
 ### Visualization
-- Interactive quality dashboards
+- Gap analysis dashboard
+- Complete data quality dashboard
+- Meal data quality dashboard
 - Temporal pattern analysis
 - Gap analysis visualizations
 - Insulin distribution plots
@@ -34,7 +36,8 @@ XGastro-EDA is an open-source toolkit for analyzing Continuous Glucose Monitorin
 ```
 xgastro-eda/
 ├── notebooks/
-│   └── analysis_demo.ipynb    # Sample analysis workflow
+│   └── examples/    
+│       └── analysis_demo.ipynb    # Sample analysis workflow
 ├── src/
 │   ├── preprocessing/         # Data cleaning & preparation
 │   ├── analysis/             # Analysis components
