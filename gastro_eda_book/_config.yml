@@ -1,43 +1,64 @@
 # Book settings
-# Learn more at https://jupyterbook.org/customize/config.html
-
 title: Gastro_eda_book
 author: Warren Bebbington
 logo: logo.png
 
-# Force re-execution of notebooks on each build.
-# See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: force
 
-# Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
     targetname: book.tex
 
-# Add a bibtex file so that we can create citations
 bibtex_bibfiles:
   - references.bib
 
-# Information about where the book exists on the web
 repository:
-  url: https://github.com/executablebooks/jupyter-book  # Online location of your book
-  path_to_book: docs  # Optional path to your book, relative to the repository root
-  branch: master  # Which branch of the repository should be used when creating links (optional)
+  url: https://github.com/executablebooks/jupyter-book
+  path_to_book: docs
+  branch: master
 
-# Add GitHub buttons to your book
-# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
 html:
   use_issues_button: true
   use_repository_button: true
 
-# Sphinx Config
 sphinx:
   extra_extensions:
-    - sphinx-hoverxref
+    - sphinx.ext.autodoc
+    - sphinx.ext.napoleon
+    - sphinx.ext.viewcode
+    - sphinx.ext.intersphinx
+    - hoverxref.extension
   config:
+    # Python documentation settings
+    autodoc_member_order: bysource
+    autodoc_typehints: description
+    python_use_unqualified_type_names: true
+
+    # Add your source code directory
+    python_package_path: ./src
+
+    # Intersphinx mappings
+    intersphinx_mapping:
+      python: ['https://docs.python.org/3', null]
+
+    # HoverXRef settings
     hoverxref_role_types:
       ref: tooltip
-    hoverxref_roles: ["ref", "doc", "numref"]
-    hoverxref_intersphinx: true
+      func: tooltip
+      meth: tooltip
+      class: tooltip
+      mod: tooltip
+    hoverxref_default_type: tooltip
     hoverxref_auto_ref: true
+    hoverxref_roles: ['func', 'meth', 'class', 'mod', 'ref']
+    hoverxref_domains: ['py']
+
+    # Tooltip appearance
+    hoverxref_tooltip_lazy: false
+    hoverxref_tooltip_maxwidth: 450
+    hoverxref_tooltip_side: right
+    hoverxref_tooltip_animation: fade
+    hoverxref_tooltip_theme: ['tooltipster-shadow', 'tooltipster-shadow-custom']
+
+    hoverxref_sphinxtabs: true
