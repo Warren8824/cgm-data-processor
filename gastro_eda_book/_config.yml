@@ -33,7 +33,7 @@ sphinx:
     python_use_unqualified_type_names: true
 
     # Add your source code directory
-    sys_path: ['..']  # This tells Sphinx to look one directory up from the docs
+    sys_path: ['../src']  # This tells Sphinx to look one directory up from the docs
 
     # Intersphinx mappings
     intersphinx_mapping:
