@@ -124,6 +124,10 @@ Key tables for our analysis:
 [`get_table_names()`](../src/preprocessing/loading.py#L14)
 
 
+{py:class}`~preprocessing.loading.XDrip`
+{py:func}`~preprocessing.loading.get_table_names`
+
+
 ```python
 # Path to your SQLite file
 db_path = '../../data/export20240928-130349.sqlite'

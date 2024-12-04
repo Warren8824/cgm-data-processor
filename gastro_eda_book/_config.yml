@@ -19,6 +19,13 @@ html:
   use_issues_button: true
   use_repository_button: true
 
+# Add parse settings for MyST extensions
+parse:
+  myst_enable_extensions:
+    - colon_fence
+    - html_image
+    - hover_content
+
 sphinx:
   extra_extensions:
     - sphinx.ext.autodoc
@@ -33,7 +40,7 @@ sphinx:
     python_use_unqualified_type_names: true
 
     # Add your source code directory
-    sys_path: ['../src']  # This tells Sphinx to look one directory up from the docs
+    sys_path: ['..']
 
     # Intersphinx mappings
     intersphinx_mapping:
