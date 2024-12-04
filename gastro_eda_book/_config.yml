@@ -10,9 +10,6 @@ latex:
   latex_documents:
     targetname: book.tex
 
-bibtex_bibfiles:
-  - references.bib
-
 repository:
   url: https://github.com/executablebooks/jupyter-book
   path_to_book: docs
@@ -36,7 +33,7 @@ sphinx:
     python_use_unqualified_type_names: true
 
     # Add your source code directory
-    python_package_path: ./src
+    sys_path: ['..']  # This tells Sphinx to look one directory up from the docs
 
     # Intersphinx mappings
     intersphinx_mapping:
