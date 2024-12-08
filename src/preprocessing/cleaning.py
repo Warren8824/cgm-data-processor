@@ -19,14 +19,12 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     # Drop rows where the index (timestamp) is duplicated
     df_clean = df_clean[~df_clean.index.duplicated(keep='first')]
 
-    # Initialise bolus and basal columns with 0
+    # Initialise bolus, basal, and unlabeled_insulin columns
     df_clean['bolus'] = 0.0
     df_clean['basal'] = 0.0
+    df_clean['unlabeled_insulin'] = True  # Start with all as unlabeled
 
-    # Initialise unlabeled_insulin column with True
-    df_clean['unlabeled_insulin'] = True
-
-    # Process labeled data first using insulinJSON column and set flag
+    # Process labeled data using insulinJSON column
     def extract_insulin_type(row):
         try:
             if pd.isna(row['insulinJSON']):
@@ -34,16 +32,19 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
             data = json.loads(row['insulinJSON'])
             insulin_type = data.get('insulin', '').lower()
             if 'novorapid' in insulin_type:
-                df_clean.at[row.name, 'bolus'] = row['insulin']
-                df_clean.at[row.name, 'unlabeled_insulin'] = False
+                return 'bolus'
             elif 'levemir' in insulin_type:
-                df_clean.at[row.name, 'basal'] = row['insulin']
-                df_clean.at[row.name, 'unlabeled_insulin'] = False
+                return 'basal'
         except:
             return None
 
-    # Apply extract_insulin_types to each row
-    df_clean.apply(extract_insulin_type, axis=1)
+    # Apply function to classify insulin type
+    df_clean['insulin_type'] = df_clean.apply(extract_insulin_type, axis=1)
+
+    # Update bolus, basal, and unlabeled_insulin based on insulin_type
+    df_clean.loc[df_clean['insulin_type'] == 'bolus', 'bolus'] = df_clean['insulin']
+    df_clean.loc[df_clean['insulin_type'] == 'basal', 'basal'] = df_clean['insulin']
+    df_clean.loc[df_clean['insulin_type'].notna(), 'unlabeled_insulin'] = False
 
     # Process unlabeled data
     unlabeled_mask = (df_clean['bolus'] == 0) & (df_clean['basal'] == 0)
@@ -58,10 +59,14 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     df_clean.loc[unlabeled_mask & (df_clean['insulin'] > bolus_limit) & (df_clean['insulin'] <= max_limit), 'basal'] = df_clean[
         'insulin']
 
-    # Drop the original insulin column if desired
-    # df_clean = df_clean.drop('insulin', axis=1)
+    # Update unlabeled_insulin flag after all processing
+    df_clean.loc[~unlabeled_mask, 'unlabeled_insulin'] = False
+
+    # Drop the temporary insulin_type column if not needed
+    df_clean = df_clean.drop(columns=['insulin_type'])
 
     return df_clean
+
 
 
 def clean_classify_carbs(df):
