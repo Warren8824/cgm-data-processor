@@ -26,7 +26,7 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     # Initialise unlabeled_insulin column with True
     df_clean['unlabeled_insulin'] = True
 
-    # Process labeled data first using insulinJSON column
+    # Process labeled data first using insulinJSON column and set flag
     def extract_insulin_type(row):
         try:
             if pd.isna(row['insulinJSON']):
@@ -35,10 +35,10 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
             insulin_type = data.get('insulin', '').lower()
             if 'novorapid' in insulin_type:
                 df_clean.at[row.name, 'bolus'] = row['insulin']
-                df_clean['unlabeled_insulin'] = False
+                df_clean.at[row.name, 'unlabeled_insulin'] = False
             elif 'levemir' in insulin_type:
                 df_clean.at[row.name, 'basal'] = row['insulin']
-                df_clean['unlabeled_insulin'] = False
+                df_clean.at[row.name, 'unlabeled_insulin'] = False
         except:
             return None
 
