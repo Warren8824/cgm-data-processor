@@ -3,11 +3,11 @@ import json
 from typing import Dict
 
 
-def clean_classify_insulin(df):
+def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     '''
     Clean and separate basal and bolus insulin into separate columns based on insulin type if selected.
-    "Novorapid" = Bolus & "Levemir" = Basal, if undefined then all insulin <= 8 units are classified as bolus,
-    and <= 15 units are classified as Basal. All unclassified treatments over 15 units are dropped.
+    "Novorapid" = Bolus & "Levemir" = Basal, if undefined then all insulin <= bolus_limit are classified as bolus,
+    and > bolus_limit are classified as Basal. All unclassified treatments over max_limit are dropped.
     '''
 
     # Create a copy to avoid altering the original dataframe
@@ -19,9 +19,12 @@ def clean_classify_insulin(df):
     # Drop rows where the index (timestamp) is duplicated
     df_clean = df_clean[~df_clean.index.duplicated(keep='first')]
 
-    # Initialize bolus and basal columns with 0
+    # Initialise bolus and basal columns with 0
     df_clean['bolus'] = 0.0
     df_clean['basal'] = 0.0
+
+    # Initialise unlabeled_insulin column with True
+    df_clean['unlabeled_insulin'] = True
 
     # Process labeled data first using insulinJSON column
     def extract_insulin_type(row):
@@ -32,8 +35,10 @@ def clean_classify_insulin(df):
             insulin_type = data.get('insulin', '').lower()
             if 'novorapid' in insulin_type:
                 df_clean.at[row.name, 'bolus'] = row['insulin']
+                df_clean['unlabeled_insulin'] = False
             elif 'levemir' in insulin_type:
                 df_clean.at[row.name, 'basal'] = row['insulin']
+                df_clean['unlabeled_insulin'] = False
         except:
             return None
 
@@ -49,8 +54,8 @@ def clean_classify_insulin(df):
     )
 
     # Classify remaining unlabeled data
-    df_clean.loc[unlabeled_mask & (df_clean['insulin'] <= 8), 'bolus'] = df_clean['insulin']
-    df_clean.loc[unlabeled_mask & (df_clean['insulin'] > 8) & (df_clean['insulin'] <= 15), 'basal'] = df_clean[
+    df_clean.loc[unlabeled_mask & (df_clean['insulin'] <= bolus_limit), 'bolus'] = df_clean['insulin']
+    df_clean.loc[unlabeled_mask & (df_clean['insulin'] > bolus_limit) & (df_clean['insulin'] <= max_limit), 'basal'] = df_clean[
         'insulin']
 
     # Drop the original insulin column if desired
