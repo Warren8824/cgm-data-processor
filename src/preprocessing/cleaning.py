@@ -66,7 +66,10 @@ def clean_classify_carbs(df):
     df_clean = df_clean[df_clean['carbs'] >= 1.0]
 
     # Drop rows where the index (timestamp) is duplicated
-    df = df[~df.index.duplicated(keep='first')]
+    df_clean = df_clean[~df_clean.index.duplicated(keep='first')]
+
+    # Return DataFrame containing only meal related data
+    df_clean = df_clean[['carbs']]
 
     return df_clean
 
@@ -75,19 +78,38 @@ def clean_glucose(df):
     # Create copy to avoid altering original dataframe
     clean_df = df.copy()
 
-    # Drop rows where the index (timestamp) is duplicated
-    clean_df = clean_df[~clean_df.index.duplicated(keep='first')]
+    # Round all timestamps to nearest 5 minute interval
+    clean_df.index = clean_df.index.round('5min')
+
+    # Keep only the numeric 'calculated_value' column before grouping
+    clean_df = clean_df[['calculated_value']]
+
+    # Create complete 5-minute interval index
+    full_index = pd.date_range(
+        start=clean_df.index.min(),
+        end=clean_df.index.max(),
+        freq='5min'
+    )
+
+    # Reindex to include all intervals and handle duplicate times
+    clean_df = clean_df.groupby(level=0).mean().reindex(full_index)
+
+    # Create a flag for all rows with missing data
+    clean_df['missing'] = clean_df['calculated_value'].isna()
+
+    # Interpolate gaps up to 20 minutes (4 intervals) using vectorized operation
+    clean_df['calculated_value'] = clean_df['calculated_value'].interpolate(method='linear', limit=4, limit_direction='both')
 
     # Rename the 'calculated_value' column to 'mg_dl'
     clean_df.rename(columns={'calculated_value': 'mg_dl'}, inplace=True)
 
-    # Limit the 'mg_dl' column values to the range 39.64 to 360.36
+    # Limit the 'mg_dl' column values to the range 39.64 to 360.36 (2.2 - 20.0 mmol/L)
     clean_df['mg_dl'] = clean_df['mg_dl'].clip(lower=39.64, upper=360.36)
 
     # Create a new column 'mmol_l' by converting 'calculated_value' from mg/dL to mmol/L
     clean_df['mmol_l'] = clean_df['mg_dl'] * 0.0555
 
     # Drop all rows except mg_dl and mmol_l
-    clean_df = clean_df[['mg_dl', 'mmol_l']]
+    clean_df = clean_df[['mg_dl', 'mmol_l', 'missing']]
 
     return clean_df
