@@ -67,6 +67,6 @@ def align_diabetes_data(
     aligned_df['carbs'] = aligned_df['carbs'].fillna(0)
     aligned_df['bolus'] = aligned_df['bolus'].fillna(0)
     aligned_df['basal'] = aligned_df['basal'].fillna(0)
-    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].replace({np.nan: False}).astype(bool)
+    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].fillna(False)
 
     return aligned_df
