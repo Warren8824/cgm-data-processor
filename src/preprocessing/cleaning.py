@@ -44,7 +44,7 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     unlabeled = (df_clean['bolus'] == 0) & (df_clean['basal'] == 0)
     valid_insulin = df_clean['insulin'] <= max_limit
 
-    # Drop invalid unlabeled insulin
+    # Drop insulin doses which remain unlabeled and fall outside our defined range - 1 - 15 units
     df_clean = df_clean[~(unlabeled & ~valid_insulin)]
 
     # Classify remaining valid unlabeled insulin based on units

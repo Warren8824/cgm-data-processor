@@ -14,8 +14,8 @@ def align_diabetes_data(
     already established in the bg_df dataframe.
 
     This function takes three dataframes with timestamped diabetes data and produces a single
-    dataframe with regular 5-minute intervals. Carbohydrates and insulin entries are summed. This dataset is suitable
-    for ML applications where a unified timestamp is required.
+    dataframe with regular 5-minute intervals. Carbohydrates and insulin entries are summed. This
+    dataset is suitable for ML, and other applications where a unified timestamp is required.
 
     Args:
         bg_df: DataFrame with timestamp index and columns ['mg_dl', 'mmol_l', 'missing']
@@ -26,12 +26,15 @@ def align_diabetes_data(
                    Sporadic insulin entries
 
     Processing steps:
-    1. Resample insulin treatment data - sum any entries within each 5-min window
-    2. Resample insulin_labeled data - mark as True only if ALL are labeled
-    3. Resample carb treatment data - sum any entries within each 5-min window
-    4. Combine all data and ensure all intervals exist
-    5. Fill missing treatment values with 0 (keep BG as NaN)
-    6. Fill missing insulin_labeled rows(where bg_df has index and insulin_resampled does not)
+    1. Create copies of dataframes to avoid warnings
+    3. Round carbs_df and insulin_df timestamps to nearest 5 minutes
+    3a. Resample insulin treatment data - sum any entries within each 5-min window
+    3b. Reindex this dataframe to bg_df.index to align timestamps
+    4a. Resample carb treatment data - sum any entries within each 5-min window
+    4b. Reindex this dataframe to bg_df.index to align timestamps
+    5. Combine all data and ensure all intervals exist
+    6. Fill missing treatment values with 0 (keep BG as NaN)
+    7. Fill missing insulin_labeled rows(where bg_df has index and insulin_resampled does not)
     with False
 
     Returns:
@@ -46,38 +49,33 @@ def align_diabetes_data(
     carb_df = carb_df.copy()
     insulin_df = insulin_df.copy()
 
+    # Round index timestamps to nearest 5 minute intervals
     carb_df.index = carb_df.index.round('5min')
     insulin_df.index = insulin_df.index.round('5min')
 
-    # Resample insulin - sum within windows
+    # Resample and reindex insulin - sum within windows
     insulin_resampled = insulin_df.resample('5min').agg({
         'bolus': 'sum',
         'basal': 'sum',
         # Use a lambda to ensure empty groups are explicitly False - Empty groups equal True by
         # default
         'labeled_insulin': lambda x: x.all() if len(x) > 0 else False
-    })
+    }).reindex(bg_df.index)
 
-    # Resample carbs - sum within windows
+    # Fill missing labeled_insulin values with False, explicitly astype boolean to avoid warnings
+    insulin_resampled['labeled_insulin'] = insulin_resampled['labeled_insulin'].astype('boolean').fillna(False)
+
+    # Resample and reindex carbs - sum within windows
     carb_resampled = carb_df.resample('5min').agg({
         'carbs': 'sum'
-    })
+    }).reindex(bg_df.index)
 
     # Combine all data
     aligned_df = pd.concat([bg_df, carb_resampled, insulin_resampled], axis=1)
 
-    # First, infer the correct data type for the column (if necessary)
-    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects()
-
-    # Fill missing values with False, then convert to the nullable boolean type
-    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].fillna(False).astype('boolean')
-
     # Fill missing treatment values with 0
     aligned_df['carbs'] = aligned_df['carbs'].fillna(0)
-    aligned_df['bolus'] = aligned_df['bolus'].fillna(0)
-    aligned_df['basal'] = aligned_df['basal'].fillna(0)
-    # Use infer_objects() to attempt to infer better types
-    #aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects(copy=False)
-    #aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects().fillna(False)
+    aligned_df[['basal', 'bolus']] = aligned_df[['basal', 'bolus']].fillna(0)
+
 
     return aligned_df
