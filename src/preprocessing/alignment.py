@@ -31,6 +31,8 @@ def align_diabetes_data(
     3. Resample carb treatment data - sum any entries within each 5-min window
     4. Combine all data and ensure all intervals exist
     5. Fill missing treatment values with 0 (keep BG as NaN)
+    6. Fill missing insulin_labeled rows(where bg_df has index and insulin_resampled does not)
+    with False
 
     Returns:
         DataFrame with:
@@ -51,7 +53,8 @@ def align_diabetes_data(
     insulin_resampled = insulin_df.resample('5min').agg({
         'bolus': 'sum',
         'basal': 'sum',
-        # Use a lambda to ensure empty groups are explicitly False - Empty groups equal True by default
+        # Use a lambda to ensure empty groups are explicitly False - Empty groups equal True by
+        # default
         'labeled_insulin': lambda x: x.all() if len(x) > 0 else False
     })
 
@@ -63,10 +66,18 @@ def align_diabetes_data(
     # Combine all data
     aligned_df = pd.concat([bg_df, carb_resampled, insulin_resampled], axis=1)
 
-    # Fill missing treatment values with 0, and missing labeled_insulin with False
+    # First, infer the correct data type for the column (if necessary)
+    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects()
+
+    # Fill missing values with False, then convert to the nullable boolean type
+    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].fillna(False).astype('boolean')
+
+    # Fill missing treatment values with 0
     aligned_df['carbs'] = aligned_df['carbs'].fillna(0)
     aligned_df['bolus'] = aligned_df['bolus'].fillna(0)
     aligned_df['basal'] = aligned_df['basal'].fillna(0)
-    aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].fillna(False)
+    # Use infer_objects() to attempt to infer better types
+    #aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects(copy=False)
+    #aligned_df['labeled_insulin'] = aligned_df['labeled_insulin'].infer_objects().fillna(False)
 
     return aligned_df

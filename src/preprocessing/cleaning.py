@@ -22,7 +22,8 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     # Initialize columns
     df_clean['bolus'] = 0.0
     df_clean['basal'] = 0.0
-    df_clean['labeled_insulin'] = False  # Start with all insulin as unlabeled
+    # Initialize with explicit bool dtype and set to False
+    df_clean['labeled_insulin'] = pd.Series(False, index=df_clean.index, dtype=bool)
 
     # Process labeled insulin from JSON
     for idx, row in df_clean.iterrows():
