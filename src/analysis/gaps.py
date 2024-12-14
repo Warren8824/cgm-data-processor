@@ -63,12 +63,15 @@ def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict
     total_gap_minutes = gaps_df['length_minutes'].sum()
     average_gap_minutes = gaps_df['length_minutes'].mean() if len(gaps_df) > 0 else 0
     median_gap_minutes = gaps_df['length_minutes'].median() if len(gaps_df) > 0 else 0
+    remaining_gaps = len(gaps_df)
+    gaps_percentage = (remaining_gaps / total_readings) * 100
 
     metrics = {
         'initial_missing_percentage': round(missing_percentage, 2),
         'initial_missing_count': int(initially_missing),
         'total_readings': total_readings,
         'total_gaps': len(gaps_df),
+        'gaps_percentage': round(gaps_percentage, 2),
         'total_gap_minutes': round(total_gap_minutes, 2),
         'average_gap_minutes': round(average_gap_minutes, 2),
         'median_gap_minutes': round(median_gap_minutes, 2),

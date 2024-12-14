@@ -25,8 +25,9 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
     gaps_df = gaps_data.get('gaps_df', None)
 
     # New statistics
-    initial_missing_percentage = gaps_data.get('initial_missing_percentage', 0)
+    initial_missing_percentage = gaps_data.get('initial_missing_percentage', 100)
     initial_missing_count = gaps_data.get('initial_missing_count', 0)
+    remaining_missing_percentage = gaps_data.get('gaps_percentage', 100)
     total_readings = gaps_data.get('total_readings', 0)
     total_gap_minutes = gaps_data.get('total_gap_minutes', 0)
     average_gap_minutes = gaps_data.get('average_gap_minutes', 0)
@@ -44,20 +45,22 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
 
     # Create subplots with new layout
     fig = make_subplots(
-        rows=3, cols=2,
+        rows=4, cols=2,
         specs=[
+            [{"type": "indicator"}, {"type": "indicator"}],
             [{"type": "indicator"}, {"type": "indicator"}],
             [{"type": "bar"}, {"type": "scatter"}],
             [{"type": "table", "colspan": 2}, None],
         ],
         subplot_titles=(
-            "Total Gaps - Before interpolation", "Initial Missing Data",
+            "Initial Gaps", "Initial Missing Data",
+            "Remaining gaps", "Remaining Missing Data",
             "Top 10 Largest Gaps", "All Gaps Distribution",
             "Comprehensive Statistics"
         )
     )
 
-    # Indicator for total gaps
+    # Indicator for total gaps before interpolation
     fig.add_trace(
         go.Indicator(
             mode="gauge+number",
@@ -81,6 +84,30 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
         row=1, col=2
     )
 
+    # Indicator for total gaps before interpolation
+    fig.add_trace(
+        go.Indicator(
+            mode="gauge+number",
+            value=total_gaps,
+            title={'text': "Remaining Gaps"},
+            number={'suffix': " Gaps"},
+            gauge={'axis': {'range': [None, total_gaps]}},
+        ),
+        row=2, col=1
+    )
+
+    # Indicator for initial missing percentage
+    fig.add_trace(
+        go.Indicator(
+            mode="gauge+number",
+            value=remaining_missing_percentage,
+            title={'text': "Remaining Missing Data"},
+            number={'suffix': "%"},
+            gauge={'axis': {'range': [0, 100]}},
+        ),
+        row=2, col=2
+    )
+
     # Bar chart for largest gaps
     if largest_gaps is not None:
         fig.add_trace(
@@ -91,7 +118,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                 marker_color='orange',
                 hovertemplate="Start: %{x}<br>Duration: %{y} minutes<extra></extra>"
             ),
-            row=2, col=1
+            row=3, col=1
         )
 
     # Scatter plot for all gaps
@@ -105,7 +132,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                 name="All Gaps",
                 hovertemplate="Time: %{x}<br>Duration: %{y} minutes<extra></extra>"
             ),
-            row=2, col=2
+            row=3, col=2
         )
 
     # Comprehensive statistics table
@@ -152,7 +179,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                 font=dict(size=11)
             )
         ),
-        row=3, col=1
+        row=4, col=1
     )
 
     # Update layout with new dimensions and better use of space
