@@ -5,7 +5,7 @@ from typing import Dict
 
 
 def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.png", display: bool = True,
-                         width: int = 1000, height: int = 1300):
+                         width: int = 1000, height: int = 1900):
     """
     Creates a comprehensive dashboard showing gaps data, including initial missing data stats,
     total gaps, largest gaps, gap distribution, and descriptive statistics.
@@ -177,8 +177,8 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                         f"{max_gap:.1f} minutes"
                     ]
                 ],
-                align='left',
-                font=dict(size=12)
+                align='center',
+                font=dict(size=10)
             )
         ),
         row=4, col=1
