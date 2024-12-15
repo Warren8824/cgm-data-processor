@@ -17,8 +17,8 @@ def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict
 
     # Calculate initial missing data value and percentage
     total_readings = len(aligned_df)
-    initially_missing = aligned_df['missing'].sum()
-    missing_percentage = (initially_missing / total_readings) * 100
+    initial_missing = aligned_df['missing'].sum()
+    initial_missing_percentage = (initial_missing / total_readings) * 100
 
     # Create mask for all rows with NaN values
     missing_mask = aligned_df['mg_dl'].isna()
@@ -63,15 +63,15 @@ def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict
     total_gap_minutes = gaps_df['length_minutes'].sum()
     average_gap_minutes = gaps_df['length_minutes'].mean() if len(gaps_df) > 0 else 0
     median_gap_minutes = gaps_df['length_minutes'].median() if len(gaps_df) > 0 else 0
-    remaining_gaps = len(gaps_df)
-    gaps_percentage = (remaining_gaps / total_readings) * 100
+    remaining_missing = aligned_df['mg_dl'].isna().sum()
+    remaining_missing_percentage = (remaining_missing / total_readings) * 100
 
     metrics = {
-        'initial_missing_percentage': round(missing_percentage, 2),
-        'initial_missing_count': int(initially_missing),
+        'initial_missing_percentage': round(initial_missing_percentage, 2),
+        'initial_missing_count': int(initial_missing),
         'total_readings': total_readings,
-        'total_gaps': len(gaps_df),
-        'gaps_percentage': round(gaps_percentage, 2),
+        'remaining_missing_count': remaining_missing,
+        'remaining_missing_percentage': round(remaining_missing_percentage, 2),
         'total_gap_minutes': round(total_gap_minutes, 2),
         'average_gap_minutes': round(average_gap_minutes, 2),
         'median_gap_minutes': round(median_gap_minutes, 2),

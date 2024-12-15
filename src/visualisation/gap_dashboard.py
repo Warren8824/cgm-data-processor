@@ -20,14 +20,14 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
     """
 
     # Extract the gaps data
-    total_gaps = gaps_data.get('total_gaps', 0)
     largest_gaps = gaps_data.get('largest_gaps', None)
     gaps_df = gaps_data.get('gaps_df', None)
 
     # New statistics
     initial_missing_percentage = gaps_data.get('initial_missing_percentage', 100)
     initial_missing_count = gaps_data.get('initial_missing_count', 0)
-    remaining_missing_percentage = gaps_data.get('gaps_percentage', 100)
+    remaining_missing_percentage = gaps_data.get('remaining_missing_percentage', 100)
+    remaining_missing_count = gaps_data.get('remaining_missing_count', 0)
     total_readings = gaps_data.get('total_readings', 0)
     total_gap_minutes = gaps_data.get('total_gap_minutes', 0)
     average_gap_minutes = gaps_data.get('average_gap_minutes', 0)
@@ -88,10 +88,10 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
     fig.add_trace(
         go.Indicator(
             mode="gauge+number",
-            value=total_gaps,
+            value=remaining_missing_count,
             title={'text': "Remaining Gaps"},
             number={'suffix': " Gaps"},
-            gauge={'axis': {'range': [None, (total_gaps*2.2)]}},
+            gauge={'axis': {'range': [None, (remaining_missing_count*2.2)]}},
         ),
         row=2, col=1
     )
@@ -151,7 +151,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                         "Initial Missing Count",
                         "Initial Missing Percentage",
                         "Remaining Missing Count",
-                        "Remaining Missing Percentage"
+                        "Remaining Missing Percentage",
                         "Total Gap Duration",
                         "Average Gap Duration",
                         "Median Gap Duration",
@@ -165,7 +165,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                         f"{total_readings:,}",
                         f"{initial_missing_count:,}",
                         f"{initial_missing_percentage:.3f}%",
-                        f"{total_gaps:,}",
+                        f"{remaining_missing_count:,}",
                         f"{remaining_missing_percentage:.3f}%",
                         f"{total_gap_minutes:.1f} minutes",
                         f"{average_gap_minutes:.1f} minutes",
@@ -178,7 +178,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                     ]
                 ],
                 align='left',
-                font=dict(size=11)
+                font=dict(size=12)
             )
         ),
         row=4, col=1
