@@ -1,0 +1,6 @@
+ipython>=8.0.0
+jupyter>=1.0.0  # For notebook development
+
+pytest>=7.0.0  # Adding this for testing
+black>=23.0.0  # Adding this for code formatting
+flake8>=6.0.0  # Adding this for linting
