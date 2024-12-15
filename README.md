@@ -23,8 +23,8 @@ pip install [package-name]  # Once published to PyPI
 
 For development installation:
 ```bash
-git clone https://github.com/[username]/[repo-name].git
-cd [repo-name]
+git clone https://github.com/Warren8824/cgm-data-processor.git
+cd cgm-data-processor
 pip install -e .
 ```
 
@@ -50,9 +50,9 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 ## Documentation
 
 Detailed documentation is available in the following notebooks:
-- `notebooks/examples/basic_usage.ipynb`: Getting started with the tool
-- `notebooks/examples/data_quality.ipynb`: Understanding and analyzing data quality
-- `notebooks/examples/advanced_features.ipynb`: Advanced usage and customization
+- `notebooks/examples/load_and_export_data.ipynb`: Getting started with the tool
+- `notebooks/examples/data_quality.ipynb`: *To be implemented*
+- `notebooks/examples/advanced_features.ipynb`: *To be implemented*
 
 ### Data Processing Pipeline
 
@@ -67,7 +67,7 @@ Detailed documentation is available in the following notebooks:
 
 ## Example Usage
 
-See the [example notebook](notebooks/examples/basic_usage.ipynb) for detailed usage examples.
+See the [example notebook](notebooks/examples/load_and_export_data.ipynb) for detailed usage examples.
 
 ## Data Format Specifications
 
