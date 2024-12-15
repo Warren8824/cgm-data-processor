@@ -99,7 +99,7 @@ def clean_glucose(df):
     clean_df['missing'] = clean_df['calculated_value'].isna()
 
     # Interpolate gaps up to 20 minutes (4 intervals) using vectorized operation
-    clean_df['calculated_value'] = clean_df['calculated_value'].interpolate(method='linear', limit=4, limit_direction='both')
+    clean_df['calculated_value'] = clean_df['calculated_value'].interpolate(method='linear', limit=4, limit_direction='forward')
 
     # Rename the 'calculated_value' column to 'mg_dl'
     clean_df.rename(columns={'calculated_value': 'mg_dl'}, inplace=True)
