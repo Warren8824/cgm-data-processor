@@ -101,6 +101,7 @@ docs/_build/
 static/
 
 # Ignore dynamic data files
+data/
 *.db
 *.sqlite3
 *.sqlite
