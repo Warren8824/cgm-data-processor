@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import json
 from typing import Dict
 
@@ -40,14 +41,14 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
         except (json.JSONDecodeError, IndexError, KeyError, AttributeError):
             continue
 
-    # Process unlabeled insulin
+    # Create a mask for unlabeled insulin doses and for doses above 15 units
     unlabeled = (df_clean['bolus'] == 0) & (df_clean['basal'] == 0)
     valid_insulin = df_clean['insulin'] <= max_limit
 
-    # Drop insulin doses which remain unlabeled and fall outside our defined range - 1 - 15 units
+    # Drop insulin doses which remain unlabeled and fall outside our defined range - > 15 units
     df_clean = df_clean[~(unlabeled & ~valid_insulin)]
 
-    # Classify remaining valid unlabeled insulin based on units
+    # Classify remaining valid unlabeled insulin based on units - 1-8 = Bolus, >8 = Basal
     # Note: These remain flagged as unlabeled even after classification
     df_clean.loc[unlabeled & valid_insulin & (df_clean['insulin'] <= bolus_limit), 'bolus'] = df_clean['insulin']
     df_clean.loc[unlabeled & valid_insulin & (df_clean['insulin'] > bolus_limit), 'basal'] = df_clean['insulin']
@@ -75,8 +76,8 @@ def clean_classify_carbs(df):
     return df_clean
 
 
-def clean_glucose(df):
-    # Create copy to avoid altering original dataframe
+def clean_glucose(df, interpolation_limit=4):
+    # Create a copy to avoid altering original dataframe
     clean_df = df.copy()
 
     # Round all timestamps to nearest 5 minute interval
@@ -98,8 +99,27 @@ def clean_glucose(df):
     # Create a flag for all rows with missing data
     clean_df['missing'] = clean_df['calculated_value'].isna()
 
-    # Interpolate gaps up to 20 minutes (4 intervals) using vectorized operation
-    clean_df['calculated_value'] = clean_df['calculated_value'].interpolate(method='linear', limit=4, limit_direction='forward')
+    # Create groups of consecutive missing values
+    # When missing values change (True to False or vice versa), the cumsum increases
+    clean_df['gap_group'] = (~clean_df['missing']).cumsum()
+
+    # Within each False group (where missing=True), count the group size
+    gap_sizes = clean_df[clean_df['missing']].groupby('gap_group').size()
+
+    # Identify gap groups that are larger than interpolation_limit
+    large_gaps = gap_sizes[gap_sizes > interpolation_limit].index
+
+    # Interpolate all gaps initially
+    clean_df['calculated_value'] = clean_df['calculated_value'].interpolate(
+        method='linear',
+        limit=interpolation_limit,
+        limit_direction='forward'
+    )
+
+    # Reset the interpolated values back to NaN for large gaps
+    for gap_group in large_gaps:
+        mask = (clean_df['gap_group'] == gap_group) & clean_df['missing']
+        clean_df.loc[mask, 'calculated_value'] = np.nan
 
     # Rename the 'calculated_value' column to 'mg_dl'
     clean_df.rename(columns={'calculated_value': 'mg_dl'}, inplace=True)
@@ -110,7 +130,8 @@ def clean_glucose(df):
     # Create a new column 'mmol_l' by converting 'calculated_value' from mg/dL to mmol/L
     clean_df['mmol_l'] = clean_df['mg_dl'] * 0.0555
 
-    # Drop all rows except mg_dl and mmol_l
+    # Drop all columns except mg_dl and mmol_l
     clean_df = clean_df[['mg_dl', 'mmol_l', 'missing']]
 
     return clean_df
+
