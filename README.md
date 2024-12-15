@@ -1,92 +1,138 @@
-# XGastro-EDA (xDrip+ Gastroparesis Screening EDA)
+# CGM Data Processing Tool
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-## Overview
+A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM) data from various sources. Currently supports XDrip+ SQLite backups with plans to expand to other CGM platforms.
 
-XGastro-EDA is an open-source toolkit for analyzing Continuous Glucose Monitoring (CGM) data from xDrip+, with a focus on comprehensive data quality assessment and preparation for advanced analysis, including future data visualisations and statistical analysis, gastroparesis screening capabilities, MDI regime optimisation capabilities and more. This tool helps Type 1 diabetics leverage their existing CGM data for deeper insights.
+## Features
 
-## 🌟 Key Features
+- Standardizes CGM data into a consistent 5-minute interval format
+- Handles data cleaning and validation
+- Integrates glucose readings with insulin and carbohydrate records
+- Provides comprehensive gap analysis and quality metrics
+- Supports both mg/dL and mmol/L units
+- Intelligent handling of missing data with configurable interpolation
+- Interactive quality assessment dashboards
 
-### Data Processing & Quality Assessment
-- Automated processing of xDrip+ SQLite database exports
-- Sophisticated insulin classification (basal/bolus)
-- Intelligent carbohydrate data cleaning
-- Comprehensive gap analysis in CGM readings
-- Dual unit support (mmol/L and mg/dL)
+## Installation
 
-### Analysis Capabilities
-- Data quality metrics and visualization
-- Meal impact analysis preparation
-- Insulin pattern analysis
-- Gap detection and characterization
-- Quality scoring for meal entries
-
-### Visualization
-- Gap analysis dashboard
-- Complete data quality dashboard
-- Meal data quality dashboard
-- Temporal pattern analysis
-- Gap analysis visualizations
-- Insulin distribution plots
-- Meal quality distribution charts
-
-## 📊 Project Structure
-```
-xgastro-eda/
-├── notebooks/
-│   └── examples/    
-│       └── analysis_demo.ipynb    # Sample analysis workflow
-├── src/
-│   ├── preprocessing/         # Data cleaning & preparation
-│   ├── analysis/             # Analysis components
-│   └── visualisation/        # Plotting & dashboard generation
-├── data/                     # Data directory (gitignored)
-└── docs/                     # Documentation
-```
-
-## 🚀 Getting Started
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/xgastro-eda.git
-cd xgastro-eda
+pip install [package-name]  # Once published to PyPI
 ```
 
-2. Install dependencies:
+For development installation:
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/[username]/[repo-name].git
+cd [repo-name]
+pip install -e .
 ```
 
-3. Export your xDrip+ database and place it in the `data/` directory
+## Quick Start
 
-4. Run the analysis notebook:
+```python
+from cgm_processor import XDrip
+from cgm_processor.preprocessing import clean_glucose, clean_classify_insulin, clean_classify_carbs
+from cgm_processor.alignment import align_diabetes_data
+
+# Load data from XDrip+ backup
+data = XDrip('path_to_backup.sqlite')
+
+# Process individual components
+glucose_df = clean_glucose(data.load_glucose_df())
+insulin_df = clean_classify_insulin(data.load_treatment_df())
+carb_df = clean_classify_carbs(data.load_treatment_df())
+
+# Create aligned dataset
+aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
+```
+
+## Documentation
+
+Detailed documentation is available in the following notebooks:
+- `notebooks/examples/basic_usage.ipynb`: Getting started with the tool
+- `notebooks/examples/data_quality.ipynb`: Understanding and analyzing data quality
+- `notebooks/examples/advanced_features.ipynb`: Advanced usage and customization
+
+### Data Processing Pipeline
+
+1. **Data Loading**: Extract data from XDrip+ SQLite backup
+2. **Cleaning & Validation**: 
+   - Glucose readings validated and converted to standard units
+   - Insulin records classified (basal/bolus)
+   - Carbohydrate entries validated
+3. **Timeline Alignment**: All data aligned to 5-minute intervals
+4. **Quality Assessment**: Gap analysis and data quality metrics
+5. **Export**: Standardized CSV files for further analysis
+
+## Example Usage
+
+See the [example notebook](notebooks/examples/basic_usage.ipynb) for detailed usage examples.
+
+## Data Format Specifications
+
+### Input Requirements
+- XDrip+ SQLite backup file
+- [Additional format specifications to be added]
+
+### Output Format
+Generated CSV files include:
+- `complete.csv`: Aligned dataset with all measurements
+- `glucose_reading.csv`: Processed glucose readings
+- `carbs.csv`: Validated carbohydrate records
+- `insulin.csv`: Classified insulin records
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+
+### Development Setup
+1. Fork the repository
+2. Create a virtual environment
+3. Install development dependencies:
 ```bash
-jupyter notebook notebooks/analysis_demo.ipynb
+pip install -r requirements-dev.txt
+```
+4. Run tests:
+```bash
+pytest tests/
 ```
 
-## 📈 Current Status
+## Roadmap
 
-- ✅ Core data processing pipeline
-- ✅ Quality assessment framework
-- ✅ Basic meal analysis
-- 🏗️ Pre-meal stability analysis (In Development)
-- 🏗️ Gastroparesis screening components (In Development)
+- [x] Initial setup for XDrip+ SQLite backups
+- [ ] Setup test suite
+- [ ] Support for additional CGM platforms
+- [ ] Advanced meal response analysis
+- [ ] Machine learning integration
+- [ ] Web interface
+- [ ] API development
 
-## 💡 Future Plans
+## License
 
-- Pre-meal glucose stability analysis
-- Advanced gastroparesis screening metrics
-- Machine learning-based pattern recognition
-- Integration with other CGM data sources
-- Community-driven reference datasets
-- Web-based analysis interface
+[MIT] - See [LICENSE](LICENSE) file for details
 
-## 🤝 Contributing
+## Citation
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+If you use this tool in your research, please cite:
 
-## 📝 License
+```bibtex
+[Citation details to be added]
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Support
+
+- Submit issues through the [Issue Tracker](link-to-issues)
+- Join our [Discussion Forum](link-to-discussions)
+- Email: [support email]
+
+## Acknowledgments
+
+- XDrip+ development team
+- [Additional acknowledgments]
+
+## Project Status
+
+This project is in active development. Current version: [version number]
+
+---
