@@ -5,7 +5,7 @@ from typing import Dict
 
 
 def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.png", display: bool = True,
-                         width: int = 1000, height: int = 1000):
+                         width: int = 1000, height: int = 1300):
     """
     Creates a comprehensive dashboard showing gaps data, including initial missing data stats,
     total gaps, largest gaps, gap distribution, and descriptive statistics.
@@ -53,8 +53,8 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
             [{"type": "table", "colspan": 2}, None],
         ],
         subplot_titles=(
-            "Initial Gaps", "Initial Missing Data",
-            "Remaining gaps", "Remaining Missing Data",
+            "", "",
+            "", "",
             "Top 10 Largest Gaps", "All Gaps Distribution",
             "Comprehensive Statistics"
         )
@@ -91,7 +91,7 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
             value=total_gaps,
             title={'text': "Remaining Gaps"},
             number={'suffix': " Gaps"},
-            gauge={'axis': {'range': [None, total_gaps]}},
+            gauge={'axis': {'range': [None, (total_gaps*2.2)]}},
         ),
         row=2, col=1
     )
@@ -150,7 +150,8 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                         "Total Readings",
                         "Initial Missing Count",
                         "Initial Missing Percentage",
-                        "Total Number of Gaps",
+                        "Remaining Missing Count",
+                        "Remaining Missing Percentage"
                         "Total Gap Duration",
                         "Average Gap Duration",
                         "Median Gap Duration",
@@ -163,8 +164,9 @@ def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.p
                     [
                         f"{total_readings:,}",
                         f"{initial_missing_count:,}",
-                        f"{initial_missing_percentage:.2f}%",
+                        f"{initial_missing_percentage:.3f}%",
                         f"{total_gaps:,}",
+                        f"{remaining_missing_percentage:.3f}%",
                         f"{total_gap_minutes:.1f} minutes",
                         f"{average_gap_minutes:.1f} minutes",
                         f"{median_gap_minutes:.1f} minutes",
