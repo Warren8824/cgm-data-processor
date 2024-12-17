@@ -8,3 +8,22 @@ theme:
     - navigation.instant  # Makes navigation feel faster
     - navigation.tabs    # Adds tabs at the top level
     - search.suggest     # Adds search suggestions as you type
+
+
+nav:
+  - Home: index.md
+  - Getting Started: installation.md
+  - Tutorials:
+      - Quick Start: tutorials/quickstart.md
+      - Advanced Usage: tutorials/advanced.md
+  - API Reference: api/reference.md
+
+
+plugins:
+  - search    # Enables search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          selection:
+            docstring_style: google  # Or numpy etc, depending on your style
