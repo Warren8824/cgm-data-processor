@@ -1,29 +1,55 @@
-# The name that appears in the top left of your documentation
-site_name: CGM Data Processor
+site_name: XDrippy # Change this to your project name
+site_url: https://yourusername.github.io/your-repo-name
+repo_url: https://github.com/yourusername/your-repo-name
+repo_name: yourusername/your-repo-name
 
-# Configuring the theme
 theme:
-  name: material   # This tells MkDocs to use the Material theme
+  name: material
   features:
-    - navigation.instant  # Makes navigation feel faster
-    - navigation.tabs    # Adds tabs at the top level
-    - search.suggest     # Adds search suggestions as you type
-
-
-nav:
-  - Home: index.md
-  - Getting Started: installation.md
-  - Tutorials:
-      - Quick Start: tutorials/quickstart.md
-      - Advanced Usage: tutorials/advanced.md
-  - API Reference: api/reference.md
-
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
 
 plugins:
-  - search    # Enables search
+  - search
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
           selection:
-            docstring_style: google  # Or numpy etc, depending on your style
+            docstring_style: google
+          rendering:
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: true
+            show_if_no_docstring: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      auto_title: true
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - admonition
+  - pymdownx.inlinehilite
+  - tables
+  - footnotes
+  - pymdownx.snippets
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - Loading and Exporting Data: tutorials/load_and_export_data.md
+  - API Reference:
+      - Data Loading: api/data_loading.md
