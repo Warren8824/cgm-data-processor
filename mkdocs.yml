@@ -1,0 +1,10 @@
+# The name that appears in the top left of your documentation
+site_name: CGM Data Processor
+
+# Configuring the theme
+theme:
+  name: material   # This tells MkDocs to use the Material theme
+  features:
+    - navigation.instant  # Makes navigation feel faster
+    - navigation.tabs    # Adds tabs at the top level
+    - search.suggest     # Adds search suggestions as you type
