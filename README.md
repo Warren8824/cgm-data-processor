@@ -5,6 +5,8 @@
 
 A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM) data from various sources. Currently supports XDrip+ SQLite backups with plans to expand to other CGM platforms.
 
+![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
+
 ## Features
 
 - Standardizes CGM data into a consistent 5-minute interval format
@@ -31,9 +33,9 @@ pip install -e .
 ## Quick Start
 
 ```python
-from cgm_processor import XDrip
-from cgm_processor.preprocessing import clean_glucose, clean_classify_insulin, clean_classify_carbs
-from cgm_processor.alignment import align_diabetes_data
+from preprocessing.loading import XDrip
+from preprocessing.cleaning import clean_glucose, clean_classify_insulin, clean_classify_carbs
+from preprocessing.alignment import align_diabetes_data
 
 # Load data from XDrip+ backup
 data = XDrip('path_to_backup.sqlite')
