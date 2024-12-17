@@ -298,7 +298,7 @@ Image(filename=img_path) # Display solid PNG image of plot
 
 
     
-![png](load_and_export_data_files/load_and_export_data_17_1.png)
+![gap_analysis_dashboard](load_and_export_data_files/load_and_export_data_17_1.png)
     
 
 
