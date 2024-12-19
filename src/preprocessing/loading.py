@@ -76,8 +76,6 @@ class XDrip:
             pd.DataFrame: DataFrame containing treatment data with timestamp index.Example:
                 >>> glucose_df = xdrip.load_treatment_df()
                 >>> print(glucose_df.head())
-
-
         """
         table = 'Treatments'  # Table containing all Treatments from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
