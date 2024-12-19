@@ -14,6 +14,11 @@ class XDrip:
             db_path (str): Path to the SQLite database file.
             engine: SQLAlchemy engine instance for database connection.
             inspector: SQLAlchemy inspector instance for database inspection.
+
+        Example:
+            >>> xdrip = XDrip("xdrip_database.sqlite")
+            >>> glucose_df = xdrip.load_glucose_df()
+            >>> treatment_df = xdrip.load_treatment_df()
     """
 
     def __init__(self, db_path: str):
@@ -31,6 +36,10 @@ class XDrip:
 
         Prints a formatted list of all available tables in the XDrip database
         using pretty print.
+
+        Example:
+            >>> xdrip.get_table_names()
+            ['Entries', 'Treatments', 'Settings']
         """
         pprint(self.inspector.get_table_names())
 
@@ -43,6 +52,10 @@ class XDrip:
         Returns:
             pd.DataFrame: DataFrame containing blood glucose readings with
                 timestamp index and no duplicates.
+
+            Example:
+                >>> glucose_df = xdrip.load_glucose_df()
+                >>> print(glucose_df.head())
         """
         table = 'BgReadings'  # Table containing all BG Readings from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
@@ -60,7 +73,11 @@ class XDrip:
         to datetime.
 
         Returns:
-            pd.DataFrame: DataFrame containing treatment data with timestamp index.
+            pd.DataFrame: DataFrame containing treatment data with timestamp index.Example:
+                >>> glucose_df = xdrip.load_treatment_df()
+                >>> print(glucose_df.head())
+
+
         """
         table = 'Treatments'  # Table containing all Treatments from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
