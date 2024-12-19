@@ -94,6 +94,8 @@ The SQLite backup file contains the complete dataset including glucose readings,
 
 Note: When using your own data, replace the `db_path` with the path to your XDrip+ SQLite backup file. XDrip+ backups can be generated from within the XDrip+ application under Settings > Data Source > Export Database.
 
+??? abstract "View XDrip Class Source"
+    ::: src.preprocessing.loading.XDrip
 
 ```python
 # Path to your SQLite file
@@ -112,6 +114,12 @@ In this step, we extract two primary datasets from the XDrip+ backup:
 Both dataframes are automatically configured with their timestamps as indices, and dropping any rows with duplicate timestamps, facilitating temporal analysis and alignment in subsequent processing steps. The `XDrip` class handles the SQL queries and initial data structuring, ensuring consistent data types and timestamp handling across the extracted datasets.
 
 Note: These raw dataframes will undergo further processing and quality assessment before being combined into our standardized format. This two-stage loading approach allows us to validate and clean each data type independently before integration.
+
+??? abstract "View load_glucose_df Method"
+    ::: src.preprocessing.loading.XDrip.load_glucose_df
+??? abstract "View load_treatment_df Method"
+    ::: src.preprocessing.loading.XDrip.load_treatment_df
+
 
 
 ```python
