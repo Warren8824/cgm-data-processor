@@ -5,18 +5,54 @@ from typing import Dict
 
 
 def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
-    """
-    Clean and classify insulin data into basal and bolus categories.
+    """Cleans and classifies insulin data into bolus and basal doses.
 
-    Parameters:
-        df: DataFrame with insulin and insulinJSON columns
-        bolus_limit: Units threshold for classifying unlabeled insulin as bolus
-        max_limit: Maximum units allowed for unlabeled insulin
+       Processes insulin data by classifying doses into bolus or basal categories based on
+       JSON labels and dose amounts. Removes duplicates and handles unlabeled doses using
+       configurable thresholds.
 
-    Returns:
-        df_clean: DataFrame with basal, bolus, and labeled_insulin columns with
-        datetime index.
-    """
+       Args:
+           df (pd.DataFrame): DataFrame with datetime index and columns:
+               - insulin: Insulin doses in units
+               - insulinJSON: JSON string containing insulin type information
+           bolus_limit (float, optional): Maximum insulin units to classify as bolus
+               for unlabeled doses. Defaults to 8.0 units.
+           max_limit (float, optional): Maximum valid insulin dose. Doses above this
+               are dropped if unlabeled. Defaults to 15.0 units.
+
+       Returns:
+           pd.DataFrame: Cleaned DataFrame with columns:
+               - basal: Basal insulin doses in units
+               - bolus: Bolus insulin doses in units
+               - labeled_insulin: Boolean flag indicating if dose was explicitly labeled
+
+       Examples:
+           >>> import pandas as pd
+           >>> import json
+           >>> data = {
+           ...     'insulin': [5.0, 12.0, 7.0, 20.0],
+           ...     'insulinJSON': [
+           ...         json.dumps([{'insulin': 'NovoRapid'}]),
+           ...         json.dumps([{'insulin': 'Levemir'}]),
+           ...         '{}',  # Invalid JSON
+           ...         '{}'   # Invalid JSON
+           ...     ]
+           ... }
+           >>> index = pd.to_datetime([
+           ...     '2024-01-01 08:00:00',
+           ...     '2024-01-01 12:00:00',
+           ...     '2024-01-01 15:00:00',
+           ...     '2024-01-01 20:00:00'
+           ... ])
+           >>> df = pd.DataFrame(data, index=index)
+           >>> clean_df = clean_classify_insulin(df)
+           >>> print(clean_df)
+                               basal  bolus  labeled_insulin
+           2024-01-01 08:00:00   0.0    5.0            True
+           2024-01-01 12:00:00  12.0    0.0            True
+           2024-01-01 15:00:00   0.0    7.0           False
+           # Note: 20.0 unit dose was dropped as it exceeded max_limit
+       """
     df_clean = df[df['insulin'] > 0.0].copy()
     df_clean = df_clean[~df_clean.index.duplicated(keep='first')]
 

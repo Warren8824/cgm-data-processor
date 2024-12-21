@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
 site_name: CGM Data Processor
 site_url: https://Warren8824.github.io/cgm-data-processor
 repo_url: https://github.com/Warren8824/cgm-data-processor
@@ -5,6 +7,8 @@ repo_name: Warren8824/cgm-data-processor
 
 theme:
   name: material
+  palette:
+    scheme: slate
   features:
     - navigation.instant
     - navigation.tracking
@@ -28,10 +32,6 @@ plugins:
             show_root_full_path: true
             show_if_no_docstring: true
             show_signature_annotations: true
-          setup_commands:
-            - import sys
-            - from pathlib import Path
-            - sys.path.append(str(Path().resolve()))
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -40,29 +40,16 @@ markdown_extensions:
       auto_title: false
   - admonition
   - pymdownx.superfences
-  - attr_list
-  - md_in_html
-  - pymdownx.details
-  - pymdownx.inlinehilite
+  - pymdownx.details  # This is needed for the ??? expandable sections
   - tables
   - footnotes
-  - pymdownx.snippets
   - def_list
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.tabbed:
-      alternate_style: true
-
-extra_css:
-  - stylesheets/extra.css
-
-extra_javascript:
-  - javascripts/extra.js
 
 nav:
   - Home: index.md
   - Tutorials:
       - Loading and Exporting Data: tutorials/load_and_export_data.md
   - API Reference:
+      - Reference: api/reference.md
       - Loading: api/loading.md
       - Cleaning: api/cleaning.md
