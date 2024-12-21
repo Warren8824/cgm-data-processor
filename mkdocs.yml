@@ -28,6 +28,10 @@ plugins:
             show_root_full_path: true
             show_if_no_docstring: true
             show_signature_annotations: true
+          setup_commands:
+            - import sys
+            - from pathlib import Path
+            - sys.path.append(str(Path().resolve()))
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -52,9 +56,13 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
+extra_javascript:
+  - javascripts/extra.js
+
 nav:
   - Home: index.md
   - Tutorials:
       - Loading and Exporting Data: tutorials/load_and_export_data.md
   - API Reference:
-      - Data Loading: api/data_loading.md
+      - Loading: api/loading.md
+      - Cleaning: api/cleaning.md

@@ -94,9 +94,7 @@ The SQLite backup file contains the complete dataset including glucose readings,
 
 Note: When using your own data, replace the `db_path` with the path to your XDrip+ SQLite backup file. XDrip+ backups can be generated from within the XDrip+ application under Settings > Data Source > Export Database.
 
-The `XDrip` [📚](javascript:void(0)){.source-link title="View Source" data-content="::: src.preprocessing.loading.XDrip"} class handles all database interactions. 
-
-You can load glucose data using the `load_glucose_df()` [📚](javascript:void(0)){.source-link title="View Source" data-content="::: src.preprocessing.loading.XDrip.load_glucose_df"} method, which returns a clean DataFrame of glucose readings.
+We can load glucose data using `load_glucose_df()` [📚](javascript:void(0)){.source-link data-content="src.preprocessing.loading.XDrip.load_glucose_df"} and treatment data using `load_treatment_df()` [📚](javascript:void(0)){.source-link data-content="src.preprocessing.loading.XDrip.load_treatment_df"}
 
 ```python
 # Path to your SQLite file

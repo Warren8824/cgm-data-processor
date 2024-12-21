@@ -1,5 +1,4 @@
-# Data Loading API Reference
+# Loading API Reference
 
-## XDrip Class Documentation
+::: src.preprocessing.loading
 
-::: src.preprocessing.loading.XDrip
