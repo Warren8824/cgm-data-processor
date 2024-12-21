@@ -7,11 +7,11 @@ from typing import Dict
 def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     """
     Clean and classify insulin data into basal and bolus categories.
+
     Parameters:
         df: DataFrame with insulin and insulinJSON columns
         bolus_limit: Units threshold for classifying unlabeled insulin as bolus
         max_limit: Maximum units allowed for unlabeled insulin
-
 
     Returns:
         df_clean: DataFrame with basal, bolus, and labeled_insulin columns with
@@ -61,6 +61,38 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
 
 
 def clean_classify_carbs(df):
+    """Cleans and filters carbohydrate data from a DataFrame.
+
+        Processes a DataFrame containing carbohydrate intake data by filtering
+        for significant meals (≥1g carbs) and removing duplicate timestamps.
+
+        Args:
+            df (pd.DataFrame): DataFrame with a datetime index and 'carbs' column
+                representing carbohydrate intake in grams.
+
+        Returns:
+            pd.DataFrame: Cleaned DataFrame containing only the 'carbs' column,
+                filtered for meals ≥1g and with duplicate timestamps removed.
+
+        Examples:
+            >>> import pandas as pd
+            >>> data = {
+            ...     'carbs': [15.0, 0.5, 30.0, 15.0],
+            ...     'other_col': ['a', 'b', 'c', 'd']
+            ... }
+            >>> index = pd.to_datetime([
+            ...     '2024-01-01 08:00:00',
+            ...     '2024-01-01 10:00:00',
+            ...     '2024-01-01 12:00:00',
+            ...     '2024-01-01 12:00:00'  # Duplicate timestamp
+            ... ])
+            >>> df = pd.DataFrame(data, index=index)
+            >>> clean_df = clean_classify_carbs(df)
+            >>> print(clean_df)
+                                carbs
+            2024-01-01 08:00:00  15.0
+            2024-01-01 12:00:00  30.0
+        """
     # Create a copy to avoid altering the original dataframe
     df_clean = df.copy()
 
@@ -77,6 +109,46 @@ def clean_classify_carbs(df):
 
 
 def clean_glucose(df, interpolation_limit=4):
+    """Cleans and processes glucose measurement data.
+
+        Processes continuous glucose monitoring data by standardizing timestamps,
+        handling missing values through interpolation, and converting units.
+
+        Args:
+            df (pd.DataFrame): DataFrame with datetime index and 'calculated_value'
+                column containing glucose measurements in mg/dL.
+            interpolation_limit (int, optional): Maximum number of consecutive
+                missing values to interpolate. Defaults to 4 (20 minutes at 5-min intervals).
+
+        Returns:
+            pd.DataFrame: Cleaned DataFrame with columns:
+                - mg_dl: Glucose values in mg/dL (range: 39.64-360.36)
+                - mmol_l: Glucose values in mmol/L (range: 2.2-20.0)
+                - missing: Boolean flag indicating originally missing values
+
+        Examples:
+            >>> import pandas as pd
+            >>> import numpy as np
+            >>> data = {
+            ...     'calculated_value': [100, np.nan, np.nan, 120, 400],
+            ...     'other_col': ['a', 'b', 'c', 'd', 'e']
+            ... }
+            >>> index = pd.to_datetime([
+            ...     '2024-01-01 08:00:00',
+            ...     '2024-01-01 08:03:00',  # Will be rounded to 08:05
+            ...     '2024-01-01 08:07:00',  # Will be rounded to 08:05
+            ...     '2024-01-01 08:10:00',
+            ...     '2024-01-01 08:15:00'
+            ... ])
+            >>> df = pd.DataFrame(data, index=index)
+            >>> clean_df = clean_glucose(df, interpolation_limit=2)
+            >>> print(clean_df)
+                                mg_dl  mmol_l  missing
+            2024-01-01 08:00:00  100.0    5.55   False
+            2024-01-01 08:05:00  110.0    6.11    True
+            2024-01-01 08:10:00  120.0    6.66   False
+            2024-01-01 08:15:00  360.36  20.00   False
+        """
     # Create a copy to avoid altering original dataframe
     clean_df = df.copy()
 

@@ -51,7 +51,7 @@ class XDrip:
         datetime, and handles duplicate timestamps.
 
         Returns:
-            pd.DataFrame: DataFrame containing blood glucose readings with
+            (pd.DataFrame): DataFrame containing blood glucose readings with
                 timestamp index and no duplicates.
 
         Example:
@@ -74,10 +74,11 @@ class XDrip:
         to datetime.
 
         Returns:
-            pd.DataFrame: DataFrame containing treatment data with timestamp index.
-            Example:
-                >>> treatment_df = xdrip.load_treatment_df()
-                >>> print(treatment_df.head())
+            (pd.DataFrame): DataFrame containing treatment data with timestamp index.
+
+        Example:
+            >>> treatment_df = xdrip.load_treatment_df()
+            >>> print(treatment_df.head())
         """
         table = 'Treatments'  # Table containing all Treatments from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
