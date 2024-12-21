@@ -5,8 +5,6 @@
 
 A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM) data from various sources. Currently supports XDrip+ SQLite backups with plans to expand to other CGM platforms.
 
-![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
-
 ## Features
 
 - Standardizes CGM data into a consistent 5-minute interval format
@@ -16,6 +14,9 @@ A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM
 - Supports both mg/dL and mmol/L units
 - Intelligent handling of missing data with configurable interpolation
 - Interactive quality assessment dashboards
+
+
+![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
 
 ## Installation
 
