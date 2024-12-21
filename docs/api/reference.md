@@ -8,3 +8,5 @@ the left.
 ::: src.preprocessing.loading
 # Data Cleaning
 ::: src.preprocessing.cleaning
+# Data Alignment
+::: src.preprocessing.alignment
