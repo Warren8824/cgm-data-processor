@@ -59,7 +59,7 @@ class XDrip:
         """
         pprint(self.inspector.get_table_names())
 
-    def load_glucose_df(self):
+    def load_glucose_df(self) -> pd.DataFrame:
         """Load blood glucose readings from the database into a DataFrame.
 
         Reads the BgReadings table, converts timestamps from milliseconds to
@@ -88,7 +88,7 @@ class XDrip:
 
         return df
 
-    def load_treatment_df(self):
+    def load_treatment_df(self) -> pd.DataFrame:
         """Load treatment data from the database into a DataFrame.
 
        Reads the Treatments table and converts timestamps from milliseconds

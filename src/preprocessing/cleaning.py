@@ -4,7 +4,7 @@ import json
 from typing import Dict
 
 
-def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
+def clean_classify_insulin(df, bolus_limit=8, max_limit=15) -> pd.DataFrame:
     """Cleans and classifies insulin data into bolus and basal doses.
 
        Processes insulin data by classifying doses into bolus or basal categories based on
@@ -95,8 +95,7 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15):
     return df_clean
 
 
-
-def clean_classify_carbs(df):
+def clean_classify_carbs(df) -> pd.DataFrame:
     """Cleans and filters carbohydrate data from a DataFrame.
 
         Processes a DataFrame containing carbohydrate intake data by filtering
@@ -144,7 +143,7 @@ def clean_classify_carbs(df):
     return df_clean
 
 
-def clean_glucose(df, interpolation_limit=4):
+def clean_glucose(df, interpolation_limit=4) -> pd.DataFrame:
     """Cleans and processes glucose measurement data.
 
         Processes continuous glucose monitoring data by standardizing timestamps,
@@ -242,4 +241,3 @@ def clean_glucose(df, interpolation_limit=4):
     clean_df = clean_df[['mg_dl', 'mmol_l', 'missing']]
 
     return clean_df
-

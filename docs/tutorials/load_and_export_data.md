@@ -94,8 +94,6 @@ The SQLite backup file contains the complete dataset including glucose readings,
 
 Note: When using your own data, replace the `db_path` with the path to your XDrip+ SQLite backup file. XDrip+ backups can be generated from within the XDrip+ application under Settings > Data Source > Export Database.
 
-We can load glucose data using `load_glucose_df()` [📚](javascript:void(0)){.source-link data-content="src.preprocessing.loading.XDrip.load_glucose_df"} and treatment data using `load_treatment_df()` [📚](javascript:void(0)){.source-link data-content="src.preprocessing.loading.XDrip.load_treatment_df"}
-
 ```python
 # Path to your SQLite file
 db_path = '../../data/export20240928-130349.sqlite'
@@ -144,6 +142,8 @@ The function handles several key aspects of insulin data processing:
 
 The resulting `insulin_df` provides a clean, validated dataset of insulin records, split by basal vs bolus and with a flag to see if the data was labeled by the user, that is ready to be integrated into our final standardized format.
 
+??? abstract "View clean_classify_insulin Method"
+    ::: src.preprocessing.cleaning.clean_classify_insulin
 
 ```python
 insulin_df = clean_classify_insulin(treatment_df) # Function in source directory
@@ -161,6 +161,8 @@ After processing insulin records, we now clean and standardize the carbohydrate 
 
 This cleaned carbohydrate dataset will be crucial for analyzing meal-related glucose responses and understanding overall patterns in carbohydrate intake alongside glucose measurements.
 
+??? abstract "View clean_classify_carbs Method"
+    ::: src.preprocessing.cleaning.clean_classify_carbs
 
 ```python
 carb_df = clean_classify_carbs(treatment_df) # Function in source directory

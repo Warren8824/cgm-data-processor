@@ -9,7 +9,9 @@ theme:
   name: material
   palette:
     scheme: slate
+    primary: teal
   features:
+    - header.autohide
     - navigation.instant
     - navigation.tracking
     - navigation.tabs
@@ -53,3 +55,4 @@ nav:
       - Reference: api/reference.md
       - Loading: api/loading.md
       - Cleaning: api/cleaning.md
+      - Alignment: api/alignment.md

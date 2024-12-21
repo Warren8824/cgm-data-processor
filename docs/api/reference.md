@@ -4,9 +4,9 @@ This page displays API references and examples for each class, method and functi
 the CGM Data Processor project, individual categories can be selected in the menu on 
 the left.
 
-# Data Loading
+## Data Loading
 ::: src.preprocessing.loading
-# Data Cleaning
+## Data Cleaning
 ::: src.preprocessing.cleaning
-# Data Alignment
+## Data Alignment
 ::: src.preprocessing.alignment
