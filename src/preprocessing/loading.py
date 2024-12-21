@@ -17,6 +17,7 @@ class XDrip:
 
         Example:
             >>> xdrip = XDrip("xdrip_database.sqlite")
+            >>> xdrip.get_table_names()
             >>> glucose_df = xdrip.load_glucose_df()
             >>> treatment_df = xdrip.load_treatment_df()
     """
@@ -53,9 +54,9 @@ class XDrip:
             pd.DataFrame: DataFrame containing blood glucose readings with
                 timestamp index and no duplicates.
 
-            Example:
-                >>> glucose_df = xdrip.load_glucose_df()
-                >>> print(glucose_df.head())
+        Example:
+            >>> glucose_df = xdrip.load_glucose_df()
+            >>> print(glucose_df.head())
         """
         table = 'BgReadings'  # Table containing all BG Readings from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
@@ -73,9 +74,10 @@ class XDrip:
         to datetime.
 
         Returns:
-            pd.DataFrame: DataFrame containing treatment data with timestamp index.Example:
-                >>> glucose_df = xdrip.load_treatment_df()
-                >>> print(glucose_df.head())
+            pd.DataFrame: DataFrame containing treatment data with timestamp index.
+            Example:
+                >>> treatment_df = xdrip.load_treatment_df()
+                >>> print(treatment_df.head())
         """
         table = 'Treatments'  # Table containing all Treatments from XDrip+
         df = pd.read_sql_table(table, con=self.engine)
