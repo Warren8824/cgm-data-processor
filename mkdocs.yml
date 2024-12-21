@@ -39,7 +39,6 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.details
-  - admonition
   - pymdownx.inlinehilite
   - tables
   - footnotes
@@ -47,6 +46,8 @@ markdown_extensions:
   - def_list
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
 
 extra_css:
   - stylesheets/extra.css
