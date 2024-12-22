@@ -6,19 +6,60 @@ from typing import Dict
 
 def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.png", display: bool = True,
                          width: int = 1000, height: int = 1900):
-    """
-    Creates a comprehensive dashboard showing gaps data, including initial missing data stats,
-    total gaps, largest gaps, gap distribution, and descriptive statistics.
+    """Creates an interactive dashboard visualizing glucose monitoring data gaps.
+
+    Generates a comprehensive dashboard using Plotly with multiple visualizations
+    showing patterns and statistics of missing glucose readings.
 
     Args:
-        gaps_data: Dictionary containing gap analysis data including initial missing stats
-        save_path: File path to save the dashboard PNG image, set to None to not save.
-        display: If True, returns the figure object for display in notebook. True by default
+        gaps_data (Dict): Dictionary containing gap analysis metrics from analyse_glucose_gaps():
+
+            - initial_missing_percentage (float): Percentage of missing values before processing
+
+            - initial_missing_count (int): Count of missing values before processing
+
+            - total_readings (int): Total number of readings
+
+            - remaining_missing_count (int): Count of missing values after processing
+
+            - remaining_missing_percentage (float): Percentage of missing values after processing
+
+            - total_gap_minutes (float): Total duration of all gaps
+
+            - average_gap_minutes (float): Mean gap duration
+
+            - median_gap_minutes (float): Median gap duration
+
+            - largest_gaps (pd.DataFrame): Details of largest gaps
+
+            - gaps_df (pd.DataFrame): Complete DataFrame of all gaps
+
+        save_path (str, optional): File path to save dashboard image.
+
+            Defaults to "img/gaps_dashboard.png".
+
+        display (bool, optional): Whether to return figure object for display.
+
+            Defaults to True.
+
+        width (int, optional): Width of dashboard in pixels. Defaults to 1000.
+
+        height (int, optional): Height of dashboard in pixels. Defaults to 1900.
 
     Returns:
-        plotly.graph_objects.Figure if display=True, else None
-    """
+        go.Figure: Plotly figure object if display=True, else None
 
+    Examples:
+        >>> gaps_data = analyse_glucose_gaps(glucose_df)
+        >>> fig = create_gap_dashboard(
+        ...     gaps_data,
+        ...     save_path="glucose_gaps.png",
+        ...     width=1200,
+        ...     height=2000
+        ... )
+        >>> fig.show()  # Display interactive dashboard
+        Enhanced Gaps Dashboard saved to glucose_gaps.png
+"""
     # Extract the gaps data
     largest_gaps = gaps_data.get('largest_gaps', None)
     gaps_df = gaps_data.get('gaps_df', None)

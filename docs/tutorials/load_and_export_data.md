@@ -191,6 +191,8 @@ The resulting dataset includes three essential columns:
 
 This processed glucose dataset forms the backbone of our standardized CGM data structure, providing a reliable foundation for subsequent analysis while maintaining transparency about data quality and completeness.
 
+??? abstract "View clean_glucose Method"
+    ::: src.preprocessing.cleaning.clean_glucose
 
 ```python
 glucose_df = clean_glucose(bg_df) # Function in source directory
@@ -234,6 +236,8 @@ Missing treatment values (carbohydrates and insulin) are filled with zeros, whil
 
 This aligned dataset serves as our standardized format, ready for various analyses including meal response patterns, insulin sensitivity calculations, and machine learning applications where understanding data completeness and interpolation is crucial.
 
+??? abstract "View align_diabetes_data Method"
+    ::: src.preprocessing.alignment.align_diabetes_data
 
 ```python
 aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
@@ -286,6 +290,10 @@ The dashboard provides a comprehensive view of data quality through:
 
 This analysis provides crucial context for understanding data quality and helps identify periods where additional monitoring or different analysis approaches might be needed.
 
+??? abstract "View analyse_glucose_gaps Method"
+    ::: src.analysis.gaps.analyse_glucose_gaps
+??? abstract "View create_gap_dashboard Method"
+    ::: src.visualisation.gap_dashboard
 
 ```python
 # Analyse missing glucose values

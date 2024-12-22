@@ -3,18 +3,61 @@ from typing import Dict
 
 
 def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict:
+    """Analyzes gaps in continuous glucose monitoring data.
+
+       Performs detailed analysis of missing glucose readings, including gap counts, durations,
+       and statistics. Identifies and provides information about the largest gaps in the data.
+
+       Args:
+           aligned_df (pd.DataFrame): DataFrame with 5-minute interval timestamps as index
+               and required columns:
+
+                   - mg_dl: Blood glucose values in mg/dL
+
+                   - mmol_l: Blood glucose values in mmol/L
+
+                   - missing: Boolean flag for missing values
+
+           show_top_n (int, optional): Number of largest gaps to analyze in detail.
+               Defaults to 10.
+
+       Returns:
+           Dict: Dictionary containing gap analysis metrics:
+
+                - initial_missing_count (int): Count of missing values before processing
+
+                - initial_missing_percentage (float): Percentage of missing values before processing
+
+                - total_readings (int): Total number of readings in dataset
+
+                - remaining_missing_count (int): Count of missing values after processing
+
+                - remaining_missing_percentage (float): Percentage of missing values after processing
+
+                - total_gap_minutes (float): Total duration of all gaps in minutes
+
+                - average_gap_minutes (float): Mean gap duration in minutes
+
+                - median_gap_minutes (float): Median gap duration in minutes
+
+                - largest_gaps (pd.DataFrame): Details of top N largest gaps
+
+                - gaps_df (pd.DataFrame): Complete DataFrame of all gaps
+
+       Examples:
+           >>> df = pd.DataFrame({
+           ...     'mg_dl': [100, np.nan, np.nan, 120],
+           ...     'mmol_l': [5.5, np.nan, np.nan, 6.7],
+           ...     'missing': [False, True, True, False]
+           ... })
+           >>> df.index = pd.date_range('2024-01-01', periods=4, freq='5min')
+           >>> metrics = analyse_glucose_gaps(df, show_top_n=2)
+           >>> print(f"Missing data: {metrics['initial_missing_percentage']}%")
+           Missing data: 50.0%
+           >>> print(metrics['largest_gaps'][['duration', 'length_minutes']])
+                        duration  length_minutes
+           0  0h 10m            10.0
     """
-    Analyzes gaps in glucose readings with detailed information about largest gaps.
-
-    Args:
-        aligned_df: DataFrame with 5-min interval index and columns including
-                   'mg_dl', 'mmol_l' and 'missing'
-        show_top_n: Number of largest gaps to show details for
-
-    Returns:
-        Dictionary containing gap analysis including detailed info about largest gaps
-    """
-
     # Calculate initial missing data value and percentage
     total_readings = len(aligned_df)
     initial_missing = aligned_df['missing'].sum()
@@ -67,8 +110,8 @@ def analyse_glucose_gaps(aligned_df: pd.DataFrame, show_top_n: int = 10) -> dict
     remaining_missing_percentage = (remaining_missing / total_readings) * 100
 
     metrics = {
-        'initial_missing_percentage': round(initial_missing_percentage, 2),
         'initial_missing_count': int(initial_missing),
+        'initial_missing_percentage': round(initial_missing_percentage, 2),
         'total_readings': total_readings,
         'remaining_missing_count': remaining_missing,
         'remaining_missing_percentage': round(remaining_missing_percentage, 2),

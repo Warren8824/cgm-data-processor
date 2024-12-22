@@ -10,3 +10,9 @@ the left.
 ::: src.preprocessing.cleaning
 ## Data Alignment
 ::: src.preprocessing.alignment
+## CGM Gap Analysis
+::: src.analysis.gaps
+## CGM Gap Analysis Dashboard
+::: src.visualisation.gap_dashboard
+### Example Gap Analysis Dashboard
+![gap_analysis_dashboard](../tutorials/load_and_export_data_files/load_and_export_data_17_1.png)

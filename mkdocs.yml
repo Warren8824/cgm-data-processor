@@ -52,7 +52,9 @@ nav:
   - Tutorials:
       - Loading and Exporting Data: tutorials/load_and_export_data.md
   - API Reference:
-      - Reference: api/reference.md
-      - Loading: api/loading.md
-      - Cleaning: api/cleaning.md
-      - Alignment: api/alignment.md
+      - Data Loading: api/preprocessing/loading.md
+      - Data Cleaning: api/preprocessing/cleaning.md
+      - Data Alignment: api/preprocessing/alignment.md
+      - CGM Gap Analysis: api/analysis/gaps.md
+      - CGM Gap Analysis Dashboard: api/visualisation/gap_dashboard.md
+      - Complete API Reference: api/reference.md
