@@ -97,7 +97,7 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
     - Module references
     - Code examples
 
-- [**Examples**](#documentation-structure)
+- [**Examples**](user-guide/tutorials/load_and_export_data.md)
     - Jupyter notebook tutorials(To be added soon)
     - Real-world use cases(To be added soon)
     - Advanced features(To be added soon)
@@ -120,7 +120,7 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 
 ## Contributing
 
-We welcome contributions! See our [Contributing Guide](#in-progress) for:
+We welcome contributions! See our [Contributing Guide](development/contributing.md) for:
 
 - Development setup
 - Code style guidelines
@@ -129,7 +129,7 @@ We welcome contributions! See our [Contributing Guide](#in-progress) for:
 
 ## Support & Community
 
-- 📚 [Documentation](development/contributing.md)
+- 📚 [Documentation](#contributing)
 - 🐛 [Issue Tracker](https://github.com/Warren8824/cgm-data-processor/issues)
 - 💡 [Discussions](https://github.com/Warren8824/cgm-data-processor/discussions)
 
