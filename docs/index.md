@@ -82,7 +82,7 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 
 ## Documentation Structure
 
-- [**Getting Started**](getting-started.md)
+- [**Getting Started**](installation/index.md)
     - Basic setup and installation
     - First steps with the tool
     - Quick usage examples
