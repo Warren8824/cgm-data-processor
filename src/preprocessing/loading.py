@@ -67,9 +67,13 @@ class XDrip:
 
         Returns:
             pd.DataFrame: DataFrame containing blood glucose readings with columns:
+
                 - calculated_value: Blood glucose value
+
                 - raw_data: Raw sensor data
+
                 Additional columns may be present depending on XDrip version
+
                 Index is timestamp in datetime format
 
         Examples:
@@ -96,9 +100,13 @@ class XDrip:
 
        Returns:
            pd.DataFrame: DataFrame containing treatment data with columns:
+
                - insulin: Insulin doses in units
+
                - carbs: Carbohydrate amounts in grams
+
                - timestamp: Treatment time as datetime index
+
                Additional columns may be present depending on XDrip version
 
        Examples:

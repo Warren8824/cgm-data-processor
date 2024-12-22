@@ -13,17 +13,24 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15) -> pd.DataFrame:
 
        Args:
            df (pd.DataFrame): DataFrame with datetime index and columns:
+
                - insulin: Insulin doses in units
+
                - insulinJSON: JSON string containing insulin type information
+
            bolus_limit (float, optional): Maximum insulin units to classify as bolus
                for unlabeled doses. Defaults to 8.0 units.
+
            max_limit (float, optional): Maximum valid insulin dose. Doses above this
                are dropped if unlabeled. Defaults to 15.0 units.
 
        Returns:
            pd.DataFrame: Cleaned DataFrame with columns:
+
                - basal: Basal insulin doses in units
+
                - bolus: Bolus insulin doses in units
+
                - labeled_insulin: Boolean flag indicating if dose was explicitly labeled
 
        Examples:
@@ -152,13 +159,17 @@ def clean_glucose(df, interpolation_limit=4) -> pd.DataFrame:
         Args:
             df (pd.DataFrame): DataFrame with datetime index and 'calculated_value'
                 column containing glucose measurements in mg/dL.
+
             interpolation_limit (int, optional): Maximum number of consecutive
                 missing values to interpolate. Defaults to 4 (20 minutes at 5-min intervals).
 
         Returns:
             pd.DataFrame: Cleaned DataFrame with columns:
+
                 - mg_dl: Glucose values in mg/dL (range: 39.64-360.36)
+
                 - mmol_l: Glucose values in mmol/L (range: 2.2-20.0)
+
                 - missing: Boolean flag indicating originally missing values
 
         Examples:
