@@ -26,23 +26,36 @@ def align_diabetes_data(
                    Sporadic insulin entries
 
     Processing steps:
+
     1. Create copies of dataframes to avoid warnings
-    3. Round carbs_df and insulin_df timestamps to nearest 5 minutes
-    3a. Resample insulin treatment data - sum any entries within each 5-min window
-    3b. Reindex this dataframe to bg_df.index to align timestamps
-    4a. Resample carb treatment data - sum any entries within each 5-min window
-    4b. Reindex this dataframe to bg_df.index to align timestamps
-    5. Combine all data and ensure all intervals exist
-    6. Fill missing treatment values with 0 (keep BG as NaN)
-    7. Fill missing insulin_labeled rows(where bg_df has index and insulin_resampled does not)
-    with False
+
+    2. Round carbs_df and insulin_df timestamps to nearest 5 minutes
+
+    3. Resample insulin treatment data - sum any entries within each 5-min window
+
+    4. Reindex this dataframe to bg_df.index to align timestamps
+
+    5. Fill missing insulin_labeled rows(where bg_df has index and insulin_resampled does not)
+       with False
+
+    6. Resample carb treatment data - sum any entries within each 5-min window
+
+    7. Reindex this dataframe to bg_df.index to align timestamps
+
+    8. Combine all data and ensure all intervals exist
+
+    9. Fill missing treatment values with 0 (keep BG as NaN)
 
     Returns:
         DataFrame with:
-        - Regular 5-minute interval index
-        - Columns: ['mg_dl', 'mmol_l', 'missing', 'carbs', 'bolus', 'basal', 'labeled_insulin']
-        - BG values averaged within intervals, NaN where missing
-        - Treatment values summed within intervals, 0 where missing
+
+            - Regular 5-minute interval index
+
+            - Columns: ['mg_dl', 'mmol_l', 'missing', 'carbs', 'bolus', 'basal', 'labeled_insulin']
+
+            - BG values averaged within intervals, NaN where missing
+
+            - Treatment values summed within intervals, 0 where missing
     """
     # First round timestamps in all dataframes to 5-min intervals
     bg_df = bg_df.copy()
