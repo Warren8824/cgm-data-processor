@@ -5,7 +5,7 @@ from typing import Dict
 
 
 def create_gap_dashboard(gaps_data: Dict, save_path: str = "img/gaps_dashboard.png", display: bool = True,
-                         width: int = 1000, height: int = 1900):
+                         width: int = 1000, height: int = 1900) -> Optional[go.Figure]:
     """Creates an interactive dashboard visualizing glucose monitoring data gaps.
 
     Generates a comprehensive dashboard using Plotly with multiple visualizations
