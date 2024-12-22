@@ -71,7 +71,7 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
     - Data quality metrics
     - Interactive dashboards
 
-![CGM Gap Analysis Dashboard](tutorials/load_and_export_data_files/load_and_export_data_17_1.png){: style="height:1100px;width:660px"}
+![CGM Gap Analysis Dashboard](user-guide/tutorials/load_and_export_data_files/load_and_export_data_17_1.png){: style="height:1100px;width:660px"}
 
 **Export Options**
 

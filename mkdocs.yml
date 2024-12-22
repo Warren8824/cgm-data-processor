@@ -36,6 +36,11 @@ plugins:
             show_signature_annotations: true
 
 markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - attr_list
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -53,13 +58,28 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Installation: installation/index.md
-  - Tutorials:
-      - Loading and Exporting Data: tutorials/load_and_export_data.md
+  - Getting Started:
+    - Installation: installation/index.md
+  - User Guide:
+    - Tutorials:
+      - Loading and Exporting Data: user-guide/tutorials/load_and_export_data.md
+    - Concepts:
+      - Data Processing Pipeline: user-guide/concepts/processing_pipeline.md
+      - Gap Analysis: user-guide/concepts/gap_analysis.md
   - API Reference:
+    - Overview: api/index.md
+    - Preprocessing:
       - Data Loading: api/preprocessing/loading.md
       - Data Cleaning: api/preprocessing/cleaning.md
       - Data Alignment: api/preprocessing/alignment.md
+    - Analysis:
       - CGM Gap Analysis: api/analysis/gaps.md
-      - CGM Gap Analysis Dashboard: api/visualisation/gap_dashboard.md
-      - Complete API Reference: api/reference.md
+    - Visualization:
+      - Gap Analysis Dashboard: api/visualisation/gap_dashboard.md
+    - Complete Reference: api/reference.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Roadmap: development/roadmap.md
+  - About:
+    - Changelog: about/changelog.md
+    - License: about/license.md

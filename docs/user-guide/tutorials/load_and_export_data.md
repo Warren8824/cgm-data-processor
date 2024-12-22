@@ -96,8 +96,8 @@ Note: When using your own data, replace the `db_path` with the path to your XDri
 
 ```python
 # Path to your SQLite file
-db_path = '../../data/export20240928-130349.sqlite'
-data = XDrip(db_path) # Load db path into XDrip class - Class found in src directory
+db_path = '../../../data/export20240928-130349.sqlite'
+data = XDrip(db_path)  # Load db path into XDrip class - Class found in src directory
 ```
 
 ## Initial Data Extraction
