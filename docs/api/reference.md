@@ -15,4 +15,6 @@ the left.
 ## CGM Gap Analysis Dashboard
 ::: src.visualisation.gap_dashboard
 
-Take a look at an example [gap_analysis_dashboard](../user-guide/tutorials/load_and_export_data_files/load_and_export_data_17_1.png)
+Take a look at an example Gap Analysis Dashboard:
+
+![gap_analysis_dashboard](../user-guide/tutorials/load_and_export_data_files/load_and_export_data_17_1.png)

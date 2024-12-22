@@ -146,60 +146,65 @@ dashboard = create_gap_dashboard(
 
 ### Potential Issues to Watch For
 1. **Regular Gap Patterns**
-   - May indicate systematic problems
-   - Could be related to daily activities
+      - May indicate systematic problems
+      - Could be related to daily activities
 
 2. **Increasing Gap Frequency**
-   - Might suggest sensor degradation
-   - Could indicate calibration issues
+      - Might suggest sensor degradation
+      - Could indicate calibration issues
 
 3. **Clustered Gaps**
-   - May correspond to specific activities
-   - Could indicate device interference
+      - May correspond to specific activities
+      - Could indicate device interference
 
 4. **Long Gaps**
-   - Check for sensor changes
-   - Review device settings
-   - Consider user activities
+      - Check for sensor changes
+      - Review device settings
+      - Consider user activities
 
 ## Impact on Analysis
 
 Understanding gaps is crucial for:
 
 1. **Data Quality Assessment**
-   - Determine if dataset is suitable for analysis
-   - Identify periods that may need special handling
+      - Determine if dataset is suitable for analysis
+      - Identify periods that may need special handling
 
 2. **Processing Decisions**
-   - Choose appropriate interpolation settings
-   - Decide whether to exclude certain periods
+      - Choose appropriate interpolation settings
+      - Decide whether to exclude certain periods
 
 3. **Result Interpretation**
-   - Account for missing data in conclusions
-   - Understand limitations of analysis
+      - Account for missing data in conclusions
+      - Understand limitations of analysis
 
 4. **Device Management**
-   - Identify potential sensor issues
-   - Optimize sensor usage and replacement timing
+      - Identify potential sensor issues
+      - Optimize sensor usage and replacement timing
 
 ## Best Practices
 
 1. **Regular Monitoring**
-   - Run gap analysis periodically
-   - Track changes in gap patterns
-   - Document significant gaps
+      - Run gap analysis periodically
+      - Track changes in gap patterns
+      - Document significant gaps
 
 2. **Documentation**
-   - Note sensor changes
-   - Record known device issues
-   - Track user activities that may affect readings
+      - Note sensor changes
+      - Record known device issues
+      - Track user activities that may affect readings
 
 3. **Analysis Adjustment**
-   - Consider gap impact on results
-   - Use appropriate statistical methods
-   - Document data quality in reports
+      - Consider gap impact on results
+      - Use appropriate statistical methods
+      - Document data quality in reports
 
 4. **Quality Improvement**
-   - Use insights to improve data collection
-   - Optimize device settings
-   - Adjust user practices if needed
+      - Use insights to improve data collection
+      - Optimize device settings
+      - Adjust user practices if needed
+
+## Next Steps
+
+- Review the [API Reference](../../api/index.md) for detailed function documentation
+- Explore example notebooks for practical applications

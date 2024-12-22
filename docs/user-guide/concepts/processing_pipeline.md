@@ -219,6 +219,6 @@ Choose the format that best suits your analysis needs:
 
 ## Next Steps
 
-- Check out the [Gap Analysis](../analysis/gap-analysis.md) guide
-- Review the [API Reference](../api/index.md) for detailed function documentation
+- Check out the [Gap Analysis](gap_analysis.md) guide
+- Review the [API Reference](../../api/index.md) for detailed function documentation
 - Explore example notebooks for practical applications

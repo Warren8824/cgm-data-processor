@@ -92,15 +92,15 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
     - Configuration options
     - Best practices
 
-- [**API Reference**](api/reference.md)
+- [**API Reference**](api/index.md)
     - Complete API documentation
     - Module references
     - Code examples
 
-- [**Examples**](user-guide/preprocessing/loading.md)
-    - Jupyter notebook tutorials
-    - Real-world use cases
-    - Advanced features
+- [**Examples**](#documentation-structure)
+    - Jupyter notebook tutorials(To be added soon)
+    - Real-world use cases(To be added soon)
+    - Advanced features(To be added soon)
 
 ## Project Status & Roadmap
 
@@ -113,14 +113,14 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 ### In Progress
 - :material-checkbox-blank: Setup test suite
 - :material-checkbox-blank: Support for additional CGM platforms
-- :material-checkbox-blank: Advanced meal response analysis
-- :material-checkbox-blank: Machine learning integration
+- :material-checkbox-blank: Advanced meal record quality analysis
+- :material-checkbox-blank: Diabetes Management Analysis and Visualisations!!!
 - :material-checkbox-blank: Web interface
 - :material-checkbox-blank: API development
 
 ## Contributing
 
-We welcome contributions! See our [Contributing Guide](development/contributing.md) for:
+We welcome contributions! See our [Contributing Guide](#in-progress) for:
 
 - Development setup
 - Code style guidelines
@@ -129,7 +129,7 @@ We welcome contributions! See our [Contributing Guide](development/contributing.
 
 ## Support & Community
 
-- 📚 [Documentation](https://cgm-data-processor.readthedocs.io/)
+- 📚 [Documentation](development/contributing.md)
 - 🐛 [Issue Tracker](https://github.com/Warren8824/cgm-data-processor/issues)
 - 💡 [Discussions](https://github.com/Warren8824/cgm-data-processor/discussions)
 

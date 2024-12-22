@@ -60,7 +60,10 @@ nav:
   - Home: index.md
   - Getting Started:
     - Installation: installation/index.md
+    - Configuration: installation/configuration.md
+    - Requirements: installation/requirements.md
   - User Guide:
+    - Overview: user-guide/index.md
     - Tutorials:
       - Loading and Exporting Data: user-guide/tutorials/load_and_export_data.md
     - Concepts:
