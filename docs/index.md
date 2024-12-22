@@ -3,13 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM) data from various sources. Currently supports XDrip+ SQLite backups with plans to expand to other CGM platforms.
-
-![CGM Quality Dashboard](tutorials/load_and_export_data_files/load_and_export_data_17_1.png)
+A versatile Python tool designed to standardise and analyse Continuous Glucose Monitoring (CGM) data from various sources. Currently compatible with XDrip+ SQLite backups, it features a robust framework with plans to support additional CGM platforms in the future.
 
 ## Key Features
 
-- **Standardized Data**: Consistent 5-minute interval format for all CGM data
+- **Standardised Data**: Consistent 5-minute interval format for all CGM data
 - **Comprehensive Processing**:
   - Robust data cleaning and validation
   - Support for both mg/dL and mmol/L units
@@ -20,6 +18,18 @@ A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM
   - Interactive quality assessment dashboards
   - Smart classification of insulin (basal/bolus)
 - **Flexible Export**: Multiple CSV formats for further analysis
+
+## Installation
+
+```bash
+# For users (once published to PyPI)
+pip install [package-name]
+
+# For developers
+git clone https://github.com/Warren8824/cgm-data-processor.git
+cd cgm-data-processor
+pip install -e .
+```
 
 ## Quick Start
 
@@ -38,18 +48,6 @@ carb_df = clean_classify_carbs(data.load_treatment_df())
 
 # Create aligned dataset
 aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
-```
-
-## Installation
-
-```bash
-# For users (once published to PyPI)
-pip install [package-name]
-
-# For developers
-git clone https://github.com/Warren8824/cgm-data-processor.git
-cd cgm-data-processor
-pip install -e .
 ```
 
 ## Data Processing Pipeline
@@ -73,11 +71,14 @@ pip install -e .
     - Data quality metrics
     - Interactive dashboards
 
-5. **Export Options**
-    - `complete.csv`: Aligned dataset with all measurements
-    - `glucose_reading.csv`: Processed glucose readings
-    - `carbs.csv`: Validated carbohydrate records
-    - `insulin.csv`: Classified insulin records
+![CGM Gap Analysis Dashboard](tutorials/load_and_export_data_files/load_and_export_data_17_1.png){: style="height:1100px;width:660px"}
+
+**Export Options**
+
+- `complete.csv`: Aligned dataset with all measurements
+- `glucose_reading.csv`: Processed glucose readings
+- `carbs.csv`: Validated carbohydrate records
+- `insulin.csv`: Classified insulin records
 
 ## Documentation Structure
 
@@ -104,18 +105,18 @@ pip install -e .
 ## Project Status & Roadmap
 
 ### Completed
-- [x] Initial setup for XDrip+ SQLite backups
-- [x] Basic data processing pipeline
-- [x] Gap analysis functionality
-- [x] Interactive dashboards
+- :material-checkbox-marked: Initial setup for XDrip+ SQLite backups
+- :material-checkbox-marked: Basic data processing pipeline
+- :material-checkbox-marked: Gap analysis functionality
+- :material-checkbox-marked: Interactive dashboards
 
 ### In Progress
-- [ ] Setup test suite
-- [ ] Support for additional CGM platforms
-- [ ] Advanced meal response analysis
-- [ ] Machine learning integration
-- [ ] Web interface
-- [ ] API development
+- :material-checkbox-blank: Setup test suite
+- :material-checkbox-blank: Support for additional CGM platforms
+- :material-checkbox-blank: Advanced meal response analysis
+- :material-checkbox-blank: Machine learning integration
+- :material-checkbox-blank: Web interface
+- :material-checkbox-blank: API development
 
 ## Contributing
 
