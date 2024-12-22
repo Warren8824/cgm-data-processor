@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-A Python tool for standardizing and analyzing Continuous Glucose Monitoring (CGM) data from various sources. Currently supports XDrip+ SQLite backups with plans to expand to other CGM platforms.
+A versatile Python tool designed to standardize and analyze Continuous Glucose Monitoring (CGM) data from various sources. Currently compatible with XDrip+ SQLite backups, it features a robust framework with plans to support additional CGM platforms in the future.
 
 ## Features
 
