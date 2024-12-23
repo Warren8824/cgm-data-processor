@@ -196,7 +196,7 @@ This cleaned carbohydrate dataset will be crucial for analyzing meal-related glu
 carb_df = clean_classify_carbs(treatment_df) # Function in source directory
 ```
 
-## Glucose Data Processing and Standardization
+## Glucose Data Processing and Standardisation
 
 The `clean_glucose()` function performs comprehensive processing of raw CGM data to create a standardized, analysis-ready glucose dataset with consistent time intervals and validated measurements.
 
@@ -204,7 +204,9 @@ The `clean_glucose()` function performs comprehensive processing of raw CGM data
 The function first standardizes the temporal aspects of the data by rounding timestamps to 5-minute intervals, which is the standard measurement frequency for most CGM systems. It then creates a complete timeline by generating a continuous 5-minute interval index spanning the entire monitoring period. This ensures we have a consistent temporal structure, even when raw data points are missing or irregularly spaced.
 
 ### Gap Handling and Data Quality
-A key feature of the processing is its sophisticated handling of data gaps. The function identifies and flags missing data points, creating a 'missing' indicator that allows downstream analyses to distinguish between measured and interpolated values. For gaps up to 20 minutes (four 5-minute intervals), the function applies linear interpolation to estimate glucose values. This approach balances the need for continuous data with the importance of maintaining data integrity.
+A key feature of the processing is its sophisticated handling of data gaps. The function identifies and flags missing data points, creating a 'missing' indicator that allows downstream analyses to distinguish between measured and interpolated values. 
+
+For gaps up to 20 minutes (four 5-minute intervals), the function applies linear interpolation to estimate glucose values. This approach balances the need for continuous data with the importance of maintaining data integrity.
 
 ### Measurement Standardization
 The function implements several measurement quality controls:
@@ -246,22 +248,19 @@ The function takes these independently processed dataframes and performs several
 1. **Temporal Alignment**: All timestamps are rounded to 5-minute intervals to ensure consistent temporal binning across all data types, maintaining the integrity of our interpolated glucose values.
 
 2. **Treatment Data Aggregation**:
-
-   - Multiple insulin doses within the same 5-minute window are summed
-   - Multiple carbohydrate entries within the same window are summed
-   - Insulin entries maintain their classification (bolus/basal) and labeling
+    - Multiple insulin doses within the same 5-minute window are summed
+    - Multiple carbohydrate entries within the same window are summed
+    - Insulin entries maintain their classification (bolus/basal) and labeling
 
 3. **Unified Timeline**: The function uses the glucose measurements' timeline (including interpolated values) as the master index, ensuring:
+    - Complete coverage of the monitoring period
 
-   - Complete coverage of the monitoring period
+    - Consistent 5-minute intervals throughout
 
-   - Consistent 5-minute intervals throughout
-
-   - Preservation of gap indicators for transparency
+    - Preservation of gap indicators for transparency
 
 ### Output Structure
 The resulting `aligned_df` provides a comprehensive view of diabetes management data with:
-
     - Regular 5-minute interval timestamps
 
     - Glucose values in both mg/dL and mmol/L units
