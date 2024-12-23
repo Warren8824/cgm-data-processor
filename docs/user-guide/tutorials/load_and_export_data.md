@@ -261,6 +261,7 @@ The function takes these independently processed dataframes and performs several
 
 ### Output Structure
 The resulting `aligned_df` provides a comprehensive view of diabetes management data with:
+    
     - Regular 5-minute interval timestamps
     - Glucose values in both mg/dL and mmol/L units
     - Missing data indicators showing where glucose values were interpolated
