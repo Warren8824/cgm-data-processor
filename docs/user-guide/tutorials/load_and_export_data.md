@@ -262,12 +262,12 @@ The function takes these independently processed dataframes and performs several
 ### Output Structure
 The resulting `aligned_df` provides a comprehensive view of diabetes management data with:
     
-    - Regular 5-minute interval timestamps
-    - Glucose values in both mg/dL and mmol/L units
-    - Missing data indicators showing where glucose values were interpolated
-    - Summed carbohydrate quantities
-    - Aggregated insulin doses (both basal and bolus)
-    - Boolean flags for labeled insulin entries
+- Regular 5-minute interval timestamps
+- Glucose values in both mg/dL and mmol/L units
+- Missing data indicators showing where glucose values were interpolated
+- Summed carbohydrate quantities
+- Aggregated insulin doses (both basal and bolus)
+- Boolean flags for labeled insulin entries
 
 Missing treatment values (carbohydrates and insulin) are filled with zeros, while the glucose values and their interpolation status are preserved from the pre-processed glucose dataset. This maintains transparency about data quality while providing a complete timeline for analysis.
 
