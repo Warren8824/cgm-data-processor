@@ -14,23 +14,33 @@ The cgm-data-processor tool simplifies the process of working with CGM data by h
 ### Prerequisites
 
 Before running this notebook, ensure you have:
+
 - The cgm-data-processor package installed
+
 - An XDrip+ SQLite backup file
+
 - Basic familiarity with Python and pandas
 
 ### Expected Output
 
 The processed datasets will include:
+
 - Glucose measurements aligned to 5-minute intervals
+
 - Values in both mg/dL and mmol/L units
+
 - Validated carbohydrate and insulin records
+
 - Quality metrics for each time period
+
 - Clearly marked data gaps and interpolated values
 
 ### Data Quality Considerations
 
 Throughout this tutorial, we'll examine several key quality metrics:
+
 - Measurement frequency and consistency
+
 - Gap duration and distribution
 
 This quality assessment helps ensure that subsequent analyses are based on reliable data and that any limitations are well understood.
@@ -38,9 +48,13 @@ This quality assessment helps ensure that subsequent analyses are based on relia
 ### Next Steps
 
 After completing this tutorial, you'll have a standardized dataset ready for various analyses such as:
+
 - Glucose variability assessment
+
 - Meal response patterns
+
 - Insulin sensitivity calculations
+
 - Time-in-range analysis
 
 Let's begin by importing the necessary libraries and setting up our environment.
@@ -59,10 +73,14 @@ import pprint
 This notebook relies on a modular codebase organized into three main components:
 
 1. Preprocessing: Handles data loading from XDrip+ backups, cleaning operations, and timeline alignment
+
 2. Analysis: Provides tools for assessing data quality, gap detection, and statistical analysis
+
 3. Visualization: Creates informative dashboards and plots for quality assessment
 
-The following code adds the project root to the Python path and imports the necessary functionality from each module. Each import is organized by its primary function to maintain clarity and facilitate future extensions of the codebase.
+The following code adds the project root to the Python path and imports the necessary functionality from each module.
+
+Each import is organized by its primary function to maintain clarity and facilitate future extensions of the codebase.
 
 
 ```python
@@ -92,7 +110,9 @@ Here we initialize our data processing pipeline by loading an XDrip+ SQLite back
 
 The SQLite backup file contains the complete dataset including glucose readings, insulin records, and carbohydrate entries. The `XDrip` class handles the low-level database interactions and provides structured access to this data.
 
-Note: When using your own data, replace the `db_path` with the path to your XDrip+ SQLite backup file. XDrip+ backups can be generated from within the XDrip+ application under Settings > Data Source > Export Database.
+Note: When using your own data, replace the `db_path` with the path to your XDrip+ SQLite backup file. 
+
+XDrip+ backups can be generated from within the XDrip+ application under Settings > Data Source > Export Database.
 
 ```python
 # Path to your SQLite file
@@ -129,15 +149,23 @@ treatment_df = data.load_treatment_df() # Load treatment data into a pandas data
 The `clean_classify_insulin()` function processes the raw treatment records to create a structured insulin dataset. This critical step separates insulin records from other treatments and applies standardization rules specific to insulin data. 
 
 There are two optional parameters than can be supplied to this function:
+
 - bolus_limit - Number of units where insulin doses above this should be classified as basal, default = 8
+
 - max_limit - Number of units where user would suggest it must be an error to be discarded, default = 15
 
 The function handles several key aspects of insulin data processing:
+
 - Extracts insulin-specific records from the treatment dataset
+
 - Classifies insulin entries into basal and bolus categories - through meta-data or doseage
+
 - Validates dosage values and units
+
 - Standardizes timestamp formats
+
 - Removes any duplicate or invalid entries
+
 - Sets index to timestamp column
 
 The resulting `insulin_df` provides a clean, validated dataset of insulin records, split by basal vs bolus and with a flag to see if the data was labeled by the user, that is ready to be integrated into our final standardized format.
@@ -180,11 +208,15 @@ A key feature of the processing is its sophisticated handling of data gaps. The 
 
 ### Measurement Standardization
 The function implements several measurement quality controls:
+
 - Glucose values are constrained to a physiologically reasonable range of 39.64 to 360.36 mg/dL (2.2 to 20.0 mmol/L)
+
 - Measurements are provided in both mg/dL and mmol/L units using the standard conversion factor of 0.0555
+
 - Where multiple readings exist for a single 5-minute interval, they are averaged to provide a single representative value
 
 The resulting dataset includes three essential columns:
+
 1. Glucose measurements in mg/dL
 2. Parallel measurements in mmol/L
 3. Missing data flags to indicate interpolated values
@@ -214,23 +246,33 @@ The function takes these independently processed dataframes and performs several
 1. **Temporal Alignment**: All timestamps are rounded to 5-minute intervals to ensure consistent temporal binning across all data types, maintaining the integrity of our interpolated glucose values.
 
 2. **Treatment Data Aggregation**:
-  - Multiple insulin doses within the same 5-minute window are summed
-  - Multiple carbohydrate entries within the same window are summed
-  - Insulin entries maintain their classification (bolus/basal) and labeling
+
+   - Multiple insulin doses within the same 5-minute window are summed
+   - Multiple carbohydrate entries within the same window are summed
+   - Insulin entries maintain their classification (bolus/basal) and labeling
 
 3. **Unified Timeline**: The function uses the glucose measurements' timeline (including interpolated values) as the master index, ensuring:
-  - Complete coverage of the monitoring period
-  - Consistent 5-minute intervals throughout
-  - Preservation of gap indicators for transparency
+
+   - Complete coverage of the monitoring period
+
+   - Consistent 5-minute intervals throughout
+
+   - Preservation of gap indicators for transparency
 
 ### Output Structure
 The resulting `aligned_df` provides a comprehensive view of diabetes management data with:
-- Regular 5-minute interval timestamps
-- Glucose values in both mg/dL and mmol/L units
-- Missing data indicators showing where glucose values were interpolated
-- Summed carbohydrate quantities
-- Aggregated insulin doses (both basal and bolus)
-- Boolean flags for labeled insulin entries
+
+    - Regular 5-minute interval timestamps
+
+    - Glucose values in both mg/dL and mmol/L units
+
+    - Missing data indicators showing where glucose values were interpolated
+
+    - Summed carbohydrate quantities
+
+    - Aggregated insulin doses (both basal and bolus)
+
+    - Boolean flags for labeled insulin entries
 
 Missing treatment values (carbohydrates and insulin) are filled with zeros, while the glucose values and their interpolation status are preserved from the pre-processed glucose dataset. This maintains transparency about data quality while providing a complete timeline for analysis.
 
@@ -248,45 +290,57 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 After aligning and interpolating our data, we perform a comprehensive analysis of gaps in glucose readings using two specialized functions:
 
 1. `analyse_glucose_gaps()`: Performs detailed analysis of missing data patterns
+
 2. `create_gap_dashboard()`: Visualizes the gap analysis results in an interactive dashboard
 
 ### Gap Analysis Process
 The analysis examines several key aspects of data completeness:
 
 1. **Initial Data Quality**:
-  - Identifies all missing glucose readings
-  - Calculates the percentage of missing data before interpolation
-  - Determines the total number of 5-minute intervals in the dataset
+
+    - Identifies all missing glucose readings
+
+    - Calculates the percentage of missing data before interpolation
+
+    - Determines the total number of 5-minute intervals in the dataset
 
 2. **Gap Characterization**:
-  - Identifies continuous sequences of missing values
-  - Measures gap durations in minutes
-  - Records start and end times for each gap
-  - Calculates gap statistics (mean, median, total duration)
+
+    - Identifies continuous sequences of missing values
+
+    - Measures gap durations in minutes
+
+    - Records start and end times for each gap
+
+    - Calculates gap statistics (mean, median, total duration)
 
 3. **Post-Interpolation Assessment**:
-  - Evaluates remaining gaps after 20-minute interpolation limit
-  - Compares initial vs. remaining missing data percentage
-  - Identifies largest continuous gaps
+
+    - Evaluates remaining gaps after 20-minute interpolation limit
+    - Compares initial vs. remaining missing data percentage
+    - Identifies largest continuous gaps
 
 ### Interactive Dashboard
 The dashboard provides a comprehensive view of data quality through:
 
 1. **Summary Metrics**:
-  - Gauge displays for initial and remaining missing data percentages
-  - Indicators for total gap counts before and after interpolation
-  - Comprehensive statistics table with detailed metrics
+
+    - Gauge displays for initial and remaining missing data percentages
+    - Indicators for total gap counts before and after interpolation
+    - Comprehensive statistics table with detailed metrics
 
 2. **Visual Analysis**:
-  - Bar chart of the top 10 largest gaps
-  - Scatter plot showing distribution of all gaps
-  - Interactive tooltips with detailed timing information
+
+    - Bar chart of the top 10 largest gaps
+    - Scatter plot showing distribution of all gaps
+    - Interactive tooltips with detailed timing information
 
 3. **Statistics Display**:
-  - Total readings and missing values
-  - Gap duration statistics (mean, median, quartiles)
-  - Standard deviation of gap lengths
-  - Maximum and minimum gap durations
+
+    - Total readings and missing values
+    - Gap duration statistics (mean, median, quartiles)
+    - Standard deviation of gap lengths
+    - Maximum and minimum gap durations
 
 This analysis provides crucial context for understanding data quality and helps identify periods where additional monitoring or different analysis approaches might be needed.
 
@@ -325,29 +379,30 @@ Image(filename=img_path) # Display solid PNG image of plot
 We now export our processed datasets to CSV files for further analysis and reproducibility. Each file contains a specific aspect of the diabetes management data:
 
 1. **complete.csv**: 
-  - Our fully processed, temporally aligned dataset
-  - Contains all measurements at regular 5-minute intervals
-  - Includes glucose values, carbohydrates, insulin, and data quality indicators
+    - Our fully processed, temporally aligned dataset
+    - Contains all measurements at regular 5-minute intervals
+    - Includes glucose values, carbohydrates, insulin, and data quality indicators
 
 2. **glucose_readings.csv**:
-  - Clean glucose measurements in both mg/dL and mmol/L
-  - Includes flags for interpolated values
-  - All measurements aligned to 5-minute intervals
+    - Clean glucose measurements in both mg/dL and mmol/L
+    - Includes flags for interpolated values
+    - All measurements aligned to 5-minute intervals
 
 3. **carbs.csv**:
-  - Validated carbohydrate intake records
-  - Cleaned and filtered for meaningful entries (≥1g)
+    - Validated carbohydrate intake records
+    - Cleaned and filtered for meaningful entries (≥1g)
 
 4. **insulin.csv**:
-  - Processed insulin records
-  - Separated into basal and bolus categories
+    - Processed insulin records
+    - Separated into basal and bolus categories
 
 These standardized CSV files provide a foundation for various analyses, such as:
-- Meal response pattern analysis
-- Insulin sensitivity calculations
-- Time-in-range assessments
-- Machine learning applications
-- Statistical analysis of diabetes management patterns
+
+  - Meal response pattern analysis
+  - Insulin sensitivity calculations
+  - Time-in-range assessments
+  - Machine learning applications
+  - Statistical analysis of diabetes management patterns
 
 The consistent format and documented processing steps ensure reproducibility and facilitate sharing with other analysis tools and platforms.
 
