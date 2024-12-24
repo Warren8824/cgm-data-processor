@@ -8,13 +8,19 @@ A versatile Python tool designed to standardize and analyze Continuous Glucose M
 ## Features
 
 - Standardizes CGM data into a consistent 5-minute interval format
+  
 - Handles data cleaning and validation
+  
 - Integrates glucose readings with insulin and carbohydrate records
+  
 - Provides comprehensive gap analysis and quality metrics
+  
 - Supports both mg/dL and mmol/L units
 - Intelligent handling of missing data with configurable interpolation
+  
 - Interactive quality assessment dashboards
 
+check out our [Full Documentation](https://warren8824.github.io/cgm-data-processor/)
 
 ![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
 
