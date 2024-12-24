@@ -16,6 +16,6 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install mkdocs
-      - run: pip install mkdocs-material  # if you're using the material theme
+      - run: pip install mkdocs-material
       - run: pip install mkdocstrings[python]  # This installs mkdocstrings with Python handler
       - run: mkdocs gh-deploy --force
