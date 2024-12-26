@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "cgm-data-processor"
+version = "0.1.0"
+description = "Python package for processing CGM, insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer."
+authors = ["Warren8824 <warrenbebbington88@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+pylint = "^3.3.3"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pre-commit = "^4.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
