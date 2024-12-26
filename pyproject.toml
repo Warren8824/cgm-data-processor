@@ -8,6 +8,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+# Main Dependencies
+numpy = "^2.1.0"
+pandas = "^2.2.0"
+SQLAlchemy = "^2.0.0"
+plotly = "^5.0.0"
+kaleido = "^0.2.1"  # For saving plotly figures
 
 
 [tool.poetry.group.dev.dependencies]
@@ -16,6 +22,7 @@ pylint = "^3.3.3"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 pre-commit = "^4.0.1"
+mkdocs = "^1.5.0"
 
 [build-system]
 requires = ["poetry-core"]
