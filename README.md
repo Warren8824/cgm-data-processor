@@ -89,10 +89,11 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 ### Development Workflow
 
 1. Create a new branch for your feature/fix
-2. Ensure all tests pass
-3. Format code with Black: `poetry run black .`
-4. Check linting with Pylint: `poetry run pylint src tests`
-5. Submit a Pull Request
+2. Add unit tests for your added functionality
+3. Ensure all tests pass
+4. Format code with Black: `poetry run black .`
+5. Check linting with Pylint: `poetry run pylint src tests`
+6. Submit a Pull Request
 
 ## Roadmap
 
