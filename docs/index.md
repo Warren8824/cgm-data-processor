@@ -7,17 +7,19 @@ A versatile Python tool designed to standardise and analyse Continuous Glucose M
 
 ## Key Features
 
-- **Standardised Data**: Consistent 5-minute interval format for all CGM data
-- **Comprehensive Processing**:
-  - Robust data cleaning and validation
-  - Support for both mg/dL and mmol/L units
-  - Intelligent handling of missing data with configurable interpolation
-  - Integration of glucose readings with insulin and carbohydrate records
-- **Advanced Analysis**:
-  - Comprehensive gap analysis and quality metrics
-  - Interactive quality assessment dashboards
-  - Smart classification of insulin (basal/bolus)
-- **Flexible Export**: Multiple CSV formats for further analysis
+1. **Standardised Data**:
+    - Consistent 5-minute interval format for all CGM data
+2. **Comprehensive Processing**:
+    - Robust data cleaning and validation
+    - Support for both mg/dL and mmol/L units
+    - Intelligent handling of missing data with configurable interpolation
+    - Integration of glucose readings with insulin and carbohydrate records
+3. **Advanced Analysis**:
+    - Comprehensive gap analysis and quality metrics
+    - Interactive quality assessment dashboards
+    - Smart classification of insulin (basal/bolus)
+4. **Flexible Export**:
+    - Multiple CSV formats for further analysis
 
 ## Installation
 
@@ -82,25 +84,29 @@ aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 
 ## Documentation Structure
 
-- [**Getting Started**](installation/index.md)
-    - Basic setup and installation
-    - First steps with the tool
-    - Quick usage examples
+[**Getting Started**](installation/index.md)
 
-- [**User Guide**](user-guide/index.md)
-    - Detailed usage instructions
-    - Configuration options
-    - Best practices
+- Basic setup and installation
+- First steps with the tool
+- Quick usage examples
 
-- [**API Reference**](api/index.md)
-    - Complete API documentation
-    - Module references
-    - Code examples
+[**User Guide**](user-guide/index.md)
 
-- [**Examples**](user-guide/tutorials/load_and_export_data.md)
-    - Jupyter notebook tutorials(To be added soon)
-    - Real-world use cases(To be added soon)
-    - Advanced features(To be added soon)
+- Detailed usage instructions
+- Configuration options
+- Best practices
+
+[**API Reference**](api/index.md)
+
+- Complete API documentation
+- Module references
+- Code examples
+
+[**Examples**](user-guide/tutorials/load_and_export_data.md)
+
+- Jupyter notebook tutorials(To be added soon)
+- Real-world use cases(To be added soon)
+- Advanced features(To be added soon)
 
 ## Project Status & Roadmap
 
