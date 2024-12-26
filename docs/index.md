@@ -38,7 +38,7 @@ pip install -e .
 ```python
 from preprocessing.loading import XDrip
 from preprocessing.cleaning import clean_glucose, clean_classify_insulin, clean_classify_carbs
-from preprocessing.alignment import align_diabetes_data
+from core.alignment import align_diabetes_data
 
 # Load data from XDrip+ backup
 data = XDrip('path_to_backup.sqlite')

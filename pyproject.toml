@@ -13,7 +13,7 @@ numpy = "^2.1.0"
 pandas = "^2.2.0"
 SQLAlchemy = "^2.0.0"
 plotly = "^5.0.0"
-kaleido = "^0.2.1"  # For saving plotly figures
+kaleido = "^0.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -82,26 +82,26 @@ The following code adds the project root to the Python path and imports the nece
 
 Each import is organized by its primary function to maintain clarity and facilitate future extensions of the codebase.
 
-
 ```python
 # Path modification used to allow Notebook access to src directory
 import os
 import sys
+
 notebook_path = os.path.abspath('.')
 project_root = os.path.join(notebook_path, '../../')
 if project_root not in sys.path:
-    sys.path.append(project_root)
+   sys.path.append(project_root)
 
 # Preprocessing Module - Load, clean and align data
 from src.preprocessing.loading import XDrip
 from src.preprocessing.cleaning import clean_classify_insulin, clean_classify_carbs, clean_glucose
-from src.preprocessing.alignment import align_diabetes_data
+from core.alignment import align_diabetes_data
 
 # Analysis Module - Check and display data quality
-from src.analysis.gaps import analyse_glucose_gaps
+from analysis.quality.gaps import analyse_glucose_gaps
 
 # Visualisation Module - Format data for visual appeal in Jupyter
-from src.visualisation.gap_dashboard import create_gap_dashboard
+from visualisation.dashboards.gaps import create_gap_dashboard
 ```
 
 ## Data Loading

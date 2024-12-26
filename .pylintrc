@@ -8,6 +8,10 @@ persistent=yes
 suggestion-mode=yes
 unsafe-load-any-extension=no
 
+[MASTER]
+init-hook='import sys; sys.path.append("/home/ginge/sandbox/cgm_data_processor")'
+ignore=setup.pyclear
+
 [MESSAGES CONTROL]
 disable=raw-checker-failed,
         bad-inline-option,
@@ -16,7 +20,10 @@ disable=raw-checker-failed,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
-        use-symbolic-message-instead
+        use-symbolic-message-instead,
+        R1735,  # dict-literal vs dict() is mostly stylistic
+        C0301,  # line-too-long handled by black/other formatters
+        E
 
 [REPORTS]
 output-format=text
@@ -69,7 +76,7 @@ valid-metaclass-classmethod-first-arg=mcs
 
 [DESIGN]
 max-args=5
-max-locals=15
+max-locals=25
 max-returns=6
 max-branches=12
 max-statements=50

@@ -8,109 +8,98 @@ A versatile Python tool designed to standardize and analyze Continuous Glucose M
 ## Features
 
 - Standardizes CGM data into a consistent 5-minute interval format
-  
 - Handles data cleaning and validation
-  
 - Integrates glucose readings with insulin and carbohydrate records
-  
 - Provides comprehensive gap analysis and quality metrics
-  
 - Supports both mg/dL and mmol/L units
 - Intelligent handling of missing data with configurable interpolation
-  
 - Interactive quality assessment dashboards
 
-check out our [Full Documentation](https://warren8824.github.io/cgm-data-processor/)
+Check out our [Full Documentation](https://warren8824.github.io/cgm-data-processor/)
 
 ![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
 
-## Installation
+## Development Setup
 
+This project uses Poetry for dependency management and includes several development tools for code quality.
+
+### Prerequisites
+- Python 3.8 or higher
+- Poetry (Python package manager)
+
+### Installation
+
+1. Install Poetry:
 ```bash
-pip install [package-name]  # Once published to PyPI
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
-For development installation:
+2. Clone the repository:
 ```bash
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
-pip install -e .
 ```
+
+3. Install dependencies:
+```bash
+poetry install
+```
+
+4. Set up pre-commit hooks:
+```bash
+poetry run pre-commit install
+```
+
+### Development Tools
+
+This project uses several tools to maintain code quality:
+
+- **Poetry**: Dependency management and packaging
+- **Black**: Code formatting
+- **Pylint**: Code linting
+- **pytest**: Testing framework
+- **pre-commit**: Git hooks for code quality checks
+
+### Running Tests
+
+```bash
+poetry run pytest
+```
+
+## Project Structure
+
+[Note: This section will be updated as the modular structure is implemented]
 
 ## Quick Start
 
+[Note: Import paths will be updated during refactoring]
+
 ```python
-from preprocessing.loading import XDrip
-from preprocessing.cleaning import clean_glucose, clean_classify_insulin, clean_classify_carbs
-from preprocessing.alignment import align_diabetes_data
-
-# Load data from XDrip+ backup
-data = XDrip('path_to_backup.sqlite')
-
-# Process individual components
-glucose_df = clean_glucose(data.load_glucose_df())
-insulin_df = clean_classify_insulin(data.load_treatment_df())
-carb_df = clean_classify_carbs(data.load_treatment_df())
-
-# Create aligned dataset
-aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
+# Example code will be updated with new module structure
 ```
 
 ## Documentation
 
-Detailed documentation is available in the following notebooks:
-- `notebooks/examples/load_and_export_data.ipynb`: Getting started with the tool
-- `notebooks/examples/data_quality.ipynb`: *To be implemented*
-- `notebooks/examples/advanced_features.ipynb`: *To be implemented*
-
-### Data Processing Pipeline
-
-1. **Data Loading**: Extract data from XDrip+ SQLite backup
-2. **Cleaning & Validation**: 
-   - Glucose readings validated and converted to standard units
-   - Insulin records classified (basal/bolus)
-   - Carbohydrate entries validated
-3. **Timeline Alignment**: All data aligned to 5-minute intervals
-4. **Quality Assessment**: Gap analysis and data quality metrics
-5. **Export**: Standardized CSV files for further analysis
-
-## Example Usage
-
-See the [example notebook](notebooks/examples/load_and_export_data.ipynb) for detailed usage examples.
-
-## Data Format Specifications
-
-### Input Requirements
-- XDrip+ SQLite backup file
-- [Additional format specifications to be added]
-
-### Output Format
-Generated CSV files include:
-- `complete.csv`: Aligned dataset with all measurements
-- `glucose_reading.csv`: Processed glucose readings
-- `carbs.csv`: Validated carbohydrate records
-- `insulin.csv`: Classified insulin records
+The project is currently undergoing restructuring to improve modularity and extensibility. Documentation will be updated to reflect the new structure as it's implemented.
 
 ## Contributing
 
 Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
 
-### Development Setup
-1. Fork the repository
-2. Create a virtual environment
-3. Install development dependencies:
-```bash
-pip install -r requirements-dev.txt
-```
-4. Run tests:
-```bash
-pytest tests/
-```
+### Development Workflow
+
+1. Create a new branch for your feature/fix
+2. Ensure all tests pass
+3. Format code with Black: `poetry run black .`
+4. Check linting with Pylint: `poetry run pylint src tests`
+5. Submit a Pull Request
 
 ## Roadmap
 
 - [x] Initial setup for XDrip+ SQLite backups
-- [ ] Setup test suite
+- [x] Setup development tools (Poetry, Black, Pylint)
+- [ ] Implement test suite
+- [ ] Complete modular restructuring
 - [ ] Support for additional CGM platforms
 - [ ] Advanced meal response analysis
 - [ ] Machine learning integration

@@ -97,7 +97,7 @@ The carbohydrate processing:
 The final stage aligns all processed data to the glucose timeline:
 
 ```python
-from preprocessing.alignment import align_diabetes_data
+from core.alignment import align_diabetes_data
 
 aligned_df = align_diabetes_data(glucose_df, carb_df, insulin_df)
 ```
