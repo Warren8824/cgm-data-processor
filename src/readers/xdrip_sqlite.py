@@ -1,4 +1,5 @@
 """A class to handle XDrip database operations and data loading."""
+
 from pprint import pprint
 
 import pandas as pd

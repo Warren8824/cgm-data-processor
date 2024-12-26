@@ -1,4 +1,5 @@
 """Creates an interactive dashboard visualizing glucose monitoring data gaps."""
+
 from typing import Dict, Optional
 
 import plotly.graph_objects as go

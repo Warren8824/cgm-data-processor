@@ -1,4 +1,5 @@
 """Abstract base class for all data source readers"""
+
 from abc import abstractmethod
 
 import pandas as pd

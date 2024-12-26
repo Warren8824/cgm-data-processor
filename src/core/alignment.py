@@ -1,6 +1,7 @@
 """Aligns diabetes data (blood glucose, carbohydrates, insulin) to regular 5-minute intervals
     already established in the bg_df dataframe.
     """
+
 import pandas as pd
 
 
