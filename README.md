@@ -95,12 +95,17 @@ Generated CSV files include:
 
 Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
 
-## Development Setup
-
-1. Install Poetry
-2. Run `poetry install` to set up environment
-3. Run `pre-commit install` to set up git hooks
-4. Run `poetry run pytest` to run tests
+### Development Setup
+1. Fork the repository
+2. Create a virtual environment
+3. Install development dependencies:
+```bash
+pip install -r requirements-dev.txt
+```
+4. Run tests:
+```bash
+pytest tests/
+```
 
 ## Roadmap
 
