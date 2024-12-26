@@ -23,7 +23,6 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         R1735,  # dict-literal vs dict() is mostly stylistic
         C0301,  # line-too-long handled by black/other formatters
-        E
 
 [REPORTS]
 output-format=text
