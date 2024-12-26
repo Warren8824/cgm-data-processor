@@ -4,7 +4,7 @@ from pprint import pprint
 import pandas as pd
 from sqlalchemy import create_engine, inspect
 
-from readers.base import BaseDataReader
+from src.readers.base import BaseDataReader
 
 
 class XDripSqliteReader(BaseDataReader):
