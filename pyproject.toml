@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cgm-data-processor"
 version = "0.1.0"
-description = "Python package for processing CGM, insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer."
+description = "Python package for processing CGM, insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer. Data Analysis Tool Only. Not intended as a medical device."
 authors = ["Warren8824 <warrenbebbington88@gmail.com>"]
 license = "MIT"
 readme = "README.md"
