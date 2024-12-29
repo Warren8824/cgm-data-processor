@@ -72,7 +72,7 @@ greenlet==3.1.1 ; python_version < "3.13" and (platform_machine == "aarch64" or 
     --hash=sha256:f1d4aeb8891338e60d1ab6127af1fe45def5259def8094b9c7e34690c8858803 \
     --hash=sha256:f406b22b7c9a9b4f8aa9d2ab13d6ae0ac3e85c9a809bd590ad53fed2bf70dc79 \
     --hash=sha256:f6ff3b14f2df4c41660a7dec01045a045653998784bf8cfcb5a525bdffffbc8f
-kaleido==0.2.1.post1 ; python_version >= "3.10" and python_version < "4.0" \
+kaleido==0.2.1 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:d313940896c24447fc12c74f60d46ea826195fc991f58569a6e73864d53e5c20
 numpy==2.2.1 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:059e6a747ae84fce488c3ee397cee7e5f905fd1bda5fb18c66bc41807ff119b2 \
