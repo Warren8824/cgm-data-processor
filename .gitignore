@@ -108,6 +108,3 @@ data/
 *.sqlite-shm
 *.sqlite-wal
 *.csv
-
-# Ignore a device format files
-src/parser/devices/
