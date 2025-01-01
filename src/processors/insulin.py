@@ -77,14 +77,14 @@ def clean_classify_insulin(df, bolus_limit=8, max_limit=15) -> pd.DataFrame:
                 insulin_type = insulin_data[0].get("insulin", "").lower()
                 if "novorapid" in insulin_type:
                     df_clean.at[idx, "bolus"] = row["insulin"]
-                    df_clean.at[
-                        idx, "labeled_insulin"
-                    ] = True  # Only mark as labeled if explicitly tagged
+                    df_clean.at[idx, "labeled_insulin"] = (
+                        True  # Only mark as labeled if explicitly tagged
+                    )
                 elif "levemir" in insulin_type:
                     df_clean.at[idx, "basal"] = row["insulin"]
-                    df_clean.at[
-                        idx, "labeled_insulin"
-                    ] = True  # Only mark as labeled if explicitly tagged
+                    df_clean.at[idx, "labeled_insulin"] = (
+                        True  # Only mark as labeled if explicitly tagged
+                    )
         except (json.JSONDecodeError, IndexError, KeyError, AttributeError):
             continue
 
