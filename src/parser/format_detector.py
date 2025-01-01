@@ -39,32 +39,21 @@ class ValidationResult:
     def __init__(self):
         self.missing_tables: List[str] = []
         self.missing_columns: Dict[str, List[str]] = {}  # table: [columns]
-        self.found_tables: Dict[str, Dict] = {}  # table: {columns: []}
-
-    def add_found_table(self, table_name: str, columns: List[str]):
-        """Record a found table and its columns."""
-        self.found_tables[table_name] = {"columns": columns}
 
     def has_errors(self) -> bool:
         """Check if any validation errors exist."""
         return bool(self.missing_tables or self.missing_columns)
 
     def __str__(self) -> str:
-        """Format validation errors and found results as string."""
+        """Format validation errors as string."""
         errors = []
         if self.missing_tables:
             errors.append(f"Missing tables: {', '.join(self.missing_tables)}")
         if self.missing_columns:
-            for table, columns in self.missing_columns.items():
+            for current_table, columns in self.missing_columns.items():
                 errors.append(
-                    f"Missing required columns in {table}: {', '.join(columns)}"
+                    f"Missing required columns in {current_table}: {', '.join(columns)}"
                 )
-        if self.found_tables:
-            found = "\n".join(
-                f"Table {table}: {', '.join(data['columns'])}"
-                for table, data in self.found_tables.items()
-            )
-            errors.append(f"Found tables:\n{found}")
         return "\n".join(errors)
 
 
@@ -139,15 +128,13 @@ class FormatDetector:
         self, path: Path, fmt: DeviceFormat, validation_result: ValidationResult
     ) -> bool:
         """Validate if file matches format definition."""
-        for file_config in fmt.files:
-            validator = self._get_validator(file_config.file_type)
+        for config in fmt.files:
+            validator = self._get_validator(config.file_type)
             if validator is None:
-                logger.warning(
-                    "No validator available for %s", file_config.file_type.value
-                )
+                logger.warning("No validator available for %s", config.file_type.value)
                 return False
             try:
-                if not validator(path, file_config, validation_result):
+                if not validator(path, config, validation_result):
                     return False
             except ValidationError as e:
                 logger.debug("Validation failed: %s", {str(e)})
@@ -165,7 +152,7 @@ class FormatDetector:
         return validators.get(file_type)
 
     def _validate_sqlite(
-        self, path: Path, file_config, val_result: ValidationResult
+        self, path: Path, config, val_result: ValidationResult
     ) -> bool:
         """Validate SQLite file structure."""
         try:
@@ -176,10 +163,10 @@ class FormatDetector:
             actual_tables = {name: name for name in inspector.get_table_names()}
 
             # Check each required table
-            for table in file_config.tables:
-                table_name = table.name
+            for required_table in config.tables:
+                table_name = required_table.name
                 if table_name not in actual_tables:
-                    val_result.missing_tables.append(table.name)
+                    val_result.missing_tables.append(required_table.name)
                     continue
 
                 # Get actual table name preserving case
@@ -191,13 +178,13 @@ class FormatDetector:
 
                 # Check required columns
                 required_columns = {
-                    col.source_name for col in table.columns if col.required
+                    col.source_name for col in required_table.columns if col.required
                 }
                 missing = required_columns - column_names
                 if missing:
-                    val_result.missing_columns[table.name] = [
+                    val_result.missing_columns[required_table.name] = [
                         col.source_name
-                        for col in table.columns
+                        for col in required_table.columns
                         if col.required and col.source_name in missing
                     ]
 
@@ -207,9 +194,7 @@ class FormatDetector:
             logger.debug("SQLite validation error: %s", str(e))
             return False
 
-    def _validate_csv(
-        self, path: Path, file_config, val_result: ValidationResult
-    ) -> bool:
+    def _validate_csv(self, path: Path, config, val_result: ValidationResult) -> bool:
         """Validate CSV file structure."""
         try:
             # Read CSV headers only
@@ -217,17 +202,17 @@ class FormatDetector:
             columns = {col.lower() for col in df.columns}
 
             # CSV should have exactly one table
-            table = file_config.tables[0]
+            csv_table = config.tables[0]
 
             # Check required columns
             required_columns = {
-                col.source_name.lower() for col in table.columns if col.required
+                col.source_name.lower() for col in csv_table.columns if col.required
             }
             missing = required_columns - columns
             if missing:
                 val_result.missing_columns[""] = [
                     col
-                    for col in table.columns
+                    for col in csv_table.columns
                     if col.required and col.source_name.lower() in missing
                 ]
 
@@ -237,40 +222,40 @@ class FormatDetector:
             logger.debug("CSV validation error: %s", str(e))
             return False
 
-    def _validate_json(
-        self, path: Path, file_config, val_result: ValidationResult
-    ) -> bool:
+    def _validate_json(self, path: Path, config, val_result: ValidationResult) -> bool:
         """Validate JSON file structure."""
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
 
-            for table in file_config.tables:
+            for json_table in config.tables:
                 if isinstance(data, list):
                     if not data:
-                        val_result.missing_tables.append(table.name)
+                        val_result.missing_tables.append(json_table.name)
                         continue
                     record = data[0]
                 else:
-                    if table.name not in data:
-                        val_result.missing_tables.append(table.name)
+                    if json_table.name not in data:
+                        val_result.missing_tables.append(json_table.name)
                         continue
                     record = (
-                        data[table.name][0]
-                        if isinstance(data[table.name], list)
-                        else data[table.name]
+                        data[json_table.name][0]
+                        if isinstance(data[json_table.name], list)
+                        else data[json_table.name]
                     )
 
                 # Check required fields
                 fields = {k.lower() for k in record.keys()}
                 required_fields = {
-                    col.source_name.lower() for col in table.columns if col.required
+                    col.source_name.lower()
+                    for col in json_table.columns
+                    if col.required
                 }
                 missing = required_fields - fields
                 if missing:
-                    val_result.missing_columns[table.name] = [
+                    val_result.missing_columns[json_table.name] = [
                         col
-                        for col in table.columns
+                        for col in json_table.columns
                         if col.required and col.source_name.lower() in missing
                     ]
 
@@ -280,18 +265,16 @@ class FormatDetector:
             logger.debug("JSON validation error: %s", str(e))
             return False
 
-    def _validate_xml(
-        self, path: Path, file_config, val_result: ValidationResult
-    ) -> bool:
+    def _validate_xml(self, path: Path, config, val_result: ValidationResult) -> bool:
         """Validate XML file structure."""
         try:
             tree = ET.parse(path)
             root = tree.getroot()
 
-            for table in file_config.tables:
-                elements = root.findall(f".//{table.name}")
+            for xml_table in config.tables:
+                elements = root.findall(f".//{xml_table.name}")
                 if not elements:
-                    val_result.missing_tables.append(table.name)
+                    val_result.missing_tables.append(xml_table.name)
                     continue
 
                 # Check first element
@@ -302,13 +285,13 @@ class FormatDetector:
                 fields = {f.lower() for f in fields}
 
                 required_fields = {
-                    col.source_name.lower() for col in table.columns if col.required
+                    col.source_name.lower() for col in xml_table.columns if col.required
                 }
                 missing = required_fields - fields
                 if missing:
-                    val_result.missing_columns[table.name] = [
+                    val_result.missing_columns[xml_table.name] = [
                         col
-                        for col in table.columns
+                        for col in xml_table.columns
                         if col.required and col.source_name.lower() in missing
                     ]
 
@@ -327,16 +310,14 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
-    # Set up logging
     logging.basicConfig(
         level=logging.DEBUG if args.debug else logging.INFO,
-        format="%(levelname)s:%(name)s:%(message)s",
+        format="%(message)s",
     )
-    logger = logging.getLogger(__name__)
 
     try:
-        logger.info("-" * 50)
         file_path = Path(args.file_path)
+        logger.info("\nAnalyzing file: %s", file_path)
 
         registry = FormatRegistry()
         detector = FormatDetector(registry)
@@ -344,18 +325,27 @@ if __name__ == "__main__":
         detected_format, error, validation_results = detector.detect_format(file_path)
 
         if detected_format:
-            logger.info("Format detection successful")
-            logger.info("Matched format: %s", detected_format.name)
-            # Show validation results if needed
+            logger.info("\n✓ Format detected: %s", detected_format.name)
+            logger.info("\nFormat specification:")
+            for file_config in detected_format.files:
+                logger.info("  File type: %s", file_config.file_type.value)
+                for table in file_config.tables:
+                    logger.info("\n  Table: %s", table.name)
+                    required = [col for col in table.columns if col.required]
+                    if required:
+                        logger.info("    Required columns:")
+                        for col in required:
+                            logger.info("      - %s", col.source_name)
         else:
-            logger.error("Format detection failed: %s", error)
+            logger.error("\n✗ Format detection failed: %s", error)
             if validation_results:
                 for format_name, result in validation_results.items():
-                    logger.info("\nValidation results for %s:", format_name)
-                    logger.info(str(result))
+                    if result.has_errors():
+                        logger.info("\nValidation failures for %s:", format_name)
+                        logger.info(str(result))
 
     except FormatDetectionError as e:
-        logger.error("Unexpected error: %s", str(e))
+        logger.error("Error: %s", str(e))
         if args.debug:
-            logger.exception("Detailed error trace:")
+            logger.exception("Detailed error:")
         sys.exit(1)
