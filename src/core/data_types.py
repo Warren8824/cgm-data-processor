@@ -29,8 +29,13 @@ class FileType(Enum):
 class DataType(Enum):
     """Core diabetes data types."""
 
+    # CGM Data
     CGM = auto()  # Continuous glucose monitoring data
+
+    # BGM Data
     BGM = auto()  # Blood glucose meter readings
+
+    # Treatment Data
     INSULIN = auto()  # Insulin doses
     INSULIN_META = auto()  # Insulin metadata eg brand
     CARBS = auto()  # Carbohydrate intake
