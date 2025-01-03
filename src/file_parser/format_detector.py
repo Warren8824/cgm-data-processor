@@ -15,7 +15,7 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect
 
 from src.core.data_types import ColumnRequirement, DeviceFormat, FileType
-from src.parser.format_registry import FormatRegistry
+from src.file_parser.format_registry import FormatRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -317,7 +317,7 @@ if __name__ == "__main__":
 
     try:
         file_path = Path(args.file_path)
-        logger.info("\nAnalyzing file: %s", file_path)
+        logger.debug("\nAnalyzing file: %s", file_path)
 
         registry = FormatRegistry()
         detector = FormatDetector(registry)

@@ -62,7 +62,7 @@ class FormatRegistry:
         """Initialize the format registry and load available formats."""
         self._formats: Dict[str, DeviceFormat] = {}
         self._load_formats()
-        logger.info("Initialized FormatRegistry with %d formats", len(self._formats))
+        logger.debug("Initialized FormatRegistry with %d formats", len(self._formats))
 
     def _load_formats(self) -> None:
         """Load all format definitions from the devices directory structure.
@@ -172,7 +172,7 @@ class FormatRegistry:
             if format_key in self._formats:
                 logger.warning("Overwriting existing format: %s", format_key)
             self._formats[format_key] = format_def
-            logger.info("Registered format: %s from %s", format_key, source_file)
+            logger.debug("Registered format: %s from %s", format_key, source_file)
 
         except FormatValidationError as e:
             logger.error("Validation failed for format in %s: %s", source_file, str(e))
