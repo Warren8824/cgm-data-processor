@@ -13,7 +13,7 @@ The structure allows for:
 """
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 from typing import List, Optional
 
 
@@ -29,12 +29,25 @@ class FileType(Enum):
 class DataType(Enum):
     """Core diabetes data types."""
 
-    CGM = "cgm"  # Continuous glucose monitoring data
-    BGM = "bgm"  # Blood glucose meter readings
-    INSULIN = "insulin"  # Insulin doses
-    INSULIN_META = "insulin_meta"  # Insulin metadata eg brand
-    CARBS = "carbs"  # Carbohydrate intake
-    NOTES = "notes"  # Text notes/comments
+    CGM = auto()  # Continuous glucose monitoring data
+    BGM = auto()  # Blood glucose meter readings
+    INSULIN = auto()  # Insulin doses
+    INSULIN_META = auto()  # Insulin metadata eg brand
+    CARBS = auto()  # Carbohydrate intake
+    NOTES = auto()  # Text notes/comments
+
+
+class ColumnRequirement(Enum):
+    """Defines how column should be validated and if data reading is required"""
+
+    CONFIRMATION_ONLY: (
+        auto()
+    )  # Just needs to exist to confirm device type - no data read
+    REQUIRED_WITH_DATA: (
+        auto()
+    )  # Must exist and have >0 none null values - data read & fail if not
+    REQUIRED_NULLABLE: auto()  # Must exist, but can have all missing values - data read
+    OPTIONAL: auto()  # May or may not exist - data read
 
 
 class Unit(Enum):
