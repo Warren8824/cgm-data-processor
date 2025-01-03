@@ -169,11 +169,8 @@ class FormatDetector:
                     val_result.missing_tables.append(required_table.name)
                     continue
 
-                # Get actual table name preserving case
-                actual_table = actual_tables[table_name]
-
                 # Check columns
-                columns = inspector.get_columns(actual_table)
+                columns = inspector.get_columns(table_name)
                 column_names = {col["name"] for col in columns}
 
                 # Check required columns
