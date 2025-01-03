@@ -215,5 +215,5 @@ class DeviceFormat:
             for table in file_config.tables:
                 for column in table.columns:
                     if column.is_primary:
-                        types.add(column.data_type.value)
+                        types.add(column.data_type.name)
         return f"{self.name} - Available data: {', '.join(sorted(types))}"
