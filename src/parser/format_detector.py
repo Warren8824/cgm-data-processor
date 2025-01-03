@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Tuple
 import pandas as pd
 from sqlalchemy import create_engine, inspect
 
-from src.core.data_types import DeviceFormat, FileType
+from src.core.data_types import ColumnRequirement, DeviceFormat, FileType
 from src.parser.format_registry import FormatRegistry
 
 logger = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ class FormatDetector:
                 try:
                     val_test_result = ValidationResult()
                     if self._validate_format(path, fmt, val_test_result):
-                        logger.info("Successfully matched format: %s", fmt.name)
+                        logger.debug("Successfully matched format: %s", fmt.name)
                         return fmt, None, val_results
                     val_results[fmt.name] = val_test_result
                 except ValidationError as e:
@@ -173,16 +173,19 @@ class FormatDetector:
                 columns = inspector.get_columns(table_name)
                 column_names = {col["name"] for col in columns}
 
-                # Check required columns
+                # Check required columns exist in file
                 required_columns = {
-                    col.source_name for col in required_table.columns if col.required
+                    col.source_name
+                    for col in required_table.columns
+                    if col.requirement != ColumnRequirement.OPTIONAL
                 }
                 missing = required_columns - column_names
                 if missing:
                     val_result.missing_columns[required_table.name] = [
                         col.source_name
                         for col in required_table.columns
-                        if col.required and col.source_name in missing
+                        if col.requirement != ColumnRequirement.OPTIONAL
+                        and col.source_name in missing
                     ]
 
             return not val_result.has_errors()
@@ -327,12 +330,12 @@ if __name__ == "__main__":
             for file_config in detected_format.files:
                 logger.info("  File type: %s", file_config.file_type.value)
                 for table in file_config.tables:
-                    logger.info("\n  Table: %s", table.name)
-                    required = [col for col in table.columns if col.required]
-                    if required:
-                        logger.info("    Required columns:")
-                        for col in required:
-                            logger.info("      - %s", col.source_name)
+                    logger.info("  Table: %s", table.name)
+                    logger.info("    Column Requirements:")
+                    for col in table.columns:
+                        logger.info(
+                            "      %s - %s", col.source_name, col.requirement.name
+                        )
         else:
             logger.error("\n✗ Format detection failed: %s", error)
             if validation_results:
