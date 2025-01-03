@@ -4,8 +4,8 @@ import logging
 import sys
 from pathlib import Path
 
-from file_parser.format_detector import FormatDetectionError, FormatDetector
-from file_parser.format_registry import FormatRegistry
+from src.file_parser.format_detector import FormatDetectionError, FormatDetector
+from src.file_parser.format_registry import FormatRegistry
 
 logger = logging.getLogger(__name__)
 try:
