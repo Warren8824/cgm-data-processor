@@ -40,14 +40,14 @@ class DataType(Enum):
 class ColumnRequirement(Enum):
     """Defines how column should be validated and if data reading is required"""
 
-    CONFIRMATION_ONLY: (
-        auto()
-    )  # Just needs to exist to confirm device type - no data read
-    REQUIRED_WITH_DATA: (
-        auto()
-    )  # Must exist and have >0 none null values - data read & fail if not
-    REQUIRED_NULLABLE: auto()  # Must exist, but can have all missing values - data read
-    OPTIONAL: auto()  # May or may not exist - data read
+    # Just needs to exist to confirm device type - no data read
+    CONFIRMATION_ONLY: auto()
+    # Must exist and have >0 none null values - data read & fail if not
+    REQUIRED_WITH_DATA: auto()
+    # Must exist, but can have all missing values - data read
+    REQUIRED_NULLABLE: auto()
+    # May or may not exist - data read
+    OPTIONAL: auto()
 
 
 class Unit(Enum):
