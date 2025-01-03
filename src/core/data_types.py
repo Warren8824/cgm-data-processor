@@ -40,14 +40,10 @@ class DataType(Enum):
 class ColumnRequirement(Enum):
     """Defines how column should be validated and if data reading is required"""
 
-    # Just needs to exist to confirm device type - no data read
-    CONFIRMATION_ONLY: auto()
-    # Must exist and have >0 none null values - data read & fail if not
-    REQUIRED_WITH_DATA: auto()
-    # Must exist, but can have all missing values - data read
-    REQUIRED_NULLABLE: auto()
-    # May or may not exist - data read
-    OPTIONAL: auto()
+    CONFIRMATION_ONLY: auto()  # Just needs to exist - no data read
+    REQUIRED_WITH_DATA: auto()  # Must exist - data read & fail if not
+    REQUIRED_NULLABLE: auto()  # Must exist, can have all missing values - data read
+    OPTIONAL: auto()  # May or may not exist - data read
 
 
 class Unit(Enum):
@@ -65,24 +61,22 @@ class ColumnMapping:
 
     Args:
         source_name: Original column name in the data source
-        data_type: Type of data this column contains (Optional - can be used to simply
-        confirm device if left as None.
+        data_type: Type of data this column contains (if applicable - Any column can be
+        used for confirming device.)
         unit: Unit of measurement (if applicable)
-        required: Whether this column must exist
-        is_primary: Whether this is the primary column for this data type
+        requirement: Type of requirement - default = REQUIRED_WITH_DATA
+        is_primary: Whether this is the primary column - default = True
 
     Examples:
         >>> glucose_column = ColumnMapping(
         ...     source_name="calculated_value",
         ...     data_type=DataType.CGM,
         ...     unit=Unit.MGDL,
-        ...     required=True,
-        ...     is_primary=True
         ... )
         >>> raw_glucose = ColumnMapping(
         ...     source_name="raw_data",
         ...     data_type=DataType.CGM,
-        ...     required=False,
+        ...     requirement=ColumnRequirement.REQUIRED_NULLABLE,
         ...     is_primary=False
         ... )
     """
@@ -90,7 +84,7 @@ class ColumnMapping:
     source_name: str
     data_type: Optional[DataType] = None
     unit: Optional[Unit] = None
-    required: bool = True
+    requirement: ColumnRequirement = ColumnRequirement.REQUIRED_WITH_DATA
     is_primary: bool = True
 
 
@@ -116,7 +110,7 @@ class TableStructure:
         ...         ColumnMapping(
         ...             source_name="raw_data",
         ...             data_type=DataType.CGM,
-        ...             required=False,
+        ...             requirement=ColumnRequirement.REQUIRED_NULLABLE,
         ...             is_primary=False
         ...         )
         ...     ]

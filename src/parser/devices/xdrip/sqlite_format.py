@@ -2,6 +2,7 @@
 
 from src.core.data_types import (
     ColumnMapping,
+    ColumnRequirement,
     DataType,
     DeviceFormat,
     FileConfig,
@@ -25,12 +26,10 @@ XDRIP_SQLITE_FORMAT = DeviceFormat(
                             source_name="calculated_value",
                             data_type=DataType.CGM,
                             unit=Unit.MGDL,
-                            is_primary=True,
                         ),
                         ColumnMapping(
                             source_name="raw_data",
                             data_type=DataType.CGM,
-                            required=False,
                             is_primary=False,
                         ),
                     ],
@@ -47,6 +46,7 @@ XDRIP_SQLITE_FORMAT = DeviceFormat(
                         ColumnMapping(
                             source_name="insulinJSON",
                             data_type=DataType.INSULIN_META,
+                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
                         ),
                         ColumnMapping(
                             source_name="carbs",
@@ -56,6 +56,7 @@ XDRIP_SQLITE_FORMAT = DeviceFormat(
                         ColumnMapping(
                             source_name="notes",
                             data_type=DataType.NOTES,
+                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
                         ),
                     ],
                 ),
