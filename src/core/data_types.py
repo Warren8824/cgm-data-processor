@@ -42,6 +42,16 @@ class DataType(Enum):
     NOTES = auto()  # Text notes/comments
 
 
+class TimestampType(Enum):
+    """Common types of timestamp format, ensuring correct conversion"""
+
+    UNIX_SECONDS = "unix_seconds"
+    UNIX_MILLISECONDS = "unix_milliseconds"
+    UNIX_MICROSECONDS = "unix_microseconds"
+    ISO_8601 = "iso_8601"
+    UNKNOWN = "unknown"
+
+
 class ColumnRequirement(Enum):
     """Defines how column should be validated and if data reading is required"""
 
