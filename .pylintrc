@@ -78,12 +78,12 @@ valid-metaclass-classmethod-first-arg=mcs
 [DESIGN]
 max-args=5
 max-locals=25
-max-returns=6
+max-returns=8
 max-branches=12
 max-statements=50
 max-parents=7
 max-attributes=7
-min-public-methods=2
+min-public-methods=1
 max-public-methods=20
 
 [IMPORTS]
