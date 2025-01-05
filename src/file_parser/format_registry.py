@@ -23,21 +23,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set
 
 from src.core.data_types import DataType, DeviceFormat, FileType
+from src.core.exceptions import FileAccessError, FormatError, FormatValidationError
 
 # Configure logging
 logger = logging.getLogger(__name__)
-
-
-class FormatRegistryError(Exception):
-    """Base exception for format registry errors."""
-
-
-class FormatLoadError(FormatRegistryError):
-    """Raised when there's an error loading a format file."""
-
-
-class FormatValidationError(FormatRegistryError):
-    """Raised when a format definition fails validation."""
 
 
 class FormatRegistry:
@@ -67,18 +56,16 @@ class FormatRegistry:
     def _load_formats(self) -> None:
         """Load all format definitions from the devices directory structure.
 
-        Recursively scans the devices directory for Python files containing
-        format definitions. Each file is dynamically imported and searched for
-        DeviceFormat instances.
-
         Raises:
-            FormatLoadError: If there's an error loading format files
+            FileAccessError: If manufacturers directory cannot be accessed
+            FormatError: If there's an error loading format files
         """
         try:
             manufacturers_dir = Path(__file__).parent / "devices"
             if not manufacturers_dir.exists():
-                raise FormatLoadError(
-                    f"Manufacturers directory not found: {manufacturers_dir}"
+                raise FileAccessError(
+                    "Manufacturers directory not found",
+                    details={"directory": str(manufacturers_dir)},
                 )
 
             # Recursively find all Python files
@@ -88,15 +75,16 @@ class FormatRegistry:
 
                 try:
                     self._load_format_file(format_file)
-                except FormatLoadError as e:
+                except FormatError as e:
                     logger.error(
-                        "Error loading format file %s: %s", format_file, str(e)
+                        "Error loading format file: %s Details: %s", str(e), e.details
                     )
-
                     continue
 
         except Exception as e:
-            raise FormatLoadError(f"Failed to load formats: {str(e)}") from e
+            raise FormatError(
+                "Failed to load formats", details={"error": str(e)}
+            ) from e
 
     def _load_format_file(self, path: Path) -> None:
         """Load and process a single format definition file.
@@ -105,14 +93,16 @@ class FormatRegistry:
             path: Path to the format definition file
 
         Raises:
-            FormatLoadError: If there's an error loading the file
+            FormatError: If there's an error loading the file
         """
         try:
             module_name = f"devices.{path.parent.name}.{path.stem}"
             spec = importlib.util.spec_from_file_location(module_name, path)
 
             if spec is None or spec.loader is None:
-                raise FormatLoadError(f"Failed to create module spec for {path}")
+                raise FormatError(
+                    "Failed to create module spec", details={"path": str(path)}
+                )
 
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
@@ -125,7 +115,7 @@ class FormatRegistry:
                     self._validate_and_register_format(attr, path)
 
         except Exception as e:
-            raise FormatLoadError(f"Error loading {path}: {str(e)}") from e
+            raise FormatError(f"Error loading {path}", details={"error": str(e)}) from e
 
     def _validate_and_register_format(
         self, format_def: DeviceFormat, source_file: Path
@@ -142,30 +132,30 @@ class FormatRegistry:
         try:
             # Format name validation
             if not format_def.name:
-                raise FormatValidationError("Format name cannot be empty")
+                raise FormatValidationError(
+                    "Format name cannot be empty",
+                    details={"source_file": str(source_file)},
+                )
 
             # File configuration validation
             if not format_def.files:
                 raise FormatValidationError(
-                    f"No files defined in format {format_def.name}"
+                    f"No files defined in format {format_def.name}",
+                    details={
+                        "format_name": format_def.name,
+                        "source_file": str(source_file),
+                    },
                 )
 
             for config in format_def.files:
                 if not config.tables:
                     raise FormatValidationError(
-                        f"No tables defined in file {config.name_pattern}"
+                        f"No tables defined in file {config.name_pattern}",
+                        details={
+                            "format_name": format_def.name,
+                            "file_pattern": config.name_pattern,
+                        },
                     )
-
-                # CSV-specific validation
-                if config.file_type == FileType.CSV:
-                    if len(config.tables) > 1:
-                        raise FormatValidationError(
-                            f"CSV file {config.name_pattern} cannot have multiple tables"
-                        )
-                    if config.tables[0].name != "":
-                        raise FormatValidationError(
-                            f"CSV table name must be empty in {config.name_pattern}"
-                        )
 
             # Register the format
             format_key = f"{format_def.name}_{format_def.files[0].file_type.value}"
@@ -175,10 +165,13 @@ class FormatRegistry:
             logger.debug("Registered format: %s from %s", format_key, source_file)
 
         except FormatValidationError as e:
-            logger.error("Validation failed for format in %s: %s", source_file, str(e))
+            logger.error(
+                "Validation failed for format in %s: %s Details: %s",
+                source_file,
+                str(e),
+                e.details,
+            )
             raise
-        except Exception as e:
-            raise FormatValidationError(f"Error validating format: {str(e)}") from e
 
     @property
     def formats(self) -> List[DeviceFormat]:
