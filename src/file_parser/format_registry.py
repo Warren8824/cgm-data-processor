@@ -297,7 +297,7 @@ if __name__ == "__main__":
             logger.info("\nFormat: %s", fmt.name)
             logger.info("Primary data types:")
             for dtype in registry.get_available_data_types():
-                logger.info("  - %s", dtype.value)
+                logger.info("  - %s", dtype)
 
             for file_config in fmt.files:
                 logger.info("\nFile pattern: %s", file_config.name_pattern)
@@ -313,7 +313,7 @@ if __name__ == "__main__":
                             logger.info(
                                 "    Column: %s (%s - %s)",
                                 col.source_name,
-                                col.data_type.value,
+                                col.data_type,
                                 status_of_primary,
                             )
                         else:
