@@ -16,6 +16,8 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import List, Optional
 
+from src.core.exceptions import FormatValidationError
+
 
 class FileType(Enum):
     """Supported file types for diabetes data."""
@@ -137,15 +139,38 @@ class TableStructure:
     columns: List[ColumnMapping]
 
     def validate_columns(self):
+        """Validate that table has at least one column defined.
+
+        Raises:
+            FormatValidationError: If table has no columns defined
+        """
         if not self.columns:
-            raise ValueError(f"Table {self.name} must have at least one column defined")
+            raise FormatValidationError(
+                f"Table {self.name} must have at least one column defined",
+                details={"table_name": self.name, "columns_count": 0},
+            )
 
     def validate_unique_source_names(self):
+        """Validate that all column names are unique.
+
+        Raises:
+            FormatValidationError: If duplicate column names are found
+        """
         column_names = [col.source_name for col in self.columns]
-        if len(column_names) != len(set(column_names)):
-            raise ValueError(f"Duplicate column names in table {self.name}")
+        unique_names = set(column_names)
+        if len(column_names) != len(unique_names):
+            duplicates = [name for name in unique_names if column_names.count(name) > 1]
+            raise FormatValidationError(
+                f"Duplicate column names in table {self.name}",
+                details={"table_name": self.name, "duplicate_columns": duplicates},
+            )
 
     def validate_primary_columns(self):
+        """Validate that each data type has at most one primary column.
+
+        Raises:
+            FormatValidationError: If multiple primary columns exist for any data type
+        """
         for data_type in DataType:
             primary_columns = [
                 col.source_name
@@ -153,8 +178,13 @@ class TableStructure:
                 if col.data_type == data_type and col.is_primary
             ]
             if len(primary_columns) > 1:
-                raise ValueError(
-                    f"Multiple primary columns for {data_type.value} in table {self.name}"
+                raise FormatValidationError(
+                    f"Multiple primary columns for {data_type.value} in table {self.name}",
+                    details={
+                        "table_name": self.name,
+                        "data_type": data_type.value,
+                        "primary_columns": primary_columns,
+                    },
                 )
 
     def __post_init__(self):
@@ -185,17 +215,35 @@ class FileConfig:
     tables: List[TableStructure]
 
     def __post_init__(self):
-        """Validate file configuration after initialization."""
+        """Validate file configuration after initialization.
+
+        Raises:
+            FormatValidationError: If file configuration is invalid
+        """
         if not self.tables:
-            raise ValueError(
-                f"File {self.name_pattern} must have at least one table defined"
+            raise FormatValidationError(
+                f"File {self.name_pattern} must have at least one table defined",
+                details={"file_pattern": self.name_pattern},
             )
 
         # For CSV files, ensure only one table with empty name
-        if self.file_type == FileType.CSV and len(self.tables) > 1:
-            raise ValueError("CSV files can only have one table structure")
-        if self.file_type == FileType.CSV and self.tables[0].name != "":
-            raise ValueError("CSV file table name should be empty string")
+        if self.file_type == FileType.CSV:
+            if len(self.tables) > 1:
+                raise FormatValidationError(
+                    "CSV files can only have one table structure",
+                    details={
+                        "file_pattern": self.name_pattern,
+                        "tables_count": len(self.tables),
+                    },
+                )
+            if self.tables[0].name != "":
+                raise FormatValidationError(
+                    f"CSV file table name should be empty string for file {self.name_pattern}",
+                    details={
+                        "file_pattern": self.name_pattern,
+                        "table_name": self.tables[0].name,
+                    },
+                )
 
 
 @dataclass
@@ -217,10 +265,15 @@ class DeviceFormat:
     files: List[FileConfig]
 
     def __post_init__(self):
-        """Validate device format after initialization."""
+        """Validate device format after initialization.
+
+        Raises:
+            FormatValidationError: If device format is invalid
+        """
         if not self.files:
-            raise ValueError(
-                f"Device format {self.name} must have at least one file defined"
+            raise FormatValidationError(
+                f"Device format {self.name} must have at least one file defined",
+                details={"format_name": self.name},
             )
 
     def __str__(self) -> str:
