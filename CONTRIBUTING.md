@@ -48,7 +48,7 @@ Allowed short names: `i`, `j`, `k`, `ex`, `id`, `df`, `_`
 - Classes should have:
   - Maximum parents: 7
   - Maximum attributes: 7
-  - Minimum public methods: 2
+  - Minimum public methods: 1
   - Maximum public methods: 20
 
 ## Documentation
@@ -92,7 +92,7 @@ We allow generated members for common libraries:
 ## Error Handling
 
 - Avoid catching generic exceptions (use specific exception classes)
-- Exception handlers should be meaningful and documented
+- Exception handlers can be found in `core/exceptions.py` and new exceptions should be meaningful and documented in this file.
 
 ## Quality Metrics
 
@@ -108,11 +108,6 @@ We recommend setting up pre-commit hooks:
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/pycqa/pylint
-    rev: v2.17.0
-    hooks:
-      - id: pylint
-        args: [--rcfile=.pylintrc]
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
@@ -121,6 +116,11 @@ repos:
     rev: 5.12.0
     hooks:
       - id: isort
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.17.0
+    hooks:
+      - id: pylint
+        args: [--rcfile=.pylintrc]
 ```
 
 ## Common Issues and Solutions
