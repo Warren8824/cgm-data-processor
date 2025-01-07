@@ -10,6 +10,8 @@ from pandas.errors import EmptyDataError
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
+from src.core.exceptions import FileAccessError
+
 from .base import BaseReader, ColumnRequirement, FileConfig, TableData, TableStructure
 
 logger = logging.getLogger(__name__)
@@ -113,13 +115,26 @@ class SQLiteReader(BaseReader):
 
 
 if __name__ == "__main__":
-    # Example usage
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Diabetes Data Format Detection Tool")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(message)s",
+    )
     try:
         from src.file_parser.format_detector import FormatDetectionError, FormatDetector
         from src.file_parser.format_registry import FormatRegistry
 
-        file_path = Path("data/20240928-130349.sqlite")
-        logger.debug("\nAnalyzing file: %s", file_path)
+        try:
+            file_path: Path = Path(args.file_path)
+            logger.debug("\nAnalyzing file: %s", file_path)
+        except FileAccessError as e:
+            logger.error("File not found: %s", e)
 
         # Load registered formats and detect any matches
         registry = FormatRegistry()
