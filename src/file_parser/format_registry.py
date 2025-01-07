@@ -23,7 +23,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set
 
 from src.core.data_types import DataType, DeviceFormat, FileType
-from src.core.exceptions import FileAccessError, FormatError, FormatValidationError
+from src.core.exceptions import (
+    FileAccessError,
+    FileParseError,
+    FormatError,
+    FormatValidationError,
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -217,18 +222,18 @@ class FormatRegistry:
         Returns:
             List of potential matching formats
 
-        Example:
-            >>> registry = FormatRegistry()
-            >>> formats = registry.get_formats_for_file(Path("data.sqlite"))
-            >>> print([f.name for f in formats])
-            ['xdrip_sqlite', 'other_sqlite_format']
+        Raises:
+            FormatError: If file extension is not supported
         """
         try:
             file_type = FileType(path.suffix.lower()[1:])
             return self.get_formats_by_type(file_type)
-        except ValueError:
+        except ValueError as exc:
             logger.warning("Unsupported file type: %s", path.suffix)
-            return []
+            raise FileParseError(
+                "Unsupported file type",
+                details={"file": str(path), "extension": path.suffix},
+            ) from exc
 
     def get_formats_with_data_type(self, data_type: DataType) -> List[DeviceFormat]:
         """Get all formats that contain a specific data type.
@@ -240,11 +245,14 @@ class FormatRegistry:
             List of formats that contain the specified data type
         """
         formats = []
-        for config_fmt in self._formats.values():
-            for config in config_fmt.files:
-                for config_table in config.tables:
-                    if any(col.data_type == data_type for col in config_table.columns):
-                        formats.append(config_fmt)
+        for device_format in self._formats.values():
+            for config in device_format.files:
+                for current_table in config.tables:
+                    if any(
+                        current_column.data_type == data_type
+                        for current_column in current_table.columns
+                    ):
+                        formats.append(device_format)
                         break
         return formats
 
@@ -255,12 +263,12 @@ class FormatRegistry:
             Set of all available data types
         """
         types = set()
-        for config_fmt in self._formats.values():
-            for config in config_fmt.files:
-                for config_table in config.tables:
-                    for config_col in config_table.columns:
-                        if config_col.data_type:
-                            types.add(config_col.data_type)
+        for device_format in self._formats.values():
+            for config in device_format.files:
+                for current_table in config.tables:
+                    for current_column in current_table.columns:
+                        if current_column.data_type:
+                            types.add(current_column.data_type)
         return types
 
 
@@ -300,20 +308,18 @@ if __name__ == "__main__":
                     for col in table.columns:
                         if col.data_type:
                             # pylint: disable=invalid-name
-                            status_of_primary = (
-                                "primary" if col.is_primary else "secondary"
-                            )
+                            status = "primary" if col.is_primary else "secondary"
                             logger.info(
                                 "    Column: %s (%s - %s)",
                                 col.source_name,
                                 col.data_type,
-                                status_of_primary,
+                                status,
                             )
                         else:
                             logger.info(
                                 "    Column: %s (validation only)", col.source_name
                             )
 
-    except FormatValidationError as e:
-        logger.error("Error: %s", str(e))
+    except FormatError as e:
+        logger.error("%s Details: %s", str(e), e.details)
         sys.exit(1)

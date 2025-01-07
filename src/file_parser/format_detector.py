@@ -32,7 +32,6 @@ class ValidationError(Exception):
     """Raised when there is an error validating the format"""
 
 
-# pylint: disable=too-few-public-methods
 class ValidationResult:
     """Container for structure validation results."""
 

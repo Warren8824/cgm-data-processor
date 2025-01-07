@@ -104,8 +104,6 @@ class BaseReader(ABC):
             elif all(sample.astype(float) < 1e16):  # Microseconds
                 logger.debug("Detected timestamp type: UNIX_MICROSECONDS")
                 return TimestampType.UNIX_MICROSECONDS
-            # pylint: disable=R1705
-            # Supress pylint warning and use elif functionality for efficiency
 
             # Try ISO 8601 for string timestamps
             try:
