@@ -275,13 +275,15 @@ class FormatRegistry:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Test Format Registry with a data file"
-    )
-    parser.add_argument("file_path", type=str, help="Path to the data file to test")
+    parser = argparse.ArgumentParser(description="Diabetes Data Format Detection Tool")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(message)s",
+    )
 
     try:
         registry = FormatRegistry()
