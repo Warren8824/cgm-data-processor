@@ -10,7 +10,7 @@ from pandas.errors import EmptyDataError
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.core.exceptions import FileAccessError
+from src.core.exceptions import DataProcessingError, DataValidationError
 
 from .base import BaseReader, ColumnRequirement, FileConfig, TableData, TableStructure
 
@@ -126,58 +126,84 @@ if __name__ == "__main__":
         level=logging.DEBUG if args.debug else logging.INFO,
         format="%(message)s",
     )
+
     try:
         from src.file_parser.format_detector import FormatDetectionError, FormatDetector
         from src.file_parser.format_registry import FormatRegistry
 
-        try:
-            file_path: Path = Path(args.file_path)
-            logger.debug("\nAnalyzing file: %s", file_path)
-        except FileAccessError as e:
-            logger.error("File not found: %s", e)
+        file_path = Path(args.file_path)
+
+        # Check if file exists and is accessible
+        if not file_path.exists():
+            logger.error("File not found: %s", file_path)
+            sys.exit(1)
+        if not file_path.is_file():
+            logger.error("Path is not a file: %s", file_path)
+            sys.exit(1)
+
+        logger.debug("\nAnalyzing file: %s", file_path)
 
         # Load registered formats and detect any matches
         registry = FormatRegistry()
         detector = FormatDetector(registry)
 
-        detected_format, error, validation_results = detector.detect_format(file_path)
-    except FormatDetectionError as e:
-        logger.error("Error: %s", str(e))
-        sys.exit(1)
-
-    # Function to process SQLite file
-    def process_sqlite_file(
-        path: Path, fmt: detected_format
-    ) -> Dict[str, pd.DataFrame]:
-        """Process SQLite file according to detected format."""
         try:
-            # Create the SQLiteReader object using the detected format
-            reader = SQLiteReader(path, fmt.files[0])
-            table_data = reader.read_all_tables()
-
-            # Return DataFrames, filtering out tables with missing critical columns
-            return {
-                name: data.dataframe
-                for name, data in table_data.items()
-                if not data.missing_required_columns
-            }
-
+            detected_format, error, validation_results = detector.detect_format(
+                file_path
+            )
         except FormatDetectionError as e:
-            logger.error("Failed to process SQLite file %s: %s", path, e)
-            return {}
+            logger.error("Format detection error: %s", str(e))
+            sys.exit(1)
 
-    # Run the file processing
-    result = process_sqlite_file(file_path, detected_format)
+        if detected_format is None:
+            logger.error("No valid format detected for file")
+            sys.exit(1)
 
-    # Display results
-    if "BgReadings" in result:
-        print("CGM Data Info:")
-        result["BgReadings"].info()
-        print("\nCGM Data Descriptive Stats:")
-        print(result["BgReadings"].describe())
+        # Function to process SQLite file
+        def process_sqlite_file(
+            path: Path, fmt: detected_format
+        ) -> Dict[str, pd.DataFrame]:
+            """Process SQLite file according to detected format."""
+            try:
+                # Create the SQLiteReader object using the detected format
+                reader = SQLiteReader(path, fmt.files[0])
+                table_data = reader.read_all_tables()
 
-    if "Treatments" in result:
-        print("Treatment Data Info:")
-        result["Treatments"].info()
-        print("\nTreatment Data Descriptive Stats:")
-        print(result["Treatments"].describe())
+                # Return DataFrames, filtering out tables with missing critical columns
+                return {
+                    name: data.dataframe
+                    for name, data in table_data.items()
+                    if not data.missing_required_columns
+                }
+
+            except (
+                DataProcessingError
+            ) as exc:  # Catch all exceptions here for graceful failure
+                logger.error("Failed to process SQLite file %s: %s", path, str(exc))
+                return {}
+
+        # Run the file processing
+        result = process_sqlite_file(file_path, detected_format)
+
+        # Display results
+        if not result:
+            logger.error("No valid data found in file")
+            sys.exit(1)
+
+        if "BgReadings" in result:
+            print("CGM Data Info:")
+            result["BgReadings"].info()
+            print("\nCGM Data Descriptive Stats:")
+            print(result["BgReadings"].describe())
+
+        if "Treatments" in result:
+            print("Treatment Data Info:")
+            result["Treatments"].info()
+            print("\nTreatment Data Descriptive Stats:")
+            print(result["Treatments"].describe())
+
+    except DataValidationError as e:  # Catch any unexpected errors
+        logger.error("Unexpected error occurred: %s", str(e))
+        if args.debug:
+            logger.exception("Debug traceback:")
+        sys.exit(1)
