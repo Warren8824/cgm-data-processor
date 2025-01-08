@@ -11,29 +11,22 @@ class CGMProcessorError(Exception):
         self.details = details or {}
 
 
+# File errors
 class FileError(CGMProcessorError):
     """Base class for file-related errors."""
 
 
-class FormatError(CGMProcessorError):
-    """Base class for format-related errors."""
-
-
-class ProcessingError(CGMProcessorError):
-    """Base class for data processing errors."""
-
-
-class ValidationError(CGMProcessorError):
-    """Base class for validation errors."""
-
-
-# Specific Exceptions
 class FileAccessError(FileError):
     """Raised when there's an error accessing a file."""
 
 
 class FileParseError(FileError):
     """Raised when there's an error parsing file contents."""
+
+
+# Format errors
+class FormatError(CGMProcessorError):
+    """Base class for format-related errors."""
 
 
 class FormatDetectionError(FormatError):
@@ -44,8 +37,18 @@ class FormatValidationError(FormatError):
     """Raised when there's an error validating format definition."""
 
 
+# Processing errors
+class ProcessingError(CGMProcessorError):
+    """Base class for data processing errors."""
+
+
 class DataProcessingError(ProcessingError):
     """Raised when there's an error processing data."""
+
+
+# Validation errors
+class ValidationError(CGMProcessorError):
+    """Base class for validation errors."""
 
 
 class DataValidationError(ValidationError):
