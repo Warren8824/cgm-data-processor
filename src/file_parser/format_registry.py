@@ -25,8 +25,9 @@ from typing import Dict, List, Optional, Set
 from src.core.data_types import DataType, DeviceFormat, FileType
 from src.core.exceptions import (
     FileAccessError,
-    FileParseError,
+    FileExtensionError,
     FormatError,
+    FormatLoadingError,
     FormatValidationError,
 )
 
@@ -63,7 +64,7 @@ class FormatRegistry:
 
         Raises:
             FileAccessError: If manufacturers directory cannot be accessed
-            FormatError: If there's an error loading format files
+            FormatLoadingError: If there's an error loading format files
         """
         try:
             manufacturers_dir = Path(__file__).parent / "devices"
@@ -80,14 +81,14 @@ class FormatRegistry:
 
                 try:
                     self._load_format_file(format_file)
-                except FormatError as e:
+                except FormatLoadingError as e:
                     logger.error(
                         "Error loading format file: %s Details: %s", str(e), e.details
                     )
                     continue
 
         except Exception as e:
-            raise FormatError(
+            raise FormatLoadingError(
                 "Failed to load formats", details={"error": str(e)}
             ) from e
 
@@ -98,14 +99,14 @@ class FormatRegistry:
             path: Path to the format definition file
 
         Raises:
-            FormatError: If there's an error loading the file
+            FormatLoadingError: If there's an error loading the file
         """
         try:
             module_name = f"devices.{path.parent.name}.{path.stem}"
             spec = importlib.util.spec_from_file_location(module_name, path)
 
             if spec is None or spec.loader is None:
-                raise FormatError(
+                raise FormatLoadingError(
                     "Failed to create module spec", details={"path": str(path)}
                 )
 
@@ -120,7 +121,9 @@ class FormatRegistry:
                     self._validate_and_register_format(attr, path)
 
         except Exception as e:
-            raise FormatError(f"Error loading {path}", details={"error": str(e)}) from e
+            raise FormatLoadingError(
+                f"Error loading {path}", details={"error": str(e)}
+            ) from e
 
     def _validate_and_register_format(
         self, format_def: DeviceFormat, source_file: Path
@@ -223,14 +226,14 @@ class FormatRegistry:
             List of potential matching formats
 
         Raises:
-            FormatError: If file extension is not supported
+            FileExtensionError: If file extension is not supported
         """
         try:
             file_type = FileType(path.suffix.lower()[1:])
             return self.get_formats_by_type(file_type)
         except ValueError as exc:
             logger.warning("Unsupported file type: %s", path.suffix)
-            raise FileParseError(
+            raise FileExtensionError(
                 "Unsupported file type",
                 details={"file": str(path), "extension": path.suffix},
             ) from exc

@@ -19,6 +19,10 @@ class FileAccessError(FileError):
     """Raised when there's an error accessing a file."""
 
 
+class FileExtensionError(FileError):
+    """Raised When file extension is not supported."""
+
+
 class FileParseError(FileError):
     """Raised when there's an error parsing file contents."""
 
@@ -29,6 +33,10 @@ class FormatError(CGMProcessorError):
 
 class FormatDetectionError(FormatError):
     """Raised when there's an error detecting file format."""
+
+
+class FormatLoadingError(FormatError):
+    """Raised when a format file can`t be loaded."""
 
 
 class FormatValidationError(FormatError):
