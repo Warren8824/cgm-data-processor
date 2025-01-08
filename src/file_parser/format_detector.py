@@ -15,21 +15,14 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect
 
 from src.core.data_types import ColumnRequirement, DeviceFormat, FileType
+from src.core.exceptions import (
+    FileAccessError,
+    FormatDetectionError,
+    FormatValidationError,
+)
 from src.file_parser.format_registry import FormatRegistry
 
 logger = logging.getLogger(__name__)
-
-
-class FormatDetectionError(Exception):
-    """Base exception for format detection errors."""
-
-
-class FileAccessError(FormatDetectionError):
-    """Raised when there's an error accessing the file."""
-
-
-class ValidationError(Exception):
-    """Raised when there is an error validating the format"""
 
 
 class ValidationResult:
@@ -106,13 +99,13 @@ class FormatDetector:
                         logger.debug("Successfully matched format: %s", fmt.name)
                         return fmt, None, val_results
                     val_results[fmt.name] = val_test_result
-                except ValidationError as e:
+                except FormatValidationError as e:
                     logger.debug("Error validating format %s: %s", fmt.name, str(e))
                     continue
 
             return None, "No matching format found", val_results
 
-        except ValidationError as e:
+        except FileAccessError as e:
             logger.error("Unexpected error during format detection: %s", str(e))
             return None, f"Detection error: {str(e)}", {}
 
@@ -121,7 +114,7 @@ class FormatDetector:
         try:
             return path.exists() and path.is_file()
         except Exception as e:
-            raise ValueError(f"Error occurred: {str(e)}") from e
+            raise FileAccessError(f"Error occurred: {str(e)}") from e
 
     def _validate_format(
         self, path: Path, fmt: DeviceFormat, validation_result: ValidationResult
@@ -135,7 +128,7 @@ class FormatDetector:
             try:
                 if not validator(path, config, validation_result):
                     return False
-            except ValidationError as e:
+            except FormatValidationError as e:
                 logger.debug("Validation failed: %s", {str(e)})
                 return False
         return True
@@ -189,7 +182,7 @@ class FormatDetector:
 
             return not val_result.has_errors()
 
-        except ValidationError as e:
+        except FormatValidationError as e:
             logger.debug("SQLite validation error: %s", str(e))
             return False
 
@@ -217,7 +210,7 @@ class FormatDetector:
 
             return not val_result.has_errors()
 
-        except ValidationError as e:
+        except FormatValidationError as e:
             logger.debug("CSV validation error: %s", str(e))
             return False
 
@@ -260,7 +253,7 @@ class FormatDetector:
 
             return not val_result.has_errors()
 
-        except ValidationError as e:
+        except FormatValidationError as e:
             logger.debug("JSON validation error: %s", str(e))
             return False
 
@@ -296,7 +289,7 @@ class FormatDetector:
 
             return not val_result.has_errors()
 
-        except ValidationError as e:
+        except FormatValidationError as e:
             logger.debug("XML validation error: %s", str(e))
             return False
 
