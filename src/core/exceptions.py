@@ -1,4 +1,4 @@
-"""Base module for all expceptions used within the system"""
+"""Base module for all expceptions used in the program"""
 
 from typing import Any, Dict, Optional
 
@@ -11,7 +11,6 @@ class CGMProcessorError(Exception):
         self.details = details or {}
 
 
-# File errors
 class FileError(CGMProcessorError):
     """Base class for file-related errors."""
 
@@ -24,7 +23,6 @@ class FileParseError(FileError):
     """Raised when there's an error parsing file contents."""
 
 
-# Format errors
 class FormatError(CGMProcessorError):
     """Base class for format-related errors."""
 
@@ -37,7 +35,10 @@ class FormatValidationError(FormatError):
     """Raised when there's an error validating format definition."""
 
 
-# Processing errors
+class DeviceFormatError(FormatError):
+    """Raised for device-specific format issues."""
+
+
 class ProcessingError(CGMProcessorError):
     """Base class for data processing errors."""
 
@@ -46,7 +47,6 @@ class DataProcessingError(ProcessingError):
     """Raised when there's an error processing data."""
 
 
-# Validation errors
 class ValidationError(CGMProcessorError):
     """Base class for validation errors."""
 
@@ -68,10 +68,6 @@ class TimeAlignmentError(ProcessingError):
 
 class UnitConversionError(ProcessingError):
     """Raised for unit conversion issues (e.g., mg/dL to mmol/L)."""
-
-
-class DeviceFormatError(FormatError):
-    """Raised for device-specific format issues."""
 
 
 class MetricCalculationError(ProcessingError):
