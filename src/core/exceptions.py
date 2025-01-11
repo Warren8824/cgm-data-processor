@@ -55,6 +55,10 @@ class DataProcessingError(ProcessingError):
     """Raised when there's an error processing data."""
 
 
+class DataExistsError(ProcessingError):
+    """Raised when the reader returns no data"""
+
+
 class ValidationError(CGMProcessorError):
     """Base class for validation errors."""
 

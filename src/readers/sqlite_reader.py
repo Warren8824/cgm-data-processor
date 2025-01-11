@@ -6,11 +6,14 @@ from pathlib import Path
 from typing import Dict, Optional
 
 import pandas as pd
-from pandas.errors import EmptyDataError
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.core.exceptions import DataProcessingError, DataValidationError
+from src.core.exceptions import (
+    DataExistsError,
+    DataProcessingError,
+    DataValidationError,
+)
 
 from .base import BaseReader, ColumnRequirement, FileConfig, TableData, TableStructure
 
@@ -46,7 +49,7 @@ class SQLiteReader(BaseReader):
         try:
             # Validate identifiers
             if not self._validate_identifier(table_structure.name):
-                raise ValueError(f"Invalid table name: {table_structure.name}")
+                raise DataValidationError(f"Invalid table name: {table_structure.name}")
 
             # Read only needed columns
             columns_to_read = [
@@ -59,7 +62,7 @@ class SQLiteReader(BaseReader):
             # Validate column names
             for col in columns_to_read:
                 if not self._validate_identifier(col):
-                    raise ValueError(f"Invalid column name: {col}")
+                    raise DataValidationError(f"Invalid column name: {col}")
 
             # Create query with quoted identifiers for SQLite
             quoted_columns = [f'"{col}"' for col in columns_to_read]
@@ -90,7 +93,7 @@ class SQLiteReader(BaseReader):
                 timestamp_type=fmt,
             )
 
-        except ValueError as e:
+        except DataValidationError as e:
             # Handle specific ValueErrors such as invalid table or column names
             logger.error("ValueError: %s", e)
             return None
@@ -100,13 +103,13 @@ class SQLiteReader(BaseReader):
                 "SQLAlchemyError processing table %s: %s", table_structure.name, e
             )
             return None
-        except EmptyDataError as e:
+        except DataExistsError as e:
             # Handle case where there is no data in the result set
             logger.error(
                 "EmptyDataError processing table %s: %s", table_structure.name, e
             )
             return None
-        except TableReadError as e:
+        except DataProcessingError as e:
             # Catch any unexpected errors
             logger.error(
                 "Unexpected error processing table %s: %s", table_structure.name, e
