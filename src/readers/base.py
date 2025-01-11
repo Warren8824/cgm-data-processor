@@ -15,6 +15,7 @@ from src.core.data_types import (
     TableStructure,
     TimestampType,
 )
+from src.core.exceptions import DataProcessingError, TimestampProcessingError
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +28,6 @@ class TableData:
     dataframe: pd.DataFrame
     missing_required_columns: List[str]
     timestamp_type: Optional[TimestampType] = None
-
-
-class TimestampFormatError(Exception):
-    """Base Exception for timestamp format issues"""
 
 
 class BaseReader(ABC):
@@ -110,13 +107,13 @@ class BaseReader(ABC):
                 pd.to_datetime(sample, utc=True)
                 logger.debug("Detected timestamp type: ISO_8601")
                 return TimestampType.ISO_8601
-            except TimestampFormatError:
+            except TimestampProcessingError:
                 pass
 
             logger.warning("Could not determine timestamp format")
             return TimestampType.UNKNOWN
 
-        except TimestampFormatError as e:
+        except TimestampProcessingError as e:
             logger.error("Error during timestamp detection: %s", e)
             return TimestampType.UNKNOWN
 
@@ -127,7 +124,7 @@ class BaseReader(ABC):
         fmt = self.detect_timestamp_format(df[timestamp_column])
 
         if fmt == TimestampType.UNKNOWN:
-            raise ValueError(
+            raise TimestampProcessingError(
                 f"Could not detect timestamp format for column {timestamp_column}"
             )
 
@@ -149,9 +146,9 @@ class BaseReader(ABC):
 
             return df.set_index(timestamp_column).sort_index(), fmt
 
-        except Exception as e:
+        except DataProcessingError as e:
             logger.error("Error converting timestamps: %s", e)
-            raise ValueError(f"Invalid value: {timestamp_column}") from e
+            raise DataProcessingError(f"Invalid value: {timestamp_column}") from e
 
     def _validate_required_data(
         self, df: pd.DataFrame, columns: List[ColumnMapping]

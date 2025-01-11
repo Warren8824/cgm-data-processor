@@ -55,6 +55,10 @@ class DataProcessingError(ProcessingError):
     """Raised when there's an error processing data."""
 
 
+class TimestampProcessingError(ProcessingError):
+    """Raised when there is a timestamp format issues"""
+
+
 class DataExistsError(ProcessingError):
     """Raised when the reader returns no data"""
 

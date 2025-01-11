@@ -20,10 +20,6 @@ from .base import BaseReader, ColumnRequirement, FileConfig, TableData, TableStr
 logger = logging.getLogger(__name__)
 
 
-class TableReadError(Exception):
-    """Base Exception for unexpected read errors"""
-
-
 class SQLiteReader(BaseReader):
     """Reads and processes SQLite files according to the provided format configuration."""
 
