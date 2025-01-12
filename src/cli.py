@@ -97,6 +97,8 @@ def display_results(results, debug: bool = False):
         df = processed_data.dataframe
         print(f"\n{'=' * 50}")
         print(f"{data_type.name} Data ({df.shape})")
+        for note in processed_data.processing_notes:
+            print(f"- {note}")
         print(f"{'=' * 50}")
 
         if debug:
