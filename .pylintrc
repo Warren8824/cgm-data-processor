@@ -85,6 +85,7 @@ max-parents=7
 max-attributes=20
 min-public-methods=1
 max-public-methods=20
+max-nested-blocks=7
 
 [IMPORTS]
 allow-wildcard-with-all=no
