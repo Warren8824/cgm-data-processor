@@ -1,50 +1,97 @@
-"""Cleans and filters carbohydrate data from a DataFrame."""
+"""Processor for carbohydrate intake data."""
 
-import pandas as pd
+import logging
+from typing import List
+
+from src.core.data_types import DataType
+from src.core.exceptions import ProcessingError
+from src.processors.base import (
+    BaseTypeProcessor,
+    ColumnData,
+    DataProcessor,
+    ProcessedTypeData,
+)
+
+logger = logging.getLogger(__name__)
 
 
-def clean_classify_carbs(df) -> pd.DataFrame:
-    """
-    Processes a DataFrame containing carbohydrate intake data by filtering
-    for significant meals (≥1g carbs) and removing duplicate timestamps.
+@DataProcessor.register_processor(DataType.CARBS)
+class CarbsProcessor(BaseTypeProcessor):
+    """Processes carbohydrate intake data with validation and cleaning."""
 
-    Args:
-        df (pd.DataFrame): DataFrame with a datetime index and 'carbs' column
-            representing carbohydrate intake in grams.
+    def process_type(
+        self,
+        columns: List[ColumnData],
+    ) -> ProcessedTypeData:
+        """Process all carbohydrate data from various sources.
 
-    Returns:
-        pd.DataFrame: Cleaned DataFrame containing only the 'carbs' column,
-            filtered for meals ≥1g and with duplicate timestamps removed.
+        Args:
+            columns: List of ColumnData containing all carb data columns
 
-    Examples:
-        >>> import pandas as pd
-        >>> data = {
-        ...     'carbs': [15.0, 0.5, 30.0, 15.0],
-        ...     'other_col': ['a', 'b', 'c', 'd']
-        ... }
-        >>> index = pd.to_datetime([
-        ...     '2024-01-01 08:00:00',
-        ...     '2024-01-01 10:00:00',
-        ...     '2024-01-01 12:00:00',
-        ...     '2024-01-01 12:00:00'  # Duplicate timestamp
-        ... ])
-        >>> df = pd.DataFrame(data, index=index)
-        >>> clean_df = clean_classify_carbs(df)
-        >>> print(clean_df)
-                            carbs
-        2024-01-01 08:00:00  15.0
-        2024-01-01 12:00:00  30.0
-    """
-    # Create a copy to avoid altering the original dataframe
-    df_clean = df.copy()
+        Returns:
+            ProcessedTypeData containing combined and cleaned carb data
+        """
+        processing_notes = []
 
-    # Keep only rows where carbs is >= 1.0 grams
-    df_clean = df_clean[df_clean["carbs"] >= 1.0]
+        try:
+            # Validate we have at least one primary column
+            if not any(col.is_primary for col in columns):
+                raise ProcessingError("No primary carbohydrate column found")
 
-    # Drop rows where the index (timestamp) is duplicated
-    df_clean = df_clean[~df_clean.index.duplicated(keep="first")]
+            # Sort columns to ensure primary is first
+            sorted_columns = sorted(columns, key=lambda x: (not x.is_primary))
 
-    # Return DataFrame containing only meal related data
-    df_clean = df_clean[["carbs"]]
+            # Combine all columns with standardized names
+            combined_df, column_units = self._combine_and_rename_columns(
+                sorted_columns, DataType.CARBS
+            )
 
-    return df_clean
+            if combined_df.empty:
+                raise ProcessingError("No carbohydrate data to process")
+
+            # Log what we're processing
+            processing_notes.append(
+                f"Processing {len(combined_df.columns)} carb columns: {', '.join(combined_df.columns)}"
+            )
+
+            # Track original row count
+            original_count = len(combined_df)
+
+            # Process each carb column
+            for col in combined_df.columns:
+                # Keep only rows where carbs is >= 1.0 grams
+                mask = combined_df[col] >= 1.0
+                combined_df.loc[~mask, col] = None
+
+                filtered_count = mask.sum()
+                processing_notes.append(
+                    f"Column {col}: Kept {filtered_count} entries ≥1g "
+                    f"({filtered_count / original_count * 100:.1f}%)"
+                )
+
+            # Drop rows where all values are null (no significant carbs in any column)
+            combined_df = combined_df.dropna(how="all")
+
+            # Handle duplicate timestamps by keeping the first occurrence
+            duplicates = combined_df.index.duplicated()
+            if duplicates.any():
+                dup_count = duplicates.sum()
+                processing_notes.append(f"Removed {dup_count} duplicate timestamps")
+                combined_df = combined_df[~duplicates]
+
+            # Final stats
+            processing_notes.append(
+                f"Final dataset contains {len(combined_df)} entries "
+                f"from {original_count} original records"
+            )
+
+            return ProcessedTypeData(
+                dataframe=combined_df,
+                source_units=column_units,
+                processing_notes=processing_notes,
+            )
+
+        except Exception as e:
+            raise ProcessingError(
+                f"Error processing carbohydrate data: {str(e)}"
+            ) from e
