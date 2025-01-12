@@ -10,9 +10,15 @@ import logging
 import sys
 from pathlib import Path
 
-from src.core.exceptions import DataProcessingError, DataValidationError, ReaderError
+from src.core.exceptions import (
+    DataProcessingError,
+    DataValidationError,
+    ProcessingError,
+    ReaderError,
+)
 from src.file_parser.format_detector import FormatDetectionError, FormatDetector
 from src.file_parser.format_registry import FormatRegistry
+from src.processors.base import DataProcessor
 from src.readers.base import BaseReader
 
 logger = logging.getLogger(__name__)
@@ -27,15 +33,7 @@ def setup_logging(debug: bool = False):
 
 
 def validate_file(file_path: Path):
-    """Validate file exists and is accessible.
-
-    Args:
-        file_path: Path to the data file
-
-    Raises:
-        FileNotFoundError: If file doesn't exist
-        ValueError: If path is not a file
-    """
+    """Validate file exists and is accessible."""
     if not file_path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
     if not file_path.is_file():
@@ -45,16 +43,8 @@ def validate_file(file_path: Path):
 def process_file(file_path: Path):
     """Process diabetes device data file.
 
-    Args:
-        file_path: Path to the data file
-
     Returns:
-        Dict containing processed table data
-
-    Raises:
-        FormatDetectionError: If format detection fails
-        DataProcessingError: If data processing fails
-        ReaderError: If appropriate reader not found
+        Dict containing processed data by DataType
     """
     logger.debug("\nAnalyzing file: %s", file_path)
 
@@ -73,34 +63,47 @@ def process_file(file_path: Path):
     reader = BaseReader.get_reader_for_format(detected_format, file_path)
     with reader:
         table_data = reader.read_all_tables()
-
-        # Filter out tables with missing critical columns
-        result = {
-            name: data.dataframe
-            for name, data in table_data.items()
-            if not data.missing_required_columns
-        }
-
-        if not result:
+        if not table_data:
             raise DataProcessingError("No valid data found in file")
-
         print("    \u2713 Data Reading Successful.")
-        return result
+
+        # Initialize data processor
+        print("\u2172 Data Processing Initialised.")
+        processor = DataProcessor()
+        try:
+            # Create a dictionary mapping table names to their configurations
+            table_configs = {
+                table.name: table
+                for file_config in detected_format.files
+                for table in file_config.tables
+            }
+
+            processed_data = processor.process_tables(
+                table_data=table_data, table_configs=table_configs
+            )
+            if not processed_data:
+                raise ProcessingError("No data could be processed")
+            print("    \u2713 Data Processing Successful.")
+
+            return processed_data
+
+        except ProcessingError as e:
+            raise ProcessingError(f"Failed to process data: {str(e)}") from e
 
 
 def display_results(results, debug: bool = False):
-    """Display processed data results.
-
-    Args:
-        results: Dict of table names to processed DataFrames
-        debug: If True, displays additional statistical information
-    """
-    for table_name, df in results.items():
+    """Display processed data results."""
+    for data_type, processed_data in results.items():
+        df = processed_data.dataframe
         print(f"\n{'=' * 50}")
-        print(f"{table_name,df.shape}")
+        print(f"{data_type.name} Data ({df.shape})")
         print(f"{'=' * 50}")
 
         if debug:
+            print("\nProcessing Notes:")
+            for note in processed_data.processing_notes:
+                print(f"- {note}")
+
             print("\nDetailed Analysis:")
 
             # Data completeness
@@ -145,6 +148,11 @@ def display_results(results, debug: bool = False):
             print("\nMemory Usage:")
             print(df.memory_usage(deep=True))
 
+            # Unit information
+            print("\nUnit Information:")
+            for col, unit in processed_data.source_units.items():
+                print(f"{col}: {unit.value}")
+
 
 def main():
     """Main entry point for the CLI."""
@@ -166,7 +174,7 @@ def main():
         validate_file(file_path)
 
         results = process_file(file_path)
-        display_results(results, args.debug)  # Pass debug flag to display_results
+        display_results(results, args.debug)
 
     except (
         FileNotFoundError,
@@ -174,6 +182,7 @@ def main():
         FormatDetectionError,
         DataProcessingError,
         ReaderError,
+        ProcessingError,
     ) as e:
         logger.error(str(e))
         if args.debug and not isinstance(e, (FileNotFoundError, ValueError)):
