@@ -136,7 +136,8 @@ if __name__ == "__main__":
     )
 
     try:
-        from src.file_parser.format_detector import FormatDetectionError, FormatDetector
+        from src.core.exceptions import FormatDetectionError
+        from src.file_parser.format_detector import FormatDetector
         from src.file_parser.format_registry import FormatRegistry
         from src.readers.base import BaseReader
 
