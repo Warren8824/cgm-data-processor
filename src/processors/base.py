@@ -1,329 +1,206 @@
-"""Abstract base for data processors.
+"""Abstract base for data processors with automatic processor selection.
 
-This module defines the base processor class and common functionality for processing
-different types of diabetes data (CGM, insulin, carbs, etc.). It provides:
-    - Abstract interface for specific data type processors
-    - Common validation and processing methods
-    - Standardized data quality checks
-    - Processing status tracking and reporting
-    - Time series handling utilities
-    - Unit conversion support
+This module provides the base processor functionality and automatic processor selection based on
+data types. It supports processing different types of diabetes data from reader output.
 """
 
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Tuple, Type
 
 import pandas as pd
 
-from src.core.data_types import DataType, Unit
-from src.core.exceptions import (
-    DataProcessingError,
-    DataValidationError,
-    UnitConversionError,
-)
+from src.core.data_types import ColumnMapping, DataType, TableStructure, Unit
+from src.core.exceptions import ProcessingError
+from src.readers.base import TableData
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ProcessingMetadata:
-    """Metadata about the processing operation."""
+class ColumnData:
+    """Holds data and metadata for a single column."""
 
-    data_type: DataType
-    original_rows: int
-    processed_rows: int
-    dropped_rows: Dict[str, int]  # Reason: count
-    quality_metrics: Dict[str, float]
-    warnings: List[str]
-    source_units: Optional[Unit] = None
-    target_units: Optional[Unit] = None
-
-    # Time series specific metrics
-    time_range: Optional[Tuple[pd.Timestamp, pd.Timestamp]] = None
-    gap_statistics: Optional[Dict[str, Union[int, float]]] = None
-
-    # Classification metrics
-    classification_confidence: Optional[Dict[str, float]] = None
-
-    # Processing configuration
-    applied_rules: Dict[str, Union[str, int, float]] = None
+    dataframe: pd.DataFrame  # Single column DataFrame
+    unit: Unit
+    config: ColumnMapping
+    is_primary: bool
 
 
-class BaseProcessor(ABC):
-    """Abstract base class for all data type processors."""
+@dataclass
+class ProcessedTypeData:
+    """Holds processed data for a single data type."""
 
-    def __init__(
-        self,
-        data_type: DataType,
-        source_unit: Optional[Unit] = None,
-        target_unit: Optional[Unit] = None,
-    ):
-        """Initialize processor for specific data type.
+    dataframe: pd.DataFrame
+    source_units: Dict[str, Unit]  # Maps column name to its original unit
+    processing_notes: List[str]
+
+
+class DataProcessor:
+    """Main processor class that handles processing of all data types."""
+
+    _type_processors: Dict[DataType, Type["BaseTypeProcessor"]] = {}
+
+    def process_tables(
+        self, table_data: Dict[str, TableData], table_configs: Dict[str, TableStructure]
+    ) -> Dict[DataType, ProcessedTypeData]:
+        """Process all tables according to their configuration.
 
         Args:
-            data_type: The type of data this processor handles
-            source_unit: Unit of the input data (if applicable)
-            target_unit: Desired output unit (if applicable)
-        """
-        self.data_type = data_type
-        self.source_unit = source_unit
-        self.target_unit = target_unit
-        self._processed_data: Optional[pd.DataFrame] = None
-        self._metadata: Optional[ProcessingMetadata] = None
-        self._required_columns: Set[str] = set()
-        self._optional_columns: Set[str] = set()
-
-        # Initialize required/optional columns
-        self._initialize_column_requirements()
-
-    @abstractmethod
-    def _initialize_column_requirements(self) -> None:
-        """Define required and optional columns for this processor."""
-        raise NotImplementedError
-
-    @property
-    def processed_data(self) -> Optional[pd.DataFrame]:
-        """Get the processed data if available."""
-        return self._processed_data
-
-    @property
-    def metadata(self) -> Optional[ProcessingMetadata]:
-        """Get processing metadata if available."""
-        return self._metadata
-
-    def _round_timestamps(
-        self, df: pd.DataFrame, freq: str = "5min", handle_duplicates: str = "mean"
-    ) -> pd.DataFrame:
-        """Round timestamps to specified frequency and handle duplicates.
-
-        Args:
-            df: Input DataFrame
-            freq: Frequency to round to (default: '5min')
-            handle_duplicates: How to handle duplicate timestamps ('mean', 'first', or 'last')
+            table_data: Dict of table name to TableData from reader
+            table_configs: Dict of table name to TableStructure configurations
 
         Returns:
-            DataFrame with rounded timestamps
+            Dict mapping DataType to its processed data
         """
-        df = df.copy()
-        df.index = df.index.round(freq)
+        # First, organize data by type
+        type_data: Dict[DataType, List[ColumnData]] = {}
 
-        if handle_duplicates:
-            if handle_duplicates == "mean":
-                df = df.groupby(level=0).mean()
-            else:
-                df = df[~df.index.duplicated(keep=handle_duplicates)]
+        for table_name, data in table_data.items():
+            config = table_configs[table_name]
 
-        return df
+            # Group columns by data type (both primary and non-primary)
+            for column in config.columns:
+                if column.data_type:  # Only process columns with a defined data type
+                    df_subset = data.dataframe[[column.source_name]].copy()
+                    df_subset.columns = ["value"]  # Standardize column name
 
-    def _interpolate_gaps(
-        self, df: pd.DataFrame, column: str, max_gap: int, method: str = "linear"
-    ) -> Tuple[pd.DataFrame, Dict[str, int]]:
-        """Interpolate gaps in time series data.
+                    column_data = ColumnData(
+                        dataframe=df_subset,
+                        unit=column.unit,
+                        config=column,
+                        is_primary=column.is_primary,
+                    )
+
+                    if column.data_type not in type_data:
+                        type_data[column.data_type] = []
+
+                    type_data[column.data_type].append(column_data)
+
+        # Process each data type
+        results = {}
+        for data_type, columns in type_data.items():
+            try:
+                processor = self.get_processor_for_type(data_type)
+                results[data_type] = processor.process_type(columns)
+
+                # Log summary of processed data
+                col_count = len(columns)
+                primary_count = sum(1 for c in columns if c.is_primary)
+                logger.info(
+                    "Processed %s: %d primary and %d secondary columns",
+                    data_type.name,
+                    primary_count,
+                    col_count - primary_count,
+                )
+
+            except ProcessingError as e:
+                logger.error("Error processing %s: %s", data_type, str(e))
+                continue
+
+        return results
+
+    @classmethod
+    def register_processor(cls, data_type: DataType):
+        """Register a processor class for a specific data type."""
+
+        def wrapper(processor_cls):
+            cls._type_processors[data_type] = processor_cls
+            return processor_cls
+
+        return wrapper
+
+    def get_processor_for_type(self, data_type: DataType) -> "BaseTypeProcessor":
+        """Get appropriate processor instance for the data type."""
+        processor_cls = self._type_processors.get(data_type)
+        if processor_cls is None:
+            raise ProcessingError(
+                f"No processor registered for data type: {data_type.value}"
+            )
+        return processor_cls()
+
+
+class BaseTypeProcessor(ABC):
+    """Abstract base class for individual data type processors."""
+
+    def _generate_column_name(
+        self, data_type: DataType, is_primary: bool, index: int
+    ) -> str:
+        """Generate standardized column names.
 
         Args:
-            df: Input DataFrame
-            column: Column to interpolate
-            max_gap: Maximum number of consecutive values to interpolate
-            method: Interpolation method
+            data_type: Type of data
+            is_primary: Whether this is a primary column
+            index: Index for non-primary columns (1-based)
 
         Returns:
-            Tuple of (processed DataFrame, gap statistics)
+            Column name string (e.g., 'cgm_primary' or 'cgm_2')
         """
-        df = df.copy()
+        base_name = data_type.name.lower()
+        if is_primary:
+            return f"{base_name}_primary"
+        return f"{base_name}_{index + 1}"
 
-        # Flag missing values
-        df["missing"] = df[column].isna()
-
-        # Create groups of consecutive missing values
-        df["gap_group"] = (~df["missing"]).cumsum()
-
-        # Calculate gap statistics
-        gap_sizes = df[df["missing"]].groupby("gap_group").size()
-        gap_stats = {
-            "total_gaps": len(gap_sizes),
-            "max_gap_size": gap_sizes.max() if not gap_sizes.empty else 0,
-            "mean_gap_size": gap_sizes.mean() if not gap_sizes.empty else 0,
-            "interpolated_gaps": len(gap_sizes[gap_sizes <= max_gap]),
-            "unfilled_gaps": len(gap_sizes[gap_sizes > max_gap]),
+    def _validate_units(self, data_type: DataType, source_unit: Unit) -> None:
+        """Validate that units are compatible with data type."""
+        valid_units = {
+            DataType.CGM: [Unit.MGDL, Unit.MMOL],
+            DataType.BGM: [Unit.MGDL, Unit.MMOL],
+            DataType.INSULIN: [Unit.UNITS],
+            DataType.CARBS: [Unit.GRAMS],
         }
 
-        # Interpolate within limit
-        df[column] = df[column].interpolate(
-            method=method, limit=max_gap, limit_direction="both"
-        )
+        if data_type not in valid_units:
+            raise ProcessingError(f"No unit validation defined for {data_type.value}")
 
-        return df, gap_stats
-
-    def _validate_range(
-        self, series: pd.Series, min_val: float, max_val: float, clip: bool = True
-    ) -> Tuple[pd.Series, int]:
-        """Validate and optionally clip values to specified range.
-
-        Args:
-            series: Input series
-            min_val: Minimum allowed value
-            max_val: Maximum allowed value
-            clip: Whether to clip values to range (True) or drop them (False)
-
-        Returns:
-            Tuple of (processed series, number of out-of-range values)
-        """
-        out_of_range = ((series < min_val) | (series > max_val)).sum()
-
-        if clip:
-            series = series.clip(lower=min_val, upper=max_val)
-        else:
-            series = series[(series >= min_val) & (series <= max_val)]
-
-        return series, out_of_range
-
-    def _convert_units(
-        self,
-        series: pd.Series,
-        from_unit: Unit,
-        to_unit: Unit,
-        conversion_factor: float,
-    ) -> pd.Series:
-        """Convert values between units.
-
-        Args:
-            series: Input series
-            from_unit: Source unit
-            to_unit: Target unit
-            conversion_factor: Multiplication factor for conversion
-
-        Returns:
-            Series with converted values
-
-        Raises:
-            UnitConversionError: If units are incompatible
-        """
-        if from_unit == to_unit:
-            return series
-
-        try:
-            return series * conversion_factor
-        except Exception as e:
-            raise UnitConversionError(
-                f"Error converting from {from_unit.value} to {to_unit.value}"
-            ) from e
-
-    def validate_input(self, df: pd.DataFrame) -> None:
-        """Validate input data meets minimum requirements."""
-        # Check required columns exist
-        missing_required = self._required_columns - set(df.columns)
-        if missing_required:
-            raise DataValidationError(
-                f"Missing required columns for {self.data_type.name}",
-                details={"missing_columns": list(missing_required)},
+        if source_unit not in valid_units[data_type]:
+            raise ProcessingError(
+                f"Invalid source unit {source_unit.value} for {data_type.value}"
             )
-
-        # Ensure DataFrame is time-indexed
-        if not isinstance(df.index, pd.DatetimeIndex):
-            raise DataValidationError(
-                f"Input data for {self.data_type.name} must have DatetimeIndex"
-            )
-
-        # Check index is UTC
-        if df.index.tz is None or str(df.index.tz) != "UTC":
-            raise DataValidationError(
-                f"Input data for {self.data_type.name} must have UTC timezone"
-            )
-
-        # Validate units if specified
-        if self.source_unit and "unit" in df.columns:
-            invalid_units = df["unit"] != self.source_unit.value
-            if invalid_units.any():
-                raise DataValidationError(
-                    f"Invalid units found. Expected {self.source_unit.value}"
-                )
-
-    def _initialize_metadata(self, df: pd.DataFrame) -> None:
-        """Initialize processing metadata."""
-        self._metadata = ProcessingMetadata(
-            data_type=self.data_type,
-            original_rows=len(df),
-            processed_rows=0,
-            dropped_rows={},
-            quality_metrics={},
-            warnings=[],
-            source_units=self.source_unit,
-            target_units=self.target_unit,
-            time_range=(df.index.min(), df.index.max()),
-            gap_statistics={},
-            classification_confidence={},
-            applied_rules={},
-        )
 
     @abstractmethod
-    def process(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Process the input data according to processor rules."""
-        raise NotImplementedError
+    def process_type(self, columns: List[ColumnData]) -> ProcessedTypeData:
+        """Process all data of a specific type.
 
-    def run(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Run the complete processing pipeline."""
-        try:
-            # Validate input
-            self.validate_input(df)
+        Args:
+            columns: List of ColumnData containing all instances of this data type
 
-            # Initialize metadata
-            self._initialize_metadata(df)
+        Returns:
+            ProcessedTypeData containing the combined and processed data
+        """
 
-            # Run processing
-            self._processed_data = self.process(df)
+    def _combine_and_rename_columns(
+        self, columns: List[ColumnData], data_type: DataType
+    ) -> Tuple[pd.DataFrame, Dict[str, Unit]]:
+        """Combine multiple columns into a single DataFrame with standardized names.
 
-            # Final validation
-            if self._processed_data is None:
-                raise DataProcessingError(
-                    f"Processing {self.data_type.name} produced no output"
-                )
+        Args:
+            columns: List of ColumnData to combine
+            data_type: Type of data being processed
 
-            return self._processed_data
+        Returns:
+            Tuple of (combined DataFrame, dict mapping new column names to original units)
+        """
+        # Sort columns to ensure primary comes first
+        sorted_columns = sorted(columns, key=lambda x: (not x.is_primary))
 
-        except Exception as e:
-            logger.error("Error processing %s data: %s", self.data_type.name, str(e))
-            raise
+        combined_df = pd.DataFrame(index=pd.DatetimeIndex([]))
+        column_units = {}
 
-    def get_processing_summary(self) -> str:
-        """Get a human-readable summary of the processing results."""
-        if self._metadata is None:
-            return "No processing metadata available"
+        # Process primary column first, then others
+        for idx, col_data in enumerate(sorted_columns):
+            new_name = self._generate_column_name(data_type, col_data.is_primary, idx)
 
-        summary = [
-            f"\nProcessing Summary for {self._metadata.data_type.name}:",
-            f"Original rows: {self._metadata.original_rows}",
-            f"Processed rows: {self._metadata.processed_rows}",
-            f"\nTime range: {self._metadata.time_range[0]} to {self._metadata.time_range[1]}",
-        ]
+            # Merge with existing data
+            temp_df = col_data.dataframe.copy()
+            temp_df.columns = [new_name]
 
-        if self._metadata.gap_statistics:
-            summary.append("\nGap Statistics:")
-            for metric, value in self._metadata.gap_statistics.items():
-                summary.append(f"  - {metric}: {value}")
+            if combined_df.empty:
+                combined_df = temp_df
+            else:
+                combined_df = combined_df.join(temp_df, how="outer")
 
-        if self._metadata.classification_confidence:
-            summary.append("\nClassification Confidence:")
-            for (
-                category,
-                confidence,
-            ) in self._metadata.classification_confidence.items():
-                summary.append(f"  - {category}: {confidence:.2%}")
+            column_units[new_name] = col_data.unit
 
-        if self._metadata.dropped_rows:
-            summary.append("\nDropped rows:")
-            for reason, count in self._metadata.dropped_rows.items():
-                summary.append(f"  - {reason}: {count}")
-
-        if self._metadata.quality_metrics:
-            summary.append("\nQuality metrics:")
-            for metric, value in self._metadata.quality_metrics.items():
-                summary.append(f"  - {metric}: {value:.2f}")
-
-        if self._metadata.warnings:
-            summary.append("\nWarnings:")
-            for warning in self._metadata.warnings:
-                summary.append(f"  - {warning}")
-
-        return "\n".join(summary)
+        return combined_df, column_units
