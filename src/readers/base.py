@@ -1,21 +1,32 @@
-"""Abstract base for readers"""
+"""Abstract base for readers with automatic reader selection.
+
+This module provides the base reader functionality and automatic reader selection based on
+file types. It supports timestamp processing, data validation, and resource management
+while allowing automatic mapping of file types to their appropriate readers.
+"""
 
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Type
 
 import pandas as pd
 
 from src.core.data_types import (
     ColumnMapping,
     ColumnRequirement,
+    DeviceFormat,
     FileConfig,
+    FileType,
     TableStructure,
     TimestampType,
 )
-from src.core.exceptions import DataProcessingError, TimestampProcessingError
+from src.core.exceptions import (
+    DataProcessingError,
+    ReaderError,
+    TimestampProcessingError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +42,67 @@ class TableData:
 
 
 class BaseReader(ABC):
-    """Abstract base class for all file format readers."""
+    """Abstract base class for all file format readers.
+
+    This class provides core functionality for reading diabetes device data files
+    and automatic reader selection based on file types. It handles timestamp processing,
+    data validation, and resource management.
+    """
+
+    _readers: Dict[FileType, Type["BaseReader"]] = {}
+
+    @classmethod
+    def register(cls, file_type: FileType):
+        """Register a reader class for a specific file type.
+
+        Args:
+            file_type: FileType enum value to associate with the reader
+
+        Returns:
+            Decorator function that registers the reader class
+        """
+
+        def wrapper(reader_cls):
+            cls._readers[file_type] = reader_cls
+            return reader_cls
+
+        return wrapper
+
+    @classmethod
+    def get_reader_for_format(cls, fmt: DeviceFormat, file_path: Path) -> "BaseReader":
+        """Get appropriate reader instance for the detected format.
+
+        Args:
+            fmt: Detected device format specification
+            file_path: Path to the data file
+
+        Returns:
+            Instance of appropriate reader class
+
+        Raises:
+            ReaderError: If no reader is registered for the file type
+        """
+        for file_config in fmt.files:
+            if Path(file_path).match(file_config.name_pattern):
+                reader_cls = cls._readers.get(file_config.file_type)
+                if reader_cls is None:
+                    raise ReaderError(
+                        f"No reader registered for file type: {file_config.file_type.value}"
+                    )
+                return reader_cls(file_path, file_config)
+
+        raise ReaderError(f"No matching file configuration found for {file_path}")
 
     def __init__(self, path: Path, file_config: FileConfig):
+        """Initialize reader with file path and configuration.
+
+        Args:
+            path: Path to the data file
+            file_config: Configuration for the file format
+
+        Raises:
+            ValueError: If file does not exist
+        """
         if not path.exists():
             raise ValueError(f"File not found: {path}")
 
@@ -41,6 +110,7 @@ class BaseReader(ABC):
         self.file_config = file_config
 
     def __enter__(self):
+        """Context manager entry."""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

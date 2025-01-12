@@ -3,7 +3,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -13,13 +13,22 @@ from src.core.exceptions import (
     DataExistsError,
     DataProcessingError,
     DataValidationError,
+    ReaderError,
 )
 
-from .base import BaseReader, ColumnRequirement, FileConfig, TableData, TableStructure
+from .base import (
+    BaseReader,
+    ColumnRequirement,
+    FileConfig,
+    FileType,
+    TableData,
+    TableStructure,
+)
 
 logger = logging.getLogger(__name__)
 
 
+@BaseReader.register(FileType.SQLITE)
 class SQLiteReader(BaseReader):
     """Reads and processes SQLite files according to the provided format configuration."""
 
@@ -129,6 +138,7 @@ if __name__ == "__main__":
     try:
         from src.file_parser.format_detector import FormatDetectionError, FormatDetector
         from src.file_parser.format_registry import FormatRegistry
+        from src.readers.base import BaseReader
 
         file_path = Path(args.file_path)
 
@@ -158,31 +168,24 @@ if __name__ == "__main__":
             logger.error("No valid format detected for file")
             sys.exit(1)
 
-        # Function to process SQLite file
-        def process_sqlite_file(
-            path: Path, fmt: detected_format
-        ) -> Dict[str, pd.DataFrame]:
-            """Process SQLite file according to detected format."""
-            try:
-                # Create the SQLiteReader object using the detected format
-                reader = SQLiteReader(path, fmt.files[0])
+        # Process file using automatic reader selection
+        try:
+            reader = BaseReader.get_reader_for_format(detected_format, file_path)
+            with reader:  # Use context manager for proper resource cleanup
                 table_data = reader.read_all_tables()
 
-                # Return DataFrames, filtering out tables with missing critical columns
-                return {
+                # Filter out tables with missing critical columns
+                result = {
                     name: data.dataframe
                     for name, data in table_data.items()
                     if not data.missing_required_columns
                 }
 
-            except (
-                DataProcessingError
-            ) as exc:  # Catch all exceptions here for graceful failure
-                logger.error("Failed to process SQLite file %s: %s", path, str(exc))
-                return {}
-
-        # Run the file processing
-        result = process_sqlite_file(file_path, detected_format)
+        except (DataProcessingError, ReaderError) as exc:
+            logger.error("Failed to process file %s: %s", file_path, str(exc))
+            if args.debug:
+                logger.exception("Debug traceback:")
+            sys.exit(1)
 
         # Display results
         if not result:
@@ -201,7 +204,7 @@ if __name__ == "__main__":
             print("\nTreatment Data Descriptive Stats:")
             print(result["Treatments"].describe())
 
-    except DataValidationError as e:  # Catch any unexpected errors
+    except DataValidationError as e:
         logger.error("Unexpected error occurred: %s", str(e))
         if args.debug:
             logger.exception("Debug traceback:")
