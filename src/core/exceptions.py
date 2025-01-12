@@ -31,10 +31,6 @@ class FormatError(CGMProcessorError):
     """Base class for format-related errors."""
 
 
-class ReaderError(CGMProcessorError):
-    """Base class for reader related errors."""
-
-
 class FormatDetectionError(FormatError):
     """Raised when there's an error detecting file format."""
 
@@ -49,6 +45,10 @@ class FormatValidationError(FormatError):
 
 class DeviceFormatError(FormatError):
     """Raised for device-specific format issues."""
+
+
+class ReaderError(CGMProcessorError):
+    """Base class for reader related errors."""
 
 
 class ProcessingError(CGMProcessorError):
