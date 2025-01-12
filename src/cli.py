@@ -84,23 +84,68 @@ def process_file(file_path: Path):
         return result
 
 
-def display_results(results):
+def display_results(results, debug: bool = False):
     """Display processed data results.
 
     Args:
         results: Dict of table names to processed DataFrames
+        debug: If True, displays additional statistical information
     """
-    if "BgReadings" in results:
-        print("\nCGM Data Info:")
-        results["BgReadings"].info()
-        print("\nCGM Data Descriptive Stats:")
-        print(results["BgReadings"].describe())
+    for table_name, df in results.items():
+        print(f"\n{'=' * 50}")
+        print(f"{table_name} Analysis")
+        print(f"{'=' * 50}")
 
-    if "Treatments" in results:
-        print("\nTreatment Data Info:")
-        results["Treatments"].info()
-        print("\nTreatment Data Descriptive Stats:")
-        print(results["Treatments"].describe())
+        print("\nBasic Information:")
+        df.info()
+
+        print("\nDescriptive Statistics:")
+        print(df.describe())
+
+        if debug:
+            print("\nDetailed Analysis:")
+
+            # Data completeness
+            null_counts = df.isnull().sum()
+            print("\nMissing Values by Column:")
+            print(
+                null_counts[null_counts > 0]
+                if any(null_counts > 0)
+                else "No missing values"
+            )
+
+            # Value distributions
+            print("\nValue Counts for Non-Numeric Columns:")
+            for col in df.select_dtypes(exclude=["number"]).columns:
+                print(f"\n{col}:")
+                print(df[col].value_counts().head())
+
+            # Time-based analysis
+            print("\nTemporal Analysis:")
+            print(f"Date Range: {df.index.min()} to {df.index.max()}")
+            print(f"Total Duration: {df.index.max() - df.index.min()}")
+
+            # Data density
+            readings_per_day = df.groupby(df.index.date).size()
+            print("\nReadings per Day:")
+            print(f"Mean: {readings_per_day.mean():.2f}")
+            print(f"Min: {readings_per_day.min()}")
+            print(f"Max: {readings_per_day.max()}")
+
+            # Numeric column statistics
+            numeric_cols = df.select_dtypes(include=["number"]).columns
+            if len(numeric_cols) > 0:
+                print("\nDetailed Numeric Analysis:")
+                for col in numeric_cols:
+                    print(f"\n{col}:")
+                    print(f"Skewness: {df[col].skew():.2f}")
+                    print(f"Kurtosis: {df[col].kurtosis():.2f}")
+                    print("Quantiles:")
+                    print(df[col].quantile([0.1, 0.25, 0.5, 0.75, 0.9]))
+
+            # Memory usage
+            print("\nMemory Usage:")
+            print(df.memory_usage(deep=True))
 
 
 def main():
@@ -109,7 +154,11 @@ def main():
         description="Diabetes Data Format Detection and Processing Tool"
     )
     parser.add_argument("file_path", type=str, help="Path to the file to analyze")
-    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug logging and detailed analysis",
+    )
     args = parser.parse_args()
 
     setup_logging(args.debug)
@@ -119,7 +168,7 @@ def main():
         validate_file(file_path)
 
         results = process_file(file_path)
-        display_results(results)
+        display_results(results, args.debug)  # Pass debug flag to display_results
 
     except (
         FileNotFoundError,
@@ -140,7 +189,3 @@ def main():
         if args.debug:
             logger.exception("Debug traceback:")
         sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
