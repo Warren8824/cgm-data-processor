@@ -62,11 +62,14 @@ def process_file(file_path: Path):
     registry = FormatRegistry()
     detector = FormatDetector(registry)
 
+    print("\u2170 Format Detection Initialised.")
     detected_format, error, _ = detector.detect_format(file_path)
     if not detected_format:
         raise FormatDetectionError(f"No valid format detected: {error}")
+    print("    \u2713 Format Detection Successful.")
 
     # Get appropriate reader and process data
+    print("\u2171 Data Reading Initialised.")
     reader = BaseReader.get_reader_for_format(detected_format, file_path)
     with reader:
         table_data = reader.read_all_tables()
@@ -81,6 +84,7 @@ def process_file(file_path: Path):
         if not result:
             raise DataProcessingError("No valid data found in file")
 
+        print("    \u2713 Data Reading Successful.")
         return result
 
 
@@ -93,14 +97,8 @@ def display_results(results, debug: bool = False):
     """
     for table_name, df in results.items():
         print(f"\n{'=' * 50}")
-        print(f"{table_name} Analysis")
+        print(f"{table_name,df.shape}")
         print(f"{'=' * 50}")
-
-        print("\nBasic Information:")
-        df.info()
-
-        print("\nDescriptive Statistics:")
-        print(df.describe())
 
         if debug:
             print("\nDetailed Analysis:")
@@ -189,3 +187,7 @@ def main():
         if args.debug:
             logger.exception("Debug traceback:")
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
