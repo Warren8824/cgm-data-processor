@@ -1,8 +1,4 @@
-"""Abstract base for data processors with automatic processor selection.
-
-This module provides the base processor functionality and automatic processor selection based on
-data types. It supports processing different types of diabetes data from reader output.
-"""
+"""Abstract base for data processors with automatic processor selection."""
 
 import logging
 from abc import ABC, abstractmethod
@@ -27,6 +23,11 @@ class ColumnData:
     config: ColumnMapping
     is_primary: bool
 
+    @property
+    def data_type(self) -> DataType:
+        """Get the data type from the column config."""
+        return self.config.data_type
+
 
 @dataclass
 class ProcessedTypeData:
@@ -37,106 +38,13 @@ class ProcessedTypeData:
     processing_notes: List[str]
 
 
-class DataProcessor:
-    """Main processor class that handles processing of all data types."""
-
-    _type_processors: Dict[DataType, Type["BaseTypeProcessor"]] = {}
-
-    def process_tables(
-        self, table_data: Dict[str, TableData], table_configs: Dict[str, TableStructure]
-    ) -> Dict[DataType, ProcessedTypeData]:
-        """Process all tables according to their configuration.
-
-        Args:
-            table_data: Dict of table name to TableData from reader
-            table_configs: Dict of table name to TableStructure configurations
-
-        Returns:
-            Dict mapping DataType to its processed data
-        """
-        # First, organize data by type
-        type_data: Dict[DataType, List[ColumnData]] = {}
-
-        for table_name, data in table_data.items():
-            config = table_configs[table_name]
-
-            # Group columns by data type (both primary and non-primary)
-            for column in config.columns:
-                if column.data_type:  # Only process columns with a defined data type
-                    df_subset = data.dataframe[[column.source_name]].copy()
-                    df_subset.columns = ["value"]  # Standardize column name
-
-                    column_data = ColumnData(
-                        dataframe=df_subset,
-                        unit=column.unit,
-                        config=column,
-                        is_primary=column.is_primary,
-                    )
-
-                    if column.data_type not in type_data:
-                        type_data[column.data_type] = []
-
-                    type_data[column.data_type].append(column_data)
-
-        # Process each data type
-        results = {}
-        for data_type, columns in type_data.items():
-            try:
-                processor = self.get_processor_for_type(data_type)
-                results[data_type] = processor.process_type(columns)
-
-                # Log summary of processed data
-                col_count = len(columns)
-                primary_count = sum(1 for c in columns if c.is_primary)
-                logger.info(
-                    "Processed %s: %d primary and %d secondary columns",
-                    data_type.name,
-                    primary_count,
-                    col_count - primary_count,
-                )
-
-            except ProcessingError as e:
-                logger.error("Error processing %s: %s", data_type, str(e))
-                continue
-
-        return results
-
-    @classmethod
-    def register_processor(cls, data_type: DataType):
-        """Register a processor class for a specific data type."""
-
-        def wrapper(processor_cls):
-            cls._type_processors[data_type] = processor_cls
-            return processor_cls
-
-        return wrapper
-
-    def get_processor_for_type(self, data_type: DataType) -> "BaseTypeProcessor":
-        """Get appropriate processor instance for the data type."""
-        processor_cls = self._type_processors.get(data_type)
-        if processor_cls is None:
-            raise ProcessingError(
-                f"No processor registered for data type: {data_type.value}"
-            )
-        return processor_cls()
-
-
 class BaseTypeProcessor(ABC):
     """Abstract base class for individual data type processors."""
 
     def _generate_column_name(
         self, data_type: DataType, is_primary: bool, index: int
     ) -> str:
-        """Generate standardized column names.
-
-        Args:
-            data_type: Type of data
-            is_primary: Whether this is a primary column
-            index: Index for non-primary columns (1-based)
-
-        Returns:
-            Column name string (e.g., 'cgm_primary' or 'cgm_2')
-        """
+        """Generate standardized column names."""
         base_name = data_type.name.lower()
         if is_primary:
             return f"{base_name}_primary"
@@ -159,48 +67,125 @@ class BaseTypeProcessor(ABC):
                 f"Invalid source unit {source_unit.value} for {data_type.value}"
             )
 
-    @abstractmethod
-    def process_type(self, columns: List[ColumnData]) -> ProcessedTypeData:
-        """Process all data of a specific type.
-
-        Args:
-            columns: List of ColumnData containing all instances of this data type
-
-        Returns:
-            ProcessedTypeData containing the combined and processed data
-        """
-
     def _combine_and_rename_columns(
         self, columns: List[ColumnData], data_type: DataType
     ) -> Tuple[pd.DataFrame, Dict[str, Unit]]:
-        """Combine multiple columns into a single DataFrame with standardized names.
+        """Combine multiple columns into a single DataFrame with standardized names."""
+        try:
+            # Sort columns to ensure primary comes first
+            sorted_columns = sorted(columns, key=lambda x: (not x.is_primary))
 
-        Args:
-            columns: List of ColumnData to combine
-            data_type: Type of data being processed
+            combined_df = pd.DataFrame(index=pd.DatetimeIndex([]))
+            column_units = {}
 
-        Returns:
-            Tuple of (combined DataFrame, dict mapping new column names to original units)
-        """
-        # Sort columns to ensure primary comes first
-        sorted_columns = sorted(columns, key=lambda x: (not x.is_primary))
+            # Process primary column first, then others
+            for idx, col_data in enumerate(sorted_columns):
+                new_name = self._generate_column_name(
+                    data_type, col_data.is_primary, idx
+                )
 
-        combined_df = pd.DataFrame(index=pd.DatetimeIndex([]))
-        column_units = {}
+                # Merge with existing data
+                temp_df = col_data.dataframe.copy()
+                temp_df.columns = [new_name]
 
-        # Process primary column first, then others
-        for idx, col_data in enumerate(sorted_columns):
-            new_name = self._generate_column_name(data_type, col_data.is_primary, idx)
+                if combined_df.empty:
+                    combined_df = temp_df
+                else:
+                    combined_df = combined_df.join(temp_df, how="outer")
 
-            # Merge with existing data
-            temp_df = col_data.dataframe.copy()
-            temp_df.columns = [new_name]
+                column_units[new_name] = col_data.unit
 
-            if combined_df.empty:
-                combined_df = temp_df
-            else:
-                combined_df = combined_df.join(temp_df, how="outer")
+            return combined_df, column_units
 
-            column_units[new_name] = col_data.unit
+        except Exception as e:
+            logger.error("Error combining columns: %s", str(e))
+            raise ProcessingError(f"Failed to combine columns: {str(e)}") from e
 
-        return combined_df, column_units
+    @abstractmethod
+    def process_type(self, columns: List[ColumnData]) -> ProcessedTypeData:
+        """Process all data of a specific type."""
+
+
+class DataProcessor:
+    """Main processor class that handles processing of all data types."""
+
+    _type_processors: Dict[DataType, Type[BaseTypeProcessor]] = {}
+
+    def process_tables(
+        self, table_data: Dict[str, TableData], table_configs: Dict[str, TableStructure]
+    ) -> Dict[DataType, ProcessedTypeData]:
+        """Process all tables according to their configuration."""
+        # Organize data by type
+        type_data: Dict[DataType, List[ColumnData]] = {}
+
+        for table_name, data in table_data.items():
+            config = table_configs[table_name]
+
+            # Group columns by data type
+            for column in config.columns:
+                if column.data_type:
+                    # Include insulin meta data with insulin data
+                    target_type = (
+                        DataType.INSULIN
+                        if column.data_type == DataType.INSULIN_META
+                        else column.data_type
+                    )
+
+                    df_subset = data.dataframe[[column.source_name]].copy()
+                    df_subset.columns = ["value"]
+
+                    column_data = ColumnData(
+                        dataframe=df_subset,
+                        unit=column.unit,
+                        config=column,
+                        is_primary=column.is_primary,
+                    )
+
+                    if target_type not in type_data:
+                        type_data[target_type] = []
+
+                    type_data[target_type].append(column_data)
+
+        # Process each data type
+        results = {}
+        for data_type, columns in type_data.items():
+            try:
+                processor = self.get_processor_for_type(data_type)
+                result = processor.process_type(columns)
+
+                if not result.dataframe.empty:
+                    results[data_type] = result
+
+                    col_count = len(columns)
+                    primary_count = sum(1 for c in columns if c.is_primary)
+                    logger.info(
+                        "Processed %s: %d primary and %d secondary columns",
+                        data_type.name,
+                        primary_count,
+                        col_count - primary_count,
+                    )
+
+            except ProcessingError as e:
+                logger.error("Error processing %s: %s", data_type, str(e))
+                continue
+
+        return results
+
+    @classmethod
+    def register_processor(cls, data_type: DataType):
+        """Register a processor class for a specific data type."""
+
+        def wrapper(processor_cls: Type[BaseTypeProcessor]):
+            cls._type_processors[data_type] = processor_cls
+            return processor_cls
+
+        return wrapper
+
+    def get_processor_for_type(self, data_type: DataType) -> BaseTypeProcessor:
+        """Get appropriate processor instance for the data type."""
+        processor_cls = self._type_processors.get(data_type)
+        if processor_cls is None:
+            raise ProcessingError(
+                f"No processor registered for data type: {data_type.value}"
+            )
+        return processor_cls()
