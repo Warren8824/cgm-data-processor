@@ -18,7 +18,7 @@ from src.core.exceptions import (
 )
 from src.file_parser.format_detector import FormatDetectionError, FormatDetector
 from src.file_parser.format_registry import FormatRegistry
-from src.processors.base import DataProcessor
+from src.processors import DataProcessor
 from src.readers.base import BaseReader
 
 logger = logging.getLogger(__name__)
