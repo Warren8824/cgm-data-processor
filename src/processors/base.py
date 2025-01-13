@@ -159,7 +159,7 @@ class DataProcessor:
                     col_count = len(columns)
                     primary_count = sum(1 for c in columns if c.is_primary)
                     logger.info(
-                        "Processed %s: %d primary and %d secondary columns",
+                        "    \u2713 Processed %s: %d primary and %d secondary columns",
                         data_type.name,
                         primary_count,
                         col_count - primary_count,
