@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 from src.core.aligner import Aligner
+from src.core.data_types import DataType
 from src.core.exceptions import (
     DataProcessingError,
     DataValidationError,
@@ -178,8 +179,23 @@ def main():
         results = process_file(file_path)
         display_results(results, args.debug)
 
-        aligned_df = aligner.align(results)
-        print(aligned_df.dataframe.tail(10))
+        # Access CGM data
+        cgm_df = results[DataType.CGM].dataframe
+
+        # Access Insulin data
+        insulin_df = results[DataType.INSULIN].dataframe
+
+        # Access Carbs data
+        carbs_df = results[DataType.CARBS].dataframe
+
+        # Access Notes data
+        notes_df = results[DataType.NOTES].dataframe
+
+        # Created Aligned data
+        aligned = aligner.align(results)
+
+        all_data = [cgm_df, insulin_df, carbs_df, notes_df, aligned.dataframe]
+        print(all_data)
 
     except (
         FileNotFoundError,

@@ -128,6 +128,9 @@ class Aligner:
         processing_notes = []
         aligned_dfs = []
 
+        # Change 'missing' column to clearer name for combined data
+        reference_df.rename(columns={"missing": "missing_cgm"}, inplace=True)
+
         # Always include reference data first
         aligned_dfs.append(reference_df)
         processing_notes.append("Reference timeline established")
