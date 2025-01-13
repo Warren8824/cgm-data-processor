@@ -84,9 +84,6 @@ class NotesProcessor(BaseTypeProcessor):
             processing_notes.append(
                 f"Final dataset contains {len(result_df)} notes entries"
             )
-            processing_notes.append(
-                f"Sample Notes Dataframe: {result_df[col_name].head()}"
-            )
 
             return ProcessedTypeData(
                 dataframe=result_df,

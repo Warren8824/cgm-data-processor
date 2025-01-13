@@ -177,7 +177,6 @@ def main():
 
         results = process_file(file_path)
         display_results(results, args.debug)
-        print(results)
 
     except (
         FileNotFoundError,
