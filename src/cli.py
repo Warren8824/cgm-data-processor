@@ -97,7 +97,7 @@ def display_results(results, debug: bool = False):
         df = processed_data.dataframe
         print(f"\n{'=' * 50}")
         print(f"{data_type.name} Data ({df.shape})")
-        print(processed_data)
+
         for note in processed_data.processing_notes:
             print(f"- {note}")
 
