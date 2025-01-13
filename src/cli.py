@@ -10,6 +10,7 @@ import logging
 import sys
 from pathlib import Path
 
+from src.core.aligner import Aligner
 from src.core.exceptions import (
     DataProcessingError,
     DataValidationError,
@@ -83,8 +84,6 @@ def process_file(file_path: Path):
             )
             if not processed_data:
                 raise ProcessingError("No data could be processed")
-            print("    \u2713 Data Processing Successful.")
-
             return processed_data
 
         except ProcessingError as e:
@@ -96,7 +95,7 @@ def display_results(results, debug: bool = False):
     for data_type, processed_data in results.items():
         df = processed_data.dataframe
         print(f"\n{'=' * 50}")
-        print(f"{data_type.name} Data ({df.shape})")
+        print(f"{data_type.name} Data Processing Successful.    \u2713")
 
         for note in processed_data.processing_notes:
             print(f"- {note}")
@@ -172,11 +171,15 @@ def main():
     setup_logging(args.debug)
 
     try:
+        aligner = Aligner()
         file_path = Path(args.file_path)
         validate_file(file_path)
 
         results = process_file(file_path)
         display_results(results, args.debug)
+
+        aligned_df = aligner.align(results)
+        print(aligned_df.dataframe.tail(10))
 
     except (
         FileNotFoundError,
