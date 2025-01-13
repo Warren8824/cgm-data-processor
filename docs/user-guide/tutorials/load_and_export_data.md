@@ -95,7 +95,7 @@ if project_root not in sys.path:
 # Preprocessing Module - Load, clean and align data
 from src.preprocessing.loading import XDrip
 from src.preprocessing.cleaning import clean_classify_insulin, clean_classify_carbs, clean_glucose
-from core.alignment import align_diabetes_data
+from aligners.cgm import align_diabetes_data
 
 # Analysis Module - Check and display data quality
 from analysis.quality.gaps import analyse_glucose_gaps

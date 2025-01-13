@@ -41,7 +41,7 @@ Tools for creating interactive visualizations.
 ```python
 from preprocessing.loading import XDrip
 from preprocessing.cleaning import clean_glucose, clean_classify_insulin, clean_classify_carbs
-from core.alignment import align_diabetes_data
+from aligners.cgm import align_diabetes_data
 
 # Load data
 data = XDrip('path_to_backup.sqlite')

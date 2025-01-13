@@ -58,7 +58,7 @@ To verify that CGM Data Processor is installed correctly, you can run this simpl
 ```python
 from preprocessing.loading import XDrip
 from preprocessing.cleaning import clean_glucose
-from core.alignment import align_diabetes_data
+from aligners.cgm import align_diabetes_data
 
 print("CGM Data Processor is installed correctly!")
 ```

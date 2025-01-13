@@ -57,7 +57,7 @@ You can export your processed data in multiple formats:
 ```python
 from preprocessing.loading import XDrip
 from preprocessing.cleaning import clean_glucose
-from core.alignment import align_diabetes_data
+from aligners.cgm import align_diabetes_data
 
 # Load and process data
 data = XDrip('xdrip_backup.sqlite')
