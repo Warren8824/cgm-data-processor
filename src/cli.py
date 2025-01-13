@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 from src.core.aligner import Aligner
-from src.core.data_types import DataType
 from src.core.exceptions import (
+    AlignmentError,
     DataProcessingError,
     DataValidationError,
     ProcessingError,
@@ -95,11 +95,7 @@ def display_results(results, debug: bool = False):
     """Display processed data results."""
     for data_type, processed_data in results.items():
         df = processed_data.dataframe
-        print(f"\n{'=' * 50}")
-        print(f"{data_type.name} Data Processing Successful.    \u2713")
-
-        for note in processed_data.processing_notes:
-            print(f"- {note}")
+        print(f"    \u2713 {data_type.name} Data Processing Successful.")
 
         if debug:
             print("\nProcessing Notes:")
@@ -179,23 +175,15 @@ def main():
         results = process_file(file_path)
         display_results(results, args.debug)
 
-        # Access CGM data
-        cgm_df = results[DataType.CGM].dataframe
-
-        # Access Insulin data
-        insulin_df = results[DataType.INSULIN].dataframe
-
-        # Access Carbs data
-        carbs_df = results[DataType.CARBS].dataframe
-
-        # Access Notes data
-        notes_df = results[DataType.NOTES].dataframe
-
         # Created Aligned data
-        aligned = aligner.align(results)
+        print("\u2173 Data Alignment Initialised.")
+        try:
+            aligned = aligner.align(results)
+            print("    \u2713 Data Alignment Successful.")
+            print(aligned.dataframe.shape)
+        except AlignmentError as e:
 
-        all_data = [cgm_df, insulin_df, carbs_df, notes_df, aligned.dataframe]
-        print(all_data)
+            logger.error(str(e))
 
     except (
         FileNotFoundError,
