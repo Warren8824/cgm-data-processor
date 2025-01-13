@@ -93,9 +93,8 @@ def process_file(file_path: Path):
 
 def display_results(results, debug: bool = False):
     """Display processed data results."""
-    for data_type, processed_data in results.items():
+    for _, processed_data in results.items():
         df = processed_data.dataframe
-        print(f"    \u2713 {data_type.name} Data Processing Successful.")
 
         if debug:
             print("\nProcessing Notes:")
