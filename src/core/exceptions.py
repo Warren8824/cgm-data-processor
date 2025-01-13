@@ -63,6 +63,10 @@ class TimestampProcessingError(ProcessingError):
     """Raised when there is a timestamp format issues"""
 
 
+class AlignmentError(ProcessingError):
+    """Raised when there is an error aligning datasets"""
+
+
 class DataExistsError(ProcessingError):
     """Raised when the reader returns no data"""
 
