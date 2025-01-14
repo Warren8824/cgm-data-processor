@@ -1,4 +1,7 @@
-"""SQLite Reader for confirmed configuration with sqlite FileType"""
+"""SQLite Reader for confirmed configuration with sqlite FileType
+
+This module provides SQLite file reading capabilities for the data processing system.
+"""
 
 import logging
 import sys
