@@ -67,7 +67,7 @@ class AlignmentError(ProcessingError):
     """Raised when there is an error aligning datasets"""
 
 
-class DataExistsError(ProcessingError):
+class DataExistsError(FileError):
     """Raised when the reader returns no data"""
 
 

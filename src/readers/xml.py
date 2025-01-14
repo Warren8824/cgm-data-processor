@@ -17,7 +17,7 @@ from src.core.exceptions import (
     DataExistsError,
     DataProcessingError,
     DataValidationError,
-    ProcessingError,
+    ReaderError,
 )
 
 from .base import BaseReader, TableData
@@ -46,9 +46,9 @@ class XMLReader(BaseReader):
                 self._tree = ET.parse(self.file_path)
                 self._root = self._tree.getroot()
             except ET.ParseError as e:
-                raise DataProcessingError(f"Failed to parse XML file: {e}") from e
+                raise DataExistsError(f"Failed to parse XML file: {e}") from e
             except Exception as e:
-                raise DataProcessingError(f"Error reading XML file: {e}") from e
+                raise DataExistsError(f"Error reading XML file: {e}") from e
 
     @staticmethod
     def _extract_value(element: ET.Element, column: str) -> str:
@@ -133,6 +133,6 @@ class XMLReader(BaseReader):
         except DataProcessingError as e:
             logger.error("Processing error: %s", e)
             return None
-        except ProcessingError as e:
+        except ReaderError as e:
             logger.error("Unexpected error processing XML: %s", e)
             return None

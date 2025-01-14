@@ -15,6 +15,7 @@ from src.core.exceptions import (
     DataExistsError,
     DataProcessingError,
     DataValidationError,
+    FileAccessError,
     ProcessingError,
 )
 
@@ -51,7 +52,7 @@ class CSVReader(BaseReader):
                         low_memory=False,  # Prevent mixed type inference warnings
                     )
                 except Exception as e:
-                    raise DataProcessingError(f"Failed to read CSV file: {e}") from e
+                    raise FileAccessError(f"Failed to read CSV file: {e}") from e
 
             if self._data.empty:
                 raise DataExistsError(f"No data found in CSV file {self.file_path}")

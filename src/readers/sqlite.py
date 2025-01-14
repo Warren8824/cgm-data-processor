@@ -16,6 +16,7 @@ from src.core.exceptions import (
     DataExistsError,
     DataProcessingError,
     DataValidationError,
+    ProcessingError,
     ReaderError,
 )
 
@@ -117,7 +118,7 @@ class SQLiteReader(BaseReader):
                 "EmptyDataError processing table %s: %s", table_structure.name, e
             )
             return None
-        except DataProcessingError as e:
+        except ReaderError as e:
             # Catch any unexpected errors
             logger.error(
                 "Unexpected error processing table %s: %s", table_structure.name, e
@@ -208,7 +209,7 @@ if __name__ == "__main__":
             print("\nTreatment Data Descriptive Stats:")
             print(result["Treatments"].describe())
 
-    except DataValidationError as e:
+    except ProcessingError as e:
         logger.error("Unexpected error occurred: %s", str(e))
         if args.debug:
             logger.exception("Debug traceback:")
