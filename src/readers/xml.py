@@ -50,7 +50,8 @@ class XMLReader(BaseReader):
             except Exception as e:
                 raise DataProcessingError(f"Error reading XML file: {e}") from e
 
-    def _extract_value(self, element: ET.Element, column: str) -> str:
+    @staticmethod
+    def _extract_value(element: ET.Element, column: str) -> str:
         """Extract value from XML element, checking both attributes and text.
 
         Args:
