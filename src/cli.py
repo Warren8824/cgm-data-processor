@@ -173,16 +173,21 @@ def main():
 
         results = process_file(file_path)
         display_results(results, args.debug)
+        # Display dataframe shapes
+        for key, item in results.items():
+            print("    ", key.name, " Dataframe Shape: ", item.dataframe.shape)
 
         # Created Aligned data
         print("\u2173 Data Alignment Initialised.")
         try:
             aligned = aligner.align(results)
             print("    \u2713 Data Alignment Successful.")
-            print(aligned.dataframe.shape)
+            print("    Aligned Dataframe Shape: ", aligned.dataframe.shape)
+
         except AlignmentError as e:
 
             logger.error(str(e))
+        print("\u2174 Data Export Initialised.")
 
     except (
         FileNotFoundError,
