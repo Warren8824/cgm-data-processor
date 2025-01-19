@@ -73,6 +73,7 @@ class ColumnMapping:
 ```
 
 **Key Concepts:**
+
 - `source_name`: Original column name in the source data
 - `data_type`: Type of data contained in the column
 - `unit`: Unit of measurement (if applicable)
@@ -92,6 +93,7 @@ class TableStructure:
 ```
 
 **Validation Methods:**
+
 - `validate_columns()`: Ensures at least one column is defined
 - `validate_unique_source_names()`: Checks for duplicate column names
 - `validate_primary_columns()`: Ensures each data type has at most one primary column
@@ -109,6 +111,7 @@ class FileConfig:
 ```
 
 **Validation Rules:**
+
 - Must have at least one table defined
 - CSV files are limited to one table with an empty name
 - File patterns must match supported file types
@@ -195,24 +198,28 @@ XDRIP_SQLITE_FORMAT = DeviceFormat(
 ## Best Practices
 
 1. **Column Requirements**
-   - Use `REQUIRED_WITH_DATA` for essential numeric data
-   - Use `REQUIRED_NULLABLE` for optional metadata
-   - Use `CONFIRMATION_ONLY` for format validation columns
+
+     - Use `REQUIRED_WITH_DATA` for essential numeric data
+     - Use `REQUIRED_NULLABLE` for optional metadata
+     - Use `CONFIRMATION_ONLY` for format validation columns
 
 2. **Primary Columns**
-   - Each data type should have exactly one primary column
-   - Secondary columns can provide additional context or raw data
-   - Set `is_primary=False` for supporting data columns
+
+     - Each data type should have exactly one primary column
+     - Secondary columns can provide additional context or raw data
+     - Set `is_primary=False` for supporting data columns
 
 3. **Units**
-   - Always specify units for numeric data
-   - Match units to the source data format
-   - Unit conversion happens during processing
+
+     - Always specify units for numeric data
+     - Match units to the source data format
+     - Unit conversion happens during processing
 
 4. **Validation**
-   - All data structures perform validation on initialization
-   - Handle validation errors appropriately
-   - Use consistent naming patterns across formats
+
+     - All data structures perform validation on initialization
+     - Handle validation errors appropriately
+     - Use consistent naming patterns across formats
 
 ## Error Handling
 
