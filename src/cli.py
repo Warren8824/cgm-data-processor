@@ -176,14 +176,14 @@ def main():
         display_results(results, args.debug)
         # Display dataframe shapes
         for key, item in results.items():
-            print("    ", key.name, " Dataframe Shape: ", item.dataframe.shape)
+            print("     ", key.name, " Dataframe Shape: ", item.dataframe.shape)
 
         # Created Aligned data
         print("\u2173 Data Alignment Initialised.")
         try:
             aligned = aligner.align(results)
             print("    \u2713 Data Alignment Successful.")
-            print("    Aligned Dataframe Shape: ", aligned.dataframe.shape)
+            print("     Aligned Dataframe Shape: ", aligned.dataframe.shape)
 
         except AlignmentError as e:
 
