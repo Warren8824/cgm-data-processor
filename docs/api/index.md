@@ -146,7 +146,7 @@ class CGMProcessor(BaseTypeProcessor):
 
 Explore specific components in detail:
 
-- [Data Types Reference](api/core/data-types.md) - Core data structures and types
-- [Format Registry](api/core/format-registry.md) - Format management and detection
-- [Data Processing](api/processing/index.md) - Data processing system
-- [Error Handling](api/core/exceptions.md) - Complete exception hierarchy
+- [Data Types Reference](core/data-types.md) - Core data structures and types
+- [Format Registry](core/format-registry.md) - Format management and detection
+- [Data Processing](processing/index.md) - Data processing system
+- [Error Handling](core/exceptions.md) - Complete exception hierarchy
