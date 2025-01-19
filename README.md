@@ -172,10 +172,10 @@ Key documentation sections:
 - [Getting Started](https://Warren8824.github.io/cgm-data-processor/getting-started/)
 - [User Guide](https://warren8824.github.io/cgm-data-processor/user-guide/)
 - [API Reference](https://warren8824.github.io/cgm-data-processor/api)
-- [Developer Guide](https://warren8824.github.io/cgm-data-processor/dev-guide/index.md)
+- [Developer Guide](https://warren8824.github.io/cgm-data-processor/dev-guide/)
 
 ## Project Status
 
 This project is under active development. The core data processing and alignment features are implemented, with export functionality coming soon. The first PyPI release will be available once the export module is complete.
 
-For the latest updates, please check the [Changelog](docs/about/changelog.md).
+For the latest updates, please check the [Changelog](https://warren8824.github.io/cgm-data-processor/about/changelog.md).
