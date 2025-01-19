@@ -60,6 +60,7 @@ def process_file(file_path: Path):
     if not detected_format:
         raise FormatDetectionError(f"No valid format detected: {error}")
     print("    \u2713 Format Detection Successful.")
+    print(f"      Currently processing file with {detected_format.name} Format. \n")
 
     # Get appropriate reader and process data
     print("\u2171 Data Reading Initialised.")
@@ -68,7 +69,7 @@ def process_file(file_path: Path):
         table_data = reader.read_all_tables()
         if not table_data:
             raise DataProcessingError("No valid data found in file")
-        print("    \u2713 Data Reading Successful.")
+        print("    \u2713 Data Reading Successful. \n")
 
         # Initialize data processor
         print("\u2172 Data Processing Initialised.")
@@ -179,11 +180,11 @@ def main():
             print("     ", key.name, " Dataframe Shape: ", item.dataframe.shape)
 
         # Created Aligned data
-        print("\u2173 Data Alignment Initialised.")
+        print("\n\u2173 Data Alignment Initialised.")
         try:
             aligned = aligner.align(results)
             print("    \u2713 Data Alignment Successful.")
-            print("      Aligned Dataframe Shape: ", aligned.dataframe.shape)
+            print("      Aligned Dataframe Shape: ", aligned.dataframe.shape, "\n")
 
         except AlignmentError as e:
 
