@@ -130,70 +130,70 @@ class DeviceFormat:
 ## Usage Example
 
 Here's a complete example of defining an XDrip+ SQLite backup format:
-
-```python
-from src.core.data_types import (
-    ColumnMapping,
-    ColumnRequirement,
-    DataType,
-    DeviceFormat,
-    FileConfig,
-    FileType,
-    TableStructure,
-    Unit,
-)
-
-XDRIP_SQLITE_FORMAT = DeviceFormat(
-    name="xdrip_sqlite",
-    files=[
-        FileConfig(
-            name_pattern="*.sqlite",
-            file_type=FileType.SQLITE,
-            tables=[
-                # BgReadings table with CGM data
-                TableStructure(
-                    name="BgReadings",
-                    timestamp_column="timestamp",
-                    columns=[
-                        ColumnMapping(
-                            source_name="calculated_value",
-                            data_type=DataType.CGM,
-                            unit=Unit.MGDL,
-                        ),
-                        ColumnMapping(
-                            source_name="raw_data",
-                            data_type=DataType.CGM,
-                            is_primary=False,
-                        ),
-                    ],
-                ),
-                # Treatments table with insulin, carbs, and notes
-                TableStructure(
-                    name="Treatments",
-                    timestamp_column="timestamp",
-                    columns=[
-                        ColumnMapping(
-                            source_name="insulin",
-                            data_type=DataType.INSULIN,
-                            unit=Unit.UNITS,
-                        ),
-                        ColumnMapping(
-                            source_name="carbs",
-                            data_type=DataType.CARBS,
-                            unit=Unit.GRAMS,
-                        ),
-                        ColumnMapping(
-                            source_name="notes",
-                            data_type=DataType.NOTES,
-                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
-                        ),
-                    ],
-                ),
-            ],
-        )
-    ],
-)
-```
+???+ example "Defining a format Example"
+    ```python
+    from src.core.data_types import (
+        ColumnMapping,
+        ColumnRequirement,
+        DataType,
+        DeviceFormat,
+        FileConfig,
+        FileType,
+        TableStructure,
+        Unit,
+    )
+    
+    XDRIP_SQLITE_FORMAT = DeviceFormat(
+        name="xdrip_sqlite",
+        files=[
+            FileConfig(
+                name_pattern="*.sqlite",
+                file_type=FileType.SQLITE,
+                tables=[
+                    # BgReadings table with CGM data
+                    TableStructure(
+                        name="BgReadings",
+                        timestamp_column="timestamp",
+                        columns=[
+                            ColumnMapping(
+                                source_name="calculated_value",
+                                data_type=DataType.CGM,
+                                unit=Unit.MGDL,
+                            ),
+                            ColumnMapping(
+                                source_name="raw_data",
+                                data_type=DataType.CGM,
+                                is_primary=False,
+                            ),
+                        ],
+                    ),
+                    # Treatments table with insulin, carbs, and notes
+                    TableStructure(
+                        name="Treatments",
+                        timestamp_column="timestamp",
+                        columns=[
+                            ColumnMapping(
+                                source_name="insulin",
+                                data_type=DataType.INSULIN,
+                                unit=Unit.UNITS,
+                            ),
+                            ColumnMapping(
+                                source_name="carbs",
+                                data_type=DataType.CARBS,
+                                unit=Unit.GRAMS,
+                            ),
+                            ColumnMapping(
+                                source_name="notes",
+                                data_type=DataType.NOTES,
+                                requirement=ColumnRequirement.REQUIRED_NULLABLE,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+        ],
+    )
+    ```
 
 ## Best Practices
 
@@ -224,11 +224,11 @@ XDRIP_SQLITE_FORMAT = DeviceFormat(
 ## Error Handling
 
 Data type-related errors are typically raised as `FormatValidationError` with detailed error messages and context:
-
-```python
-try:
-    device_format = DeviceFormat(...)
-except FormatValidationError as e:
-    print(f"Validation failed: {str(e)}")
-    print(f"Details: {e.details}")
-```
+???+ example "Error Handling Example"
+    ```python
+    try:
+        device_format = DeviceFormat(...)
+    except FormatValidationError as e:
+        print(f"Validation failed: {str(e)}")
+        print(f"Details: {e.details}")
+    ```
