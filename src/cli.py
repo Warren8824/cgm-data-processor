@@ -183,7 +183,7 @@ def main():
         try:
             aligned = aligner.align(results)
             print("    \u2713 Data Alignment Successful.")
-            print("     Aligned Dataframe Shape: ", aligned.dataframe.shape)
+            print("      Aligned Dataframe Shape: ", aligned.dataframe.shape)
 
         except AlignmentError as e:
 
