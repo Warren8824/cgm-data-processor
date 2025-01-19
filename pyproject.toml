@@ -1,20 +1,23 @@
-[tool.poetry]
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
 name = "cgm-data-processor"
 version = "0.1.0"
 description = "Python package for processing CGM, insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer. Data Analysis Tool Only. Not intended as a medical device."
-authors = ["Warren8824 <warrenbebbington88@gmail.com>"]
-license = "MIT"
+authors = [
+    {name = "Warren8824", email = "warrenbebbington88@gmail.com"}
+]
+license = {text = "MIT"}
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-# Main Dependencies
-numpy = "^2.1.0"
-pandas = "^2.2.0"
-SQLAlchemy = "^2.0.0"
-plotly = "^5.0.0"
-kaleido = "^0.2.1"
-
+requires-python = "^3.10"
+dependencies = [
+    "numpy>=2.1.0",
+    "pandas>=2.2.0",
+    "SQLAlchemy>=2.0.0",
+    "plotly>=5.0.0",
+]
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
@@ -23,10 +26,6 @@ pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 pre-commit = "^4.0.1"
 mkdocs = "^1.5.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
