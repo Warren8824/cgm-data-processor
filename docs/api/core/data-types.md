@@ -1,12 +1,28 @@
 # Data Types API Reference
 
-The `data_types` module defines the core data structures and types used throughout the CGM Data Processor. It provides a comprehensive type system for handling various kinds of diabetes-related data, file formats, and measurement units.
+The `core.data_types` module provides the foundational type system for handling diabetes device data. It defines a comprehensive set of data structures and enums that enable type-safe processing of various diabetes-related data formats.
 
-## Enums
+## Core Enums
+
+### DataType
+
+Defines the fundamental types of diabetes data that can be processed.
+
+```python
+from src.core.data_types import DataType
+
+class DataType(Enum):
+    CGM = auto()         # Continuous glucose monitoring readings
+    BGM = auto()         # Blood glucose meter readings
+    INSULIN = auto()     # Insulin doses
+    INSULIN_META = auto() # Insulin metadata (e.g., brand, type)
+    CARBS = auto()       # Carbohydrate intake
+    NOTES = auto()       # Text notes/comments
+```
 
 ### FileType
 
-Defines supported file types for diabetes device data exports.
+Specifies supported file formats for data imports.
 
 ```python
 class FileType(Enum):
@@ -16,36 +32,21 @@ class FileType(Enum):
     XML = "xml"
 ```
 
-### DataType
+### Unit
 
-Defines core diabetes data types supported by the processor.
-
-```python
-class DataType(Enum):
-    CGM = auto()        # Continuous glucose monitoring data
-    BGM = auto()        # Blood glucose meter readings
-    INSULIN = auto()    # Insulin doses
-    INSULIN_META = auto() # Insulin metadata (e.g., brand)
-    CARBS = auto()      # Carbohydrate intake
-    NOTES = auto()      # Text notes/comments
-```
-
-### TimestampType
-
-Defines common timestamp formats to ensure correct conversion.
+Defines standard units of measurement for diabetes data.
 
 ```python
-class TimestampType(Enum):
-    UNIX_SECONDS = "unix_seconds"
-    UNIX_MILLISECONDS = "unix_milliseconds"
-    UNIX_MICROSECONDS = "unix_microseconds"
-    ISO_8601 = "iso_8601"
-    UNKNOWN = "unknown"
+class Unit(Enum):
+    MGDL = "mg/dL"    # Blood glucose in milligrams per deciliter
+    MMOL = "mmol/L"   # Blood glucose in millimoles per liter
+    UNITS = "U"       # Insulin units
+    GRAMS = "g"       # Carbohydrates in grams
 ```
 
 ### ColumnRequirement
 
-Defines how columns should be validated and whether data reading is required.
+Specifies validation and data requirements for columns.
 
 ```python
 class ColumnRequirement(Enum):
@@ -55,23 +56,11 @@ class ColumnRequirement(Enum):
     OPTIONAL = auto()            # Column may or may not exist
 ```
 
-### Unit
-
-Defines supported units of measurement.
-
-```python
-class Unit(Enum):
-    MGDL = "mg/dL"    # Blood glucose in mg/dL
-    MMOL = "mmol/L"   # Blood glucose in mmol/L
-    UNITS = "U"       # Insulin units
-    GRAMS = "g"       # Carbohydrates in grams
-```
-
-## Data Classes
+## Data Structures
 
 ### ColumnMapping
 
-Maps source columns to standardized data types.
+Maps source data columns to standardized internal representations.
 
 ```python
 @dataclass
@@ -83,34 +72,16 @@ class ColumnMapping:
     is_primary: bool = True
 ```
 
-**Parameters:**
-- `source_name`: Original column name in the data source
-- `data_type`: Type of data this column contains (optional)
-- `unit`: Unit of measurement (optional)
-- `requirement`: Type of requirement (defaults to REQUIRED_WITH_DATA)
-- `is_primary`: Whether this is the primary column (defaults to True)
-
-**Example:**
-```python
-# Define a glucose column mapping
-glucose_column = ColumnMapping(
-    source_name="calculated_value",
-    data_type=DataType.CGM,
-    unit=Unit.MGDL
-)
-
-# Define a secondary raw data column
-raw_glucose = ColumnMapping(
-    source_name="raw_data",
-    data_type=DataType.CGM,
-    requirement=ColumnRequirement.REQUIRED_NULLABLE,
-    is_primary=False
-)
-```
+**Key Concepts:**
+- `source_name`: Original column name in the source data
+- `data_type`: Type of data contained in the column
+- `unit`: Unit of measurement (if applicable)
+- `requirement`: Validation requirements for the column
+- `is_primary`: Indicates whether this is the primary column for its data type
 
 ### TableStructure
 
-Defines the structure of a data table within a file.
+Defines the structure of a data table, including its columns and timestamp handling.
 
 ```python
 @dataclass
@@ -120,40 +91,14 @@ class TableStructure:
     columns: List[ColumnMapping]
 ```
 
-**Parameters:**
-- `name`: Table name in the data source (empty string for CSV files)
-- `timestamp_column`: Name of the timestamp column
-- `columns`: List of column mappings
-
-**Methods:**
-- `validate_columns()`: Ensures table has at least one column defined
-- `validate_unique_source_names()`: Ensures all column names are unique
+**Validation Methods:**
+- `validate_columns()`: Ensures at least one column is defined
+- `validate_unique_source_names()`: Checks for duplicate column names
 - `validate_primary_columns()`: Ensures each data type has at most one primary column
-
-**Example:**
-```python
-bgreadings = TableStructure(
-    name="bgreadings",
-    timestamp_column="timestamp",
-    columns=[
-        ColumnMapping(
-            source_name="calculated_value",
-            data_type=DataType.CGM,
-            unit=Unit.MGDL
-        ),
-        ColumnMapping(
-            source_name="raw_data",
-            data_type=DataType.CGM,
-            requirement=ColumnRequirement.REQUIRED_NULLABLE,
-            is_primary=False
-        )
-    ]
-)
-```
 
 ### FileConfig
 
-Configuration for a specific file in a device format.
+Specifies the configuration for a single file within a device format.
 
 ```python
 @dataclass
@@ -163,29 +108,14 @@ class FileConfig:
     tables: List[TableStructure]
 ```
 
-**Parameters:**
-- `name_pattern`: Pattern to match filename (e.g., "*.sqlite", "glucose.csv")
-- `file_type`: Type of the data file
-- `tables`: List of table structures in the file
-
-**Validation:**
-- Ensures at least one table is defined
-- For CSV files:
-  - Only one table structure allowed
-  - Table name must be an empty string
-
-**Example:**
-```python
-sqlite_file = FileConfig(
-    name_pattern="*.sqlite",
-    file_type=FileType.SQLITE,
-    tables=[bgreadings]  # TableStructure from previous example
-)
-```
+**Validation Rules:**
+- Must have at least one table defined
+- CSV files are limited to one table with an empty name
+- File patterns must match supported file types
 
 ### DeviceFormat
 
-Complete format specification for a diabetes device data export.
+Defines the complete format specification for a diabetes device data export.
 
 ```python
 @dataclass
@@ -194,28 +124,104 @@ class DeviceFormat:
     files: List[FileConfig]
 ```
 
-**Parameters:**
-- `name`: Name of the device/format
-- `files`: List of file configurations
+## Usage Example
 
-**Methods:**
-- `__str__`: Returns a string representation including available data types
+Here's a complete example of defining an XDrip+ SQLite backup format:
 
-**Example:**
 ```python
-xdrip_format = DeviceFormat(
+from src.core.data_types import (
+    ColumnMapping,
+    ColumnRequirement,
+    DataType,
+    DeviceFormat,
+    FileConfig,
+    FileType,
+    TableStructure,
+    Unit,
+)
+
+XDRIP_SQLITE_FORMAT = DeviceFormat(
     name="xdrip_sqlite",
-    files=[sqlite_file]  # FileConfig from previous example
+    files=[
+        FileConfig(
+            name_pattern="*.sqlite",
+            file_type=FileType.SQLITE,
+            tables=[
+                # BgReadings table with CGM data
+                TableStructure(
+                    name="BgReadings",
+                    timestamp_column="timestamp",
+                    columns=[
+                        ColumnMapping(
+                            source_name="calculated_value",
+                            data_type=DataType.CGM,
+                            unit=Unit.MGDL,
+                        ),
+                        ColumnMapping(
+                            source_name="raw_data",
+                            data_type=DataType.CGM,
+                            is_primary=False,
+                        ),
+                    ],
+                ),
+                # Treatments table with insulin, carbs, and notes
+                TableStructure(
+                    name="Treatments",
+                    timestamp_column="timestamp",
+                    columns=[
+                        ColumnMapping(
+                            source_name="insulin",
+                            data_type=DataType.INSULIN,
+                            unit=Unit.UNITS,
+                        ),
+                        ColumnMapping(
+                            source_name="carbs",
+                            data_type=DataType.CARBS,
+                            unit=Unit.GRAMS,
+                        ),
+                        ColumnMapping(
+                            source_name="notes",
+                            data_type=DataType.NOTES,
+                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
+                        ),
+                    ],
+                ),
+            ],
+        )
+    ],
 )
 ```
 
-## Usage Notes
+## Best Practices
 
-1. All data structures include validation logic that runs during initialization
-2. Validation ensures:
-   - Required fields are present
-   - Data consistency across related fields
-   - Format-specific rules are followed
-3. CSV files have special validation rules due to their single-table nature
-4. Primary/secondary column designation allows for both calculated and raw data handling
-5. The type system supports future expansion through enum extensions
+1. **Column Requirements**
+   - Use `REQUIRED_WITH_DATA` for essential numeric data
+   - Use `REQUIRED_NULLABLE` for optional metadata
+   - Use `CONFIRMATION_ONLY` for format validation columns
+
+2. **Primary Columns**
+   - Each data type should have exactly one primary column
+   - Secondary columns can provide additional context or raw data
+   - Set `is_primary=False` for supporting data columns
+
+3. **Units**
+   - Always specify units for numeric data
+   - Match units to the source data format
+   - Unit conversion happens during processing
+
+4. **Validation**
+   - All data structures perform validation on initialization
+   - Handle validation errors appropriately
+   - Use consistent naming patterns across formats
+
+## Error Handling
+
+Data type-related errors are typically raised as `FormatValidationError` with detailed error messages and context:
+
+```python
+try:
+    device_format = DeviceFormat(...)
+except FormatValidationError as e:
+    print(f"Validation failed: {str(e)}")
+    print(f"Details: {e.details}")
+```
