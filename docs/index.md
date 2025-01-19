@@ -73,7 +73,7 @@ The project is under active development. Current focus areas:
 
 - [Getting Started Guide](getting-started/index.md)
 - [Supported Formats](user-guide/supported-formats/index.md)
-- [API Reference](api-reference/index.md)
+- [API Reference](api/index.md)
 - [Development Guide](development/index.md)
 
 

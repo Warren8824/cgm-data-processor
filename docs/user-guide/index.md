@@ -96,7 +96,7 @@ dashboard = create_gap_dashboard(gaps_data)
 
 ## Need Help?
 
-- Check the [API Reference](../api-reference/index.md) for detailed function documentation
+- Check the [API Reference](../api/index.md) for detailed function documentation
 - Review [Example Notebooks](tutorials/load_and_export_data.md) for practical guides
 - Submit issues on [GitHub](https://github.com/Warren8824/cgm-data-processor/issues)
 
