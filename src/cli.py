@@ -15,6 +15,7 @@ from src.core.exceptions import (
     AlignmentError,
     DataProcessingError,
     DataValidationError,
+    FileAccessError,
     ProcessingError,
     ReaderError,
 )
@@ -190,7 +191,7 @@ def main():
         print("\u2174 Data Export Initialised.")
 
     except (
-        FileNotFoundError,
+        FileAccessError,
         ValueError,
         FormatDetectionError,
         DataProcessingError,
