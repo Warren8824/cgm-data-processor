@@ -50,6 +50,8 @@ markdown_extensions:
       use_pygments: true
       auto_title: false
   - admonition
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - pymdownx.details  # This is needed for the ??? expandable sections
   - tables
