@@ -1,137 +1,181 @@
-# CGM Data Processing Tool
+# CGM Data Processor
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://Warren8824.github.io/cgm-data-processor/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-A versatile Python tool designed to standardize and analyze Continuous Glucose Monitoring (CGM) data from various sources. Currently compatible with XDrip+ SQLite backups, it features a robust framework with plans to support additional CGM platforms in the future.
+A Python package for processing and analyzing diabetes device data, providing robust data alignment, gap detection, and quality assessment capabilities. Built by a T1D developer to standardize diabetes data analysis.
+
+> ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
 
 ## Features
 
-- Standardizes CGM data into a consistent 5-minute interval format
-- Handles data cleaning and validation
-- Integrates glucose readings with insulin and carbohydrate records
-- Provides comprehensive gap analysis and quality metrics
-- Supports both mg/dL and mmol/L units
-- Intelligent handling of missing data with configurable interpolation
-- Interactive quality assessment dashboards
+- **Automatic Format Detection**: Intelligently identifies and processes data from:
+  - Dexcom CGM systems
+  - Libre CGM systems
+  - XDrip+ data exports
+  
+- **Smart Data Processing**:
+  - CGM data cleaning and gap detection
+  - Insulin dose classification (basal/bolus)
+  - Carbohydrate intake normalization
+  - Automated timestamp alignment
 
-Check out our [Full Documentation](https://warren8824.github.io/cgm-data-processor/)
+- **Robust Validation**:
+  - Format-specific validation rules
+  - Data quality assessment
+  - Unit conversion and verification
+  - Gap detection and reporting
 
-![cgm_quality_dashboard](https://github.com/Warren8824/cgm-data-processor/blob/main/notebooks%2Fexamples%2Fimg%2Fgaps_dashboard.png)
+- **Extensible Architecture**:
+  - Easy to add new device formats
+  - Plugin system for data processors
+  - Flexible output formatting
 
-## Development Setup
-
-This project uses Poetry for dependency management and includes several development tools for code quality.
+## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
-- Poetry (Python package manager)
 
-### Installation
+- Python 3.10 or higher
+- Poetry (recommended) or pip
 
-1. Install Poetry:
+### Using Poetry (Recommended)
+
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
-
-2. Clone the repository:
-```bash
+# Clone the repository
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
-```
 
-3. Install dependencies:
-```bash
+# Install dependencies
 poetry install
+
+# For development dependencies
+poetry install --with dev
 ```
 
-4. Set up pre-commit hooks:
-```bash
-poetry run pre-commit install
-```
-
-### Development Tools
-
-This project uses several tools to maintain code quality:
-
-- **Poetry**: Dependency management and packaging
-- **Black**: Code formatting
-- **Pylint**: Code linting
-- **pytest**: Testing framework
-- **pre-commit**: Git hooks for code quality checks
-
-### Running Tests
+### Using pip
 
 ```bash
-poetry run pytest
+# Clone the repository
+git clone https://github.com/Warren8824/cgm-data-processor.git
+cd cgm-data-processor
+
+# Install dependencies
+pip install -r requirements.txt
+
+# For development
+pip install -r requirements-dev.txt
 ```
-
-## Project Structure
-
-[Note: This section will be updated as the modular structure is implemented]
 
 ## Quick Start
 
-[Note: Import paths will be updated during refactoring]
-
 ```python
-# Example code will be updated with new module structure
+from pathlib import Path
+from cgm_data_processor import DataProcessor
+
+# Process a single file
+file_path = Path("my_cgm_data.sqlite")
+processor = DataProcessor()
+results = processor.process_file(file_path)
+
+# Access processed data
+cgm_data = results.get(DataType.CGM)
+insulin_data = results.get(DataType.INSULIN)
 ```
 
-## Documentation
+## Development
 
-The project is currently undergoing restructuring to improve modularity and extensibility. Documentation will be updated to reflect the new structure as it's implemented.
+### Setting Up Development Environment
 
-## Contributing
+```bash
+# Install development dependencies
+poetry install --with dev
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+# Install pre-commit hooks
+pre-commit install
+```
 
-### Development Workflow
+### Code Style
 
-1. Create a new branch for your feature/fix
-2. Add unit tests for your added functionality
-3. Ensure all tests pass
-4. Format code with Black: `poetry run black .`
-5. Check linting with Pylint: `poetry run pylint src tests`
-6. Submit a Pull Request
+This project uses:
+- Black for code formatting
+- isort for import sorting
+- pylint for linting
+
+```bash
+# Format code
+poetry run black .
+poetry run isort .
+
+# Run linting
+poetry run pylint src/
+```
+
+### Documentation
+
+The documentation is built using MkDocs with Material theme:
+
+```bash
+# Install documentation dependencies
+poetry install --with dev
+
+# Serve documentation locally
+poetry run mkdocs serve
+
+# Build documentation
+poetry run mkdocs build
+```
 
 ## Roadmap
 
-- [x] Initial setup for XDrip+ SQLite backups
-- [x] Setup development tools (Poetry, Black, Pylint)
-- [ ] Implement test suite
-- [ ] Complete modular restructuring
-- [ ] Support for additional CGM platforms
-- [ ] Advanced meal response analysis
-- [ ] Machine learning integration
-- [ ] Web interface
-- [ ] API development
+- [ ] Add export module with support for:
+  - CSV exports
+  - SQLite database
+  - Parquet files
+  - Monthly/yearly data aggregation
+- [ ] Comprehensive test suite
+- [ ] CI/CD pipeline with GitHub Actions
+- [ ] Additional device format support
+- [ ] Batch processing capabilities
+- [ ] Extended health data type support
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](docs/development/contributing.md) for details.
+
+### Development Process
+
+1. Fork the repository
+2. Create a feature branch
+3. Write your changes
+4. Write tests that prove your changes work
+5. Run code formatting
+   ```bash
+   poetry run black .
+   poetry run isort .
+   ```
+6. Push your changes
+7. Submit a pull request
 
 ## License
 
-[MIT] - See [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Citation
+## Documentation
 
-If you use this tool in your research, please cite:
+Full documentation is available at [GitHub Pages](https://Warren8824.github.io/cgm-data-processor/).
 
-```bibtex
-[Citation details to be added]
-```
-
-## Support
-
-- Submit issues through the [Issue Tracker](link-to-issues)
-- Join our [Discussion Forum](link-to-discussions)
-- Email: [support email]
-
-## Acknowledgments
-
-- XDrip+ development team
-- [Additional acknowledgments]
+Key documentation sections:
+- [Getting Started](docs/getting-started/index.md)
+- [User Guide](docs/user-guide/index.md)
+- [API Reference](docs/api/index.md)
+- [Developer Guide](docs/dev-guide/index.md)
 
 ## Project Status
 
-This project is in active development. Current version: [version number]
+This project is under active development. The core data processing and alignment features are implemented, with export functionality coming soon. The first PyPI release will be available once the export module is complete.
 
----
+For the latest updates, please check the [Changelog](docs/about/changelog.md).
