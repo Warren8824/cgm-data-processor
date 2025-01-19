@@ -178,4 +178,4 @@ Key documentation sections:
 
 This project is under active development. The core data processing and alignment features are implemented, with export functionality coming soon. The first PyPI release will be available once the export module is complete.
 
-For the latest updates, please check the [Changelog](https://warren8824.github.io/cgm-data-processor/about/changelog.md).
+For the latest updates, please check the [Changelog](https://warren8824.github.io/cgm-data-processor/about/changelog/) .
