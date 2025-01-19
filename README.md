@@ -169,10 +169,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Full documentation is available at [GitHub Pages](https://Warren8824.github.io/cgm-data-processor/).
 
 Key documentation sections:
-- [Getting Started](docs/getting-started/index.md)
-- [User Guide](docs/user-guide/index.md)
-- [API Reference](docs/api/index.md)
-- [Developer Guide](docs/dev-guide/index.md)
+- [Getting Started](https://Warren8824.github.io/cgm-data-processor/getting-started/)
+- [User Guide](https://warren8824.github.io/cgm-data-processor/user-guide/)
+- [API Reference](https://warren8824.github.io/cgm-data-processor/api)
+- [Developer Guide](https://warren8824.github.io/cgm-data-processor/dev-guide/index.md)
 
 ## Project Status
 
