@@ -1,0 +1,66 @@
+"""XDrip+ SQLite backup format definition"""
+
+from src.core.data_types import (
+    ColumnMapping,
+    ColumnRequirement,
+    DataType,
+    DeviceFormat,
+    FileConfig,
+    FileType,
+    TableStructure,
+    Unit,
+)
+
+XDRIP_SQLITE_FORMAT = DeviceFormat(
+    name="xdrip_sqlite",
+    files=[
+        FileConfig(
+            name_pattern="*.sqlite",
+            file_type=FileType.SQLITE,
+            tables=[
+                TableStructure(
+                    name="BgReadings",
+                    timestamp_column="timestamp",
+                    columns=[
+                        ColumnMapping(
+                            source_name="calculated_value",
+                            data_type=DataType.CGM,
+                            unit=Unit.MGDL,
+                        ),
+                        ColumnMapping(
+                            source_name="raw_data",
+                            data_type=DataType.CGM,
+                            is_primary=False,
+                        ),
+                    ],
+                ),
+                TableStructure(
+                    name="Treatments",
+                    timestamp_column="timestamp",
+                    columns=[
+                        ColumnMapping(
+                            source_name="insulin",
+                            data_type=DataType.INSULIN,
+                            unit=Unit.UNITS,
+                        ),
+                        ColumnMapping(
+                            source_name="insulinJSON",
+                            data_type=DataType.INSULIN_META,
+                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
+                        ),
+                        ColumnMapping(
+                            source_name="carbs",
+                            data_type=DataType.CARBS,
+                            unit=Unit.GRAMS,
+                        ),
+                        ColumnMapping(
+                            source_name="notes",
+                            data_type=DataType.NOTES,
+                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
+                        ),
+                    ],
+                ),
+            ],
+        )
+    ],
+)

@@ -1,0 +1,48 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "cgm-data-processor"
+version = "0.1.0"
+description = "Python package for processing CGM, insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer. Data Analysis Tool Only. Not intended as a medical device."
+authors = [
+    {name = "Warren8824", email = "warrenbebbington88@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = "^3.10"
+dependencies = [
+    "numpy>=2.1.0",
+    "pandas>=2.2.0",
+    "SQLAlchemy>=2.0.0",
+    "plotly>=5.0.0",
+]
+
+[tool.poetry]
+packages = [
+    {include = "src"}
+]
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+pylint = "^3.3.3"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pre-commit = "^4.0.1"
+markdown = ">=3.3.7,<3.8.0"
+html5lib = ">=1.1"
+mkdocs = ">=1.4.3,<2.0.0"
+mkdocs-material = ">=9.1.0,<10.0.0"
+mkdocstrings = {version = ">=0.22.0", extras = ["python"]}
+mkdocs-git-revision-date-localized-plugin = "^1.3.0"
+mkdocs-minify-plugin = "^0.8.0"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88

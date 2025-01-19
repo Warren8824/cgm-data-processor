@@ -50,6 +50,8 @@ markdown_extensions:
       use_pygments: true
       auto_title: false
   - admonition
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - pymdownx.details  # This is needed for the ??? expandable sections
   - tables
@@ -58,31 +60,66 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+
   - Getting Started:
-    - Installation: installation/index.md
-    - Configuration: installation/configuration.md
-    - Requirements: installation/requirements.md
+    - Overview: getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Command Line Usage: getting-started/cli-usage.md
+
   - User Guide:
     - Overview: user-guide/index.md
-    - Tutorials:
-      - Loading and Exporting Data: user-guide/tutorials/load_and_export_data.md
-    - Concepts:
-      - Data Processing Pipeline: user-guide/concepts/processing_pipeline.md
-      - Gap Analysis: user-guide/concepts/gap_analysis.md
+    - Understanding Data Types:
+      - Overview: user-guide/data-types/index.md
+      - CGM Data: user-guide/data-types/cgm.md
+      - Insulin Data: user-guide/data-types/insulin.md
+      - Carbohydrate Data: user-guide/data-types/carbs.md
+      - Notes & Events: user-guide/data-types/notes.md
+    - Supported Devices:
+      - Overview: user-guide/devices/index.md
+      - Dexcom: user-guide/devices/dexcom.md
+      - Libre: user-guide/devices/libre.md
+      - XDrip+: user-guide/devices/xdrip.md
+    - Data Processing:
+      - Overview: user-guide/processing/index.md
+      - Data Alignment: user-guide/processing/alignment.md
+      - Data Validation: user-guide/processing/validation.md
+      - Error Handling: user-guide/processing/errors.md
+
   - API Reference:
     - Overview: api/index.md
-    - Preprocessing:
-      - Data Loading: api/preprocessing/loading.md
-      - Data Cleaning: api/preprocessing/cleaning.md
-      - Data Alignment: api/preprocessing/alignment.md
-    - Analysis:
-      - CGM Gap Analysis: api/analysis/gaps.md
-    - Visualization:
-      - Gap Analysis Dashboard: api/visualisation/gap_dashboard.md
-    - Complete Reference: api/reference.md
-  - Development:
-    - Contributing: development/contributing.md
-    - Roadmap: development/roadmap.md
+    - Core Components:
+      - Data Types: api/core/data-types.md
+      - Format Registry: api/core/format-registry.md
+      - Data Alignment: api/core/alignment.md
+      - Exceptions: api/core/exceptions.md
+    - File Parsing:
+      - Overview: api/file-parsing/index.md
+      - Format Detection: api/file-parsing/format-detection.md
+      - Readers: api/file-parsing/readers.md
+    - Data Processing:
+      - Overview: api/processing/index.md
+      - Base Processor: api/processing/base-processor.md
+      - CGM Processing: api/processing/cgm.md
+      - Insulin Processing: api/processing/insulin.md
+      - Carbs Processing: api/processing/carbs.md
+      - Notes Processing: api/processing/notes.md
+
+  - Developer Guide:
+    - Overview: dev-guide/index.md
+    - Contributing: dev-guide/contributing.md
+    - Project Structure: dev-guide/project-structure.md
+    - Adding New Formats:
+      - Overview: dev-guide/formats/index.md
+      - Format Definition: dev-guide/formats/definition.md
+      - Format Validation: dev-guide/formats/validation.md
+      - Testing Formats: dev-guide/formats/testing.md
+    - Adding New Processors:
+      - Overview: dev-guide/processors/index.md
+      - Processor Development: dev-guide/processors/development.md
+      - Testing Processors: dev-guide/processors/testing.md
+
   - About:
+    - Project Goals: about/index.md
     - Changelog: about/changelog.md
     - License: about/license.md

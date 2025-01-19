@@ -53,10 +53,11 @@ You can export your processed data in multiple formats:
 ## Common Use Cases
 
 ### Basic Data Export
+
 ```python
 from preprocessing.loading import XDrip
 from preprocessing.cleaning import clean_glucose
-from preprocessing.alignment import align_diabetes_data
+from aligners.cgm import align_diabetes_data
 
 # Load and process data
 data = XDrip('xdrip_backup.sqlite')
