@@ -101,22 +101,18 @@ processor = DataProcessor()
 
 # Process a file
 file_path = Path("my_diabetes_data.csv")
-format, error, results = detector.detect_format(file_path)
+detected_format, error, results = detector.detect_format(file_path)
 
 if format:
     # Process the data
-    reader = BaseReader.get_reader_for_format(format, file_path)
+    reader = BaseReader.get_reader_for_format(detected_format, file_path)
     with reader:
         table_data = reader.read_all_tables()
         if table_data:
             # Process the tables
             processed_results = processor.process_tables(
                 table_data=table_data,
-                table_configs={
-                    table.name: table
-                    for file_config in format.files
-                    for table in file_config.tables
-                }
+                detected_format= detected_format
             )
             
             # Now you have processed data by type
@@ -176,19 +172,19 @@ The processed data includes:
 Learn more about:
 
 1. [Understanding Data Types](data-types/index.md)
-   - Detailed information about each data type
-   - Processing capabilities
-   - Data requirements
+    - Detailed information about each data type
+    - Processing capabilities
+    - Data requirements
 
 2. [Supported Devices](devices/index.md)
-   - Device-specific information
-   - Export formats
-   - Data limitations
+    - Device-specific information
+    - Export formats
+    - Data limitations
 
 3. [Data Processing](processing/index.md)
-   - Processing options
-   - Data alignment
-   - Error handling
+    - Processing options
+    - Data alignment
+    - Error handling
 
 ## Best Practices
 
