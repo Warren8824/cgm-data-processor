@@ -5,13 +5,7 @@ The Data Processing system uses a modular, type-based architecture to process di
 ## Architecture Overview
 
 ```mermaid
-graph TD
-    I[Table Data]
-    J[Column Mappings]
-```
-
-
-```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'arial'}}}%%
 graph TD
     A[DataProcessor] --> B[BaseTypeProcessor]
     B --> C[CGMProcessor]
@@ -78,24 +72,24 @@ graph TD
     The system includes processors for:
 
     1. **CGM Data**
-       - Continuous glucose readings
-       - Gap interpolation
-       - Unit conversion
+        - Continuous glucose readings
+        - Gap interpolation
+        - Unit conversion
 
     2. **Insulin Data**
-       - Dose classification (basal/bolus)
-       - Metadata processing
-       - Dose validation
+        - Dose classification (basal/bolus)
+        - Metadata processing
+        - Dose validation
 
     3. **Carbohydrate Data**
-       - Intake records
-       - Value validation
-       - Duplicate handling
+        - Intake records
+        - Value validation
+        - Duplicate handling
 
     4. **Notes Data**
-       - Text processing
-       - String cleaning
-       - Empty value handling
+        - Text processing
+        - String cleaning
+        - Empty value handling
 
 ## Processing Pipeline
 
@@ -211,6 +205,7 @@ except ProcessingError as e:
 ```
 
 Common errors:
+
 - Missing primary columns
 - Invalid unit types
 - Data validation failures
@@ -246,17 +241,17 @@ Common errors:
 ## Integration with Other Components
 
 1. **Format Detection**
-   - Provides validated table structures
-   - Confirms data availability
-   - Validates column requirements
+    - Provides validated table structures
+    - Confirms data availability
+    - Validates column requirements
 
 2. **Data Alignment**
-   - Uses processed results
-   - Aligns multiple data types
-   - Handles time synchronization
+    - Uses processed results
+    - Aligns multiple data types
+    - Handles time synchronization
 
 3. **Result Usage**
-   - Analysis and visualization
-   - Data export
-   - Quality metrics
-   - Report generation
+    - Analysis and visualization
+    - Data export
+    - Quality metrics
+    - Report generation

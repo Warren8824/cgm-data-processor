@@ -5,6 +5,7 @@ The File Parsing system provides a flexible and extensible framework for reading
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'arial'}}}%%
 graph LR
     subgraph Detection
         A[Format Registry] --> B[Format Detector]
@@ -18,10 +19,9 @@ graph LR
     end
     
     B --> C
-    
-    style A fill:#517,stroke:#333
-    style B fill:#517,stroke:#333
-    style C fill:#417,stroke:#333
+
+    style Detection fill:none,stroke:none
+    style Readers fill:none,stroke:none
 ```
 
 ## Core Components
