@@ -96,6 +96,7 @@ desktop.ini
 
 # Ignore generated documentation
 docs/_build/
+site/
 
 # Ignore static files
 static/
