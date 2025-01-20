@@ -173,7 +173,7 @@ All format-related exceptions inherit from `FormatError`
 
 ## Processing Exceptions
 
-Processing errors cover data handling, calculation, and quality issues
+Processing errors cover data handling, calculation, and quality issues inheriting from the `ProcessingError` class.
 
 === "Data Processing"
     ```python
@@ -212,14 +212,19 @@ Processing errors cover data handling, calculation, and quality issues
     ```
 
 ## Validation Exceptions
+The `DataValidationError` should be used and the base class is for grouped inheritance purposes only.
 
-```python
-class ValidationError(CGMProcessorError):
-    """Base class for validation errors."""
+=== "Validation Base Error"
+    ```python
+    class ValidationError(CGMProcessorError):
+        """Base class for validation errors."""
+    ```
 
-class DataValidationError(ValidationError):
-    """Raised when there's an error validating data."""
-```
+=== "Data Validation Error"
+    ```python
+    class DataValidationError(ValidationError):
+        """Raised when there's an error validating data."""
+    ```
 
 ## Example Usage
 
