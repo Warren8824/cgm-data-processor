@@ -7,7 +7,13 @@ from typing import Dict, List, Tuple, Type
 
 import pandas as pd
 
-from src.core.data_types import ColumnMapping, DataType, TableStructure, Unit
+from src.core.data_types import (
+    ColumnMapping,
+    DataType,
+    DeviceFormat,
+    TableStructure,
+    Unit,
+)
 from src.core.exceptions import ProcessingError
 from src.readers.base import TableData
 
@@ -111,11 +117,43 @@ class DataProcessor:
 
     _type_processors: Dict[DataType, Type[BaseTypeProcessor]] = {}
 
+    @staticmethod
+    def create_table_configs(detected_format) -> Dict[str, TableStructure]:
+        """
+        Creates a table configuration dictionary from detected format.
+
+        Args:
+            detected_format: Format object containing files and their table configurations
+
+        Returns:
+            Dict[str, TableStructure]: Dictionary mapping table names to their structures
+        """
+        try:
+            return {
+                table.name: table
+                for file_config in detected_format.files
+                for table in file_config.tables
+            }
+        except Exception as e:
+            logger.error("Failed to create table configurations: %s", str(e))
+            raise ProcessingError("Failed to create table configurations") from e
+
     def process_tables(
-        self, table_data: Dict[str, TableData], table_configs: Dict[str, TableStructure]
+        self, table_data: Dict[str, TableData], detected_format: DeviceFormat
     ) -> Dict[DataType, ProcessedTypeData]:
-        """Process all tables according to their configuration."""
-        # Organize data by type
+        """
+        Process all tables according to their configuration.
+
+        Args:
+            table_data: Dictionary mapping table names to their data
+            detected_format: Format object containing table configurations
+
+        Returns:
+            Dict[DataType, ProcessedTypeData]: Processed data organized by type
+        """
+        table_configs = self.create_table_configs(detected_format)
+
+        # Rest of your existing process_tables implementation
         type_data: Dict[DataType, List[ColumnData]] = {}
 
         for table_name, data in table_data.items():

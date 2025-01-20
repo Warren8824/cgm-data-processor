@@ -75,15 +75,9 @@ def process_file(file_path: Path):
         print("\u2172 Data Processing Initialised.")
         processor = DataProcessor()
         try:
-            # Create a dictionary mapping table names to their configurations
-            table_configs = {
-                table.name: table
-                for file_config in detected_format.files
-                for table in file_config.tables
-            }
 
             processed_data = processor.process_tables(
-                table_data=table_data, table_configs=table_configs
+                table_data=table_data, detected_format=detected_format
             )
             if not processed_data:
                 raise ProcessingError("No data could be processed")
