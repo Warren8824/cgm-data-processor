@@ -1,5 +1,5 @@
-# CGM Data Processor
-
+![CGM Logo](assets/logo_main.png)
+# 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
