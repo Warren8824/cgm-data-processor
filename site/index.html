@@ -387,15 +387,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#data-processing-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Processing Pipeline
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     <span class="md-ellipsis">
       Features
@@ -2089,15 +2080,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#data-processing-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Processing Pipeline
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     <span class="md-ellipsis">
       Features
@@ -2189,21 +2171,6 @@
 <p><a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
 <a href="https://www.repostatus.org/#active"><img alt="Project Status: Active" src="https://www.repostatus.org/badges/latest/active.svg" /></a></p>
 <p>A powerful Python tool for processing and analyzing Continuous Glucose Monitoring (CGM) data from various diabetes devices. This tool automatically detects file formats, processes data, and aligns multiple data streams for comprehensive diabetes data analysis.</p>
-<h2 id="data-processing-pipeline">Data Processing Pipeline</h2>
-<pre class="mermaid"><code>graph TB
-    A[File Input] --&gt; B[Format Detection]
-    B --&gt; C[Data Reading]
-    C --&gt; D1[CGM Processing]
-    C --&gt; D2[Insulin Processing]
-    C --&gt; D3[Carbs Processing]
-    C --&gt; D4[Notes Processing]
-    D1 --&gt; E[Processed Data]
-    D2 --&gt; E
-    D3 --&gt; E
-    D4 --&gt; E
-    E --&gt; G[Data Export]
-    E --&gt; F[Data Alignment]
-    F --&gt; G</code></pre>
 <h2 id="features">Features</h2>
 <ul>
 <li><strong>Automatic Format Detection</strong>: Intelligently identifies data formats from different CGM devices</li>
