@@ -6,7 +6,8 @@ repo_url: https://github.com/Warren8824/cgm-data-processor
 repo_name: Warren8824/cgm-data-processor
 
 theme:
-  favicon: img/Favicon32x32.webp
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   name: material
   palette:
     scheme: slate
