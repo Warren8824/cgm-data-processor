@@ -5,6 +5,25 @@
 
 A powerful Python tool for processing and analyzing Continuous Glucose Monitoring (CGM) data from various diabetes devices. This tool automatically detects file formats, processes data, and aligns multiple data streams for comprehensive diabetes data analysis.
 
+## Data Processing Pipeline
+
+```mermaid
+graph TB
+    A[File Input] --> B[Format Detection]
+    B --> C[Data Reading]
+    C --> D1[CGM Processing]
+    C --> D2[Insulin Processing]
+    C --> D3[Carbs Processing]
+    C --> D4[Notes Processing]
+    D1 --> E[Processed Data]
+    D2 --> E
+    D3 --> E
+    D4 --> E
+    E --> G[Data Export]
+    E --> F[Data Alignment]
+    F --> G
+```
+
 ## Features
 
 - **Automatic Format Detection**: Intelligently identifies data formats from different CGM devices
