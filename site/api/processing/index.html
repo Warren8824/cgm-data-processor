@@ -17,7 +17,7 @@
         <link rel="next" href="base-processor/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
     
     
@@ -90,8 +90,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="CGM Data Processor" class="md-header__button md-logo" aria-label="CGM Data Processor" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -317,8 +316,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="CGM Data Processor" class="md-nav__button md-logo" aria-label="CGM Data Processor" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     CGM Data Processor
@@ -2305,10 +2303,8 @@
 <h1 id="data-processing-overview">Data Processing Overview</h1>
 <p>The Data Processing system uses a modular, type-based architecture to process different kinds of diabetes data. It provides automatic processor selection, data validation, and standardized output formats.</p>
 <h2 id="architecture-overview">Architecture Overview</h2>
-<pre class="mermaid"><code>graph TD
-    I[Table Data]
-    J[Column Mappings]</code></pre>
-<p><pre class="mermaid"><code>graph TD
+<p><pre class="mermaid"><code>%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'arial'}}}%%
+graph TD
     A[DataProcessor] --&gt; B[BaseTypeProcessor]
     B --&gt; C[CGMProcessor]
     B --&gt; D[InsulinProcessor]
@@ -2366,34 +2362,38 @@
 <p class="admonition-title">Available Processors</p>
 <p>The system includes processors for:</p>
 <ol>
-<li><strong>CGM Data</strong></li>
+<li>
+<p><strong>CGM Data</strong></p>
+<ul>
 <li>Continuous glucose readings</li>
 <li>Gap interpolation</li>
-<li>
-<p>Unit conversion</p>
+<li>Unit conversion</li>
+</ul>
 </li>
 <li>
 <p><strong>Insulin Data</strong></p>
-</li>
+<ul>
 <li>Dose classification (basal/bolus)</li>
 <li>Metadata processing</li>
-<li>
-<p>Dose validation</p>
+<li>Dose validation</li>
+</ul>
 </li>
 <li>
 <p><strong>Carbohydrate Data</strong></p>
-</li>
+<ul>
 <li>Intake records</li>
 <li>Value validation</li>
-<li>
-<p>Duplicate handling</p>
+<li>Duplicate handling</li>
+</ul>
 </li>
 <li>
 <p><strong>Notes Data</strong></p>
-</li>
+<ul>
 <li>Text processing</li>
 <li>String cleaning</li>
 <li>Empty value handling</li>
+</ul>
+</li>
 </ol>
 </div>
 <h2 id="processing-pipeline">Processing Pipeline</h2>
@@ -2502,11 +2502,13 @@
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="c1"># Handle error...</span>
 </code></pre></div>
-<p>Common errors:
-- Missing primary columns
-- Invalid unit types
-- Data validation failures
-- Processing errors</p>
+<p>Common errors:</p>
+<ul>
+<li>Missing primary columns</li>
+<li>Invalid unit types</li>
+<li>Data validation failures</li>
+<li>Processing errors</li>
+</ul>
 <h2 id="best-practices">Best Practices</h2>
 <div class="admonition tip">
 <p class="admonition-title">Implementation Guidelines</p>
@@ -2551,27 +2553,31 @@
 </div>
 <h2 id="integration-with-other-components">Integration with Other Components</h2>
 <ol>
-<li><strong>Format Detection</strong></li>
+<li>
+<p><strong>Format Detection</strong></p>
+<ul>
 <li>Provides validated table structures</li>
 <li>Confirms data availability</li>
-<li>
-<p>Validates column requirements</p>
+<li>Validates column requirements</li>
+</ul>
 </li>
 <li>
 <p><strong>Data Alignment</strong></p>
-</li>
+<ul>
 <li>Uses processed results</li>
 <li>Aligns multiple data types</li>
-<li>
-<p>Handles time synchronization</p>
+<li>Handles time synchronization</li>
+</ul>
 </li>
 <li>
 <p><strong>Result Usage</strong></p>
-</li>
+<ul>
 <li>Analysis and visualization</li>
 <li>Data export</li>
 <li>Quality metrics</li>
 <li>Report generation</li>
+</ul>
+</li>
 </ol>
 
 
