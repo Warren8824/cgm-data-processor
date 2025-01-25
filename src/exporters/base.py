@@ -35,7 +35,6 @@ class BaseExporter(ABC):
         self.config.output_dir.mkdir(parents=True, exist_ok=True)
         if self.config.split_by_month:
             (self.config.output_dir / "monthly").mkdir(exist_ok=True)
-        (self.config.output_dir / "complete").mkdir(exist_ok=True)
 
     @abstractmethod
     def export_complete_dataset(
@@ -75,11 +74,22 @@ class BaseExporter(ABC):
 
         if data_type == DataType.CGM or "cgm_primary" in data.columns:
             missing_count = data.get("missing_cgm", data.get("missing", 0)).sum()
+            total_readings = len(data)
+            total_na = data["cgm_primary"].isna().sum()
+            initial_completeness = (
+                (total_readings - missing_count) / total_readings
+            ) * 100
+            remaining_completeness = (
+                (total_readings - total_na) / total_readings
+            ) * 100
+
             stats.extend(
                 [
                     "CGM Processing Notes:",
-                    f"  Processed {len(data)} total CGM readings",
+                    f"  Processed {total_readings} total CGM readings",
                     f"  Found {missing_count} missing or interpolated values",
+                    f"  Initial CGM completeness: {initial_completeness:.2f}%",
+                    f"  CGM completeness after interpolation: {remaining_completeness:.2f}%",
                 ]
             )
 
@@ -140,6 +150,7 @@ class BaseExporter(ABC):
         self, data: ProcessedTypeData, data_type: DataType
     ) -> None:
         """Handle monthly data splits and exports."""
+
         monthly_base = self.config.output_dir / "monthly"
 
         for timestamp, group in data.dataframe.groupby(pd.Grouper(freq="ME")):
