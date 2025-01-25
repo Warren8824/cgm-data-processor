@@ -79,6 +79,10 @@ class DataValidationError(ValidationError):
     """Raised when there's an error validating data."""
 
 
+class ExportError(CGMProcessorError):
+    """Base class for export errors"""
+
+
 # Data Quality Errors
 
 
