@@ -19,8 +19,8 @@ from src.core.exceptions import (
     ProcessingError,
     ReaderError,
 )
+from src.core.format_registry import FormatRegistry
 from src.file_parser.format_detector import FormatDetectionError, FormatDetector
-from src.file_parser.format_registry import FormatRegistry
 from src.processors import DataProcessor
 from src.readers.base import BaseReader
 

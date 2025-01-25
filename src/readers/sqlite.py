@@ -141,8 +141,8 @@ if __name__ == "__main__":
 
     try:
         from src.core.exceptions import FormatDetectionError
+        from src.core.format_registry import FormatRegistry
         from src.file_parser.format_detector import FormatDetector
-        from src.file_parser.format_registry import FormatRegistry
         from src.readers.base import BaseReader
 
         file_path = Path(args.file_path)

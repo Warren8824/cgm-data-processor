@@ -20,7 +20,7 @@ from src.core.exceptions import (
     FormatDetectionError,
     FormatValidationError,
 )
-from src.file_parser.format_registry import FormatRegistry
+from src.core.format_registry import FormatRegistry
 
 logger = logging.getLogger(__name__)
 
