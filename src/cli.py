@@ -93,9 +93,7 @@ def display_results(results, debug: bool = False):
         df = processed_data.dataframe
 
         if debug:
-            print("\nProcessing Notes:")
-            for note in processed_data.processing_notes:
-                print(f"- {note}")
+            print(f"{_.name} Processing Analysis")
 
             print("\nDetailed Analysis:")
 
@@ -145,6 +143,10 @@ def display_results(results, debug: bool = False):
             print("\nUnit Information:")
             for col, unit in processed_data.source_units.items():
                 print(f"{col}: {unit.value}")
+
+            print("\nProcessing Notes:")
+            for note in processed_data.processing_notes:
+                print(f"- {note}")
 
 
 def main():
