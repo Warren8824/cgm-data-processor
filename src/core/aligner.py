@@ -5,12 +5,12 @@ reference timeline, defaulting to CGM readings but supporting other reference ty
 """
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List
 
 import pandas as pd
 
-from src.core.data_types import DataType
+from src.core.data_types import DataType, Unit
 from src.core.exceptions import AlignmentError
 from src.processors.base import ProcessedTypeData
 
@@ -26,6 +26,9 @@ class AlignmentResult:
     end_time: pd.Timestamp  # End of aligned timeline
     frequency: str  # Alignment frequency
     processing_notes: List[str]  # Notes about the alignment process
+    source_units: Dict[str, Unit] = field(
+        default_factory=dict
+    )  # Maintain source units in aligned data
 
 
 class Aligner:
@@ -53,6 +56,16 @@ class Aligner:
             raise AlignmentError(
                 f"Reference data frequency {modal_diff} does not match expected {freq}"
             )
+
+    def _collect_processing_notes(
+        self, processed_data: Dict[DataType, ProcessedTypeData]
+    ) -> List[str]:
+        """Collect processing notes from all data types."""
+        all_notes = []
+        for data_type, data in processed_data.items():
+            all_notes.extend([f"{data_type.name} Processing Notes:"])
+            all_notes.extend([f"  {note}" for note in data.processing_notes])
+        return all_notes
 
     def _align_insulin(
         self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
@@ -169,5 +182,13 @@ class Aligner:
             start_time=reference_index[0],
             end_time=reference_index[-1],
             frequency=freq,
-            processing_notes=processing_notes,
+            processing_notes=[
+                *self._collect_processing_notes(processed_data),
+                *processing_notes,
+            ],
+            source_units={
+                col: unit
+                for data in processed_data.values()
+                for col, unit in data.source_units.items()
+            },
         )

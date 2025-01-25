@@ -20,6 +20,7 @@ from src.core.exceptions import (
     ReaderError,
 )
 from src.core.format_registry import FormatRegistry
+from src.exporters.csv import create_csv_exporter
 from src.file_parser.format_detector import FormatDetectionError, FormatDetector
 from src.processors import DataProcessor
 from src.readers.base import BaseReader
@@ -160,6 +161,12 @@ def main():
         action="store_true",
         help="Enable debug logging and detailed analysis",
     )
+    parser.add_argument(
+        "--output",
+        type=str,
+        help="Output directory for exported data",
+        default="./data/exports",
+    )
     args = parser.parse_args()
 
     setup_logging(args.debug)
@@ -186,6 +193,9 @@ def main():
 
             logger.error(str(e))
         print("\u2174 Data Export Initialised.")
+        exporter = create_csv_exporter(args.output)
+        exporter.export_data(results, aligned)
+        print("    \u2713 Data Export Successful.")
 
     except (
         FileAccessError,
