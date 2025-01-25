@@ -211,7 +211,7 @@ class BaseExporter(ABC):
         date_range = self.get_date_range(
             next(iter(processed_data.values())) if processed_data else aligned_data
         )
-        complete_dir = self.config.output_dir / "complete" / date_range
+        complete_dir = self.config.output_dir / f"{date_range}_complete"
         complete_dir.mkdir(parents=True, exist_ok=True)
 
         # Export individual datasets
