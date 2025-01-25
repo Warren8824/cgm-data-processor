@@ -2,6 +2,14 @@
 # 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
+![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
+![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
+![Docs](https://img.shields.io/badge/docs-MkDocs-blue)
+![Status](https://img.shields.io/badge/status-in%20progress-yellow)
+![Maintenance](https://img.shields.io/badge/maintenance-active-brightgreen.svg)
 
 A powerful Python tool for processing and analyzing Continuous Glucose Monitoring (CGM) data from various diabetes devices. This tool automatically detects file formats, processes data, and aligns multiple data streams for comprehensive diabetes data analysis.
 

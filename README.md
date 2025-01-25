@@ -1,11 +1,15 @@
 # CGM Data Processor
 
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://Warren8824.github.io/cgm-data-processor/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
+![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
+![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
+![Docs](https://img.shields.io/badge/docs-MkDocs-blue)
+![Status](https://img.shields.io/badge/status-in%20progress-yellow)
+![Maintenance](https://img.shields.io/badge/maintenance-active-brightgreen.svg)
 
 A Python package for processing and analyzing diabetes device data, providing robust data alignment, gap detection, and quality assessment capabilities. Built by a T1D developer to standardize diabetes data analysis.
 
