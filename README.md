@@ -4,182 +4,174 @@
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
-![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
-![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
-![Docs](https://img.shields.io/badge/docs-MkDocs-blue)
-![Status](https://img.shields.io/badge/status-in%20progress-yellow)
-![Maintenance](https://img.shields.io/badge/maintenance-active-brightgreen.svg)
+![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat)
+![Status](https://img.shields.io/badge/status-pre--release-orange)
 
-A Python package for processing and analyzing diabetes device data, providing robust data alignment, gap detection, and quality assessment capabilities. Built by a T1D developer to standardize diabetes data analysis.
+A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
+
+Full documentation including detailed API reference, user guides, and examples can be found at:
+[https://warren8824.github.io/cgm-data-processor/#key-features](https://warren8824.github.io/cgm-data-processor/#key-features)
 
 > ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
 
-## Features
+## Call for Device Format Contributors
 
-- **Automatic Format Detection**: Intelligently identifies and processes data from:
-  - Dexcom CGM systems
-  - Libre CGM systems
-  - XDrip+ data exports
-  
-- **Smart Data Processing**:
-  - CGM data cleaning and gap detection
-  - Insulin dose classification (basal/bolus)
-  - Carbohydrate intake normalization
-  - Automated timestamp alignment
+We're looking for T1D developers and users to help expand our device format support. If you use a diabetes management system and can share sample export files (with dummy data), please:
 
-- **Robust Validation**:
-  - Format-specific validation rules
-  - Data quality assessment
-  - Unit conversion and verification
-  - Gap detection and reporting
+1. Open an issue with the device/app name
+2. Describe the export format(s) available
+3. Provide sample files if possible
 
-- **Extensible Architecture**:
-  - Easy to add new device formats
-  - Plugin system for data processors
-  - Flexible output formatting
+Currently supporting:
+
+- XDrip+ SQLite exports
+- More formats coming soon!
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.10 or higher
-- Poetry (recommended) or pip
-
-### Using Poetry (Recommended)
+### Using Poetry
 
 ```bash
-# Clone the repository
+# Install Poetry
+pip install poetry
+
+# Install package
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
-
-# Install dependencies
 poetry install
-
-# For development dependencies
-poetry install --with dev
 ```
 
 ### Using pip
 
 ```bash
-# Clone the repository
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
-
-# Install dependencies
 pip install -r requirements.txt
 
-# For development
+# For development dependencies
 pip install -r requirements-dev.txt
 ```
 
-## Quick Start
+## Features
 
-```python
-from pathlib import Path
-from cgm_data_processor import DataProcessor
+Current implementation:
 
-# Process a single file
-file_path = Path("my_cgm_data.sqlite")
-processor = DataProcessor()
-results = processor.process_file(file_path)
+- Automatic format detection
+- CGM data processing:
+  - Gap detection and interpolation
+  - Processing step tracking
+  - Detailed quality reporting
+- Insulin data processing:
+  - Dose classification (basal/bolus)
+  - Type detection from metadata
+- Meal/carb data processing
+- Notes/comments processing
+- Timeline synchronisation
+- Comprehensive processing logs
+- CSV export with metadata
 
-# Access processed data
-cgm_data = results.get(DataType.CGM)
-insulin_data = results.get(DataType.INSULIN)
+## Use Cases
+
+- Data Analysis: Process and clean diabetes device data for research or personal analysis
+
+- Quality Assessment: Evaluate CGM data completeness and identify gaps
+- Data Migration: Convert data between different diabetes management systems
+
+- Retrospective Review: Analyze historical diabetes management data with proper timeline alignment
+
+- Research Projects: Process diabetes device data in standardized formats for research studies
+
+- Personal Insights: Track patterns in CGM, insulin, and meal data over time
+
+## Usage
+
+```bash
+python -m src.cli path/to/data.file [options]
+
+# Options:
+#   --debug                    # Enable debug logging
+#   --output OUTPUT           # Export directory (default: ./exports)
+#   --interpolation-limit INT # Max CGM gaps to interpolate (4 = 20 mins)
+#   --bolus-limit FLOAT      # Max insulin units for bolus classification
+#   --max-dose FLOAT         # Maximum valid insulin dose
 ```
 
 ## Development
 
-### Setting Up Development Environment
+### Prerequisites
+- Python 3.10+
+
+### Setup
 
 ```bash
-# Install development dependencies
-poetry install --with dev
+git clone https://github.com/Warren8824/cgm-data-processor.git
+cd cgm-data-processor
 
-# Install pre-commit hooks
+# Using Poetry
+poetry install --with dev
+pre-commit install
+
+# Using pip
+pip install -r requirements-dev.txt
 pre-commit install
 ```
 
-### Code Style
-
-This project uses:
-- Black for code formatting
-- isort for import sorting
-- pylint for linting
-
-```bash
-# Format code
-poetry run black .
-poetry run isort .
-
-# Run linting
-poetry run pylint src/
-```
+### Quality Tools
+- Black (code formatting)
+- isort (import sorting)
+- Pylint (linting)
+- Pytest (testing)
+- Pre-commit hooks
 
 ### Documentation
 
-The documentation is built using MkDocs with Material theme:
-
 ```bash
-# Install documentation dependencies
+# Using Poetry
 poetry install --with dev
+mkdocs serve
 
-# Serve documentation locally
-poetry run mkdocs serve
+# Using pip
 
-# Build documentation
-poetry run mkdocs build
+pip install -r requirements-dev.txt
+mkdocs serve
 ```
-
-## Roadmap
-
-- [ ] Add export module with support for:
-  - CSV exports
-  - SQLite database
-  - Parquet files
-  - Monthly/yearly data aggregation
-- [ ] Comprehensive test suite
-- [ ] CI/CD pipeline with GitHub Actions
-- [ ] Additional device format support
-- [ ] Batch processing capabilities
-- [ ] Extended health data type support
-
-## Contributing
-
-Contributions are welcome! Please see our [Contributing Guide](docs/development/contributing.md) for details.
-
-### Development Process
-
-1. Fork the repository
-2. Create a feature branch
-3. Write your changes
-4. Write tests that prove your changes work
-5. Run code formatting
-   ```bash
-   poetry run black .
-   poetry run isort .
-   ```
-6. Push your changes
-7. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Documentation
-
-Full documentation is available at [GitHub Pages](https://Warren8824.github.io/cgm-data-processor/).
-
-Key documentation sections:
-- [Getting Started](https://Warren8824.github.io/cgm-data-processor/getting-started/)
-- [User Guide](https://warren8824.github.io/cgm-data-processor/user-guide/)
-- [API Reference](https://warren8824.github.io/cgm-data-processor/api)
-- [Developer Guide](https://warren8824.github.io/cgm-data-processor/dev-guide/)
 
 ## Project Status
 
-This project is under active development. The core data processing and alignment features are implemented, with export functionality coming soon. The first PyPI release will be available once the export module is complete.
+Pre-release development focusing on:
+- [ ] Core format implementations
+- [ ] Test suite completion
+- [ ] Documentation
+- [ ] Basic statistics and visualisations
+- [ ] First release
 
-For the latest updates, please check the [Changelog](https://warren8824.github.io/cgm-data-processor/about/changelog/) .
+## Dependencies
+
+Core:
+- numpy ≥2.1.0
+- pandas ≥2.2.0
+- SQLAlchemy ≥2.0.0
+- plotly ≥5.0.0
+
+Documentation:
+- MkDocs Material
+- MkDocstrings
+
+## Contributing
+
+We welcome contributions, especially:
+
+- Device format definitions
+- Sample export files (with dummy data)
+- Bug reports
+- Feature requests
+
+Please open an issue to discuss before submitting PRs.
+
+## License
+
+MIT
+
+## Contact
+
+Warren8824 (warrenbebbington88@gmail.com)
