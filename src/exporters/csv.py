@@ -64,7 +64,7 @@ class CSVExporter(BaseExporter):
         else:  # AlignmentResult
             common_data["frequency"] = data.frequency
             common_data["completeness"] = {
-                col: f"{(data.dataframe[col].notna().mean() * 100):.1f}%"
+                col: f"{(data.dataframe[col].notna().mean() * 100):.2f}%"
                 for col in data.dataframe.columns
             }
 
