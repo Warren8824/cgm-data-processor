@@ -17,5 +17,6 @@ jobs:
           python-version: '3.x'
       - run: pip install mkdocs
       - run: pip install mkdocs-material
+      - run: pip install mkdocs-git-revision-date-localized-plugin
       - run: pip install mkdocstrings[python]  # This installs mkdocstrings with Python handler
       - run: mkdocs gh-deploy --force
