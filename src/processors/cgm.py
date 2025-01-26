@@ -133,10 +133,20 @@ class CGMProcessor(BaseTypeProcessor):
             # Track stats about the processed data
             total_readings = len(combined_df)
             missing_primary = combined_df["missing"].sum()
+            total_na = combined_df["cgm_primary"].isna().sum()
+            initial_completeness_percent = (
+                (total_readings - missing_primary) / total_readings
+            ) * 100
+            remaining_completeness_percent = (
+                (total_readings - total_na) / total_readings
+            ) * 100
             processing_notes.extend(
                 [
                     f"Processed {total_readings} total CGM readings",
                     f"Found {missing_primary} missing or interpolated values in primary data",
+                    f"Found {total_na} missing values after interpolation",
+                    f"Initial CGM dataset completeness: {initial_completeness_percent:.2f}%",
+                    f"CGM completeness after interpolation: {remaining_completeness_percent:.2f}%",
                 ]
             )
 
