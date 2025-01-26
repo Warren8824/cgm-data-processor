@@ -4,6 +4,8 @@ site_name: Data Processor Documentation
 site_url: https://Warren8824.github.io/cgm-data-processor
 repo_url: https://github.com/Warren8824/cgm-data-processor
 repo_name: Warren8824/cgm-data-processor
+site_description: "Python package for processing diabetes device data"
+site_author: "Warren8824"
 
 theme:
   logo: assets/logo_white.png
@@ -14,7 +16,9 @@ theme:
     primary: teal
     accent: teal
   features:
+    - announce.dismiss
     - header.autohide
+    - navigation.footer
     - navigation.instant
     - navigation.tracking
     - navigation.tabs
@@ -24,6 +28,11 @@ theme:
     - content.code.annotate
 
 plugins:
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+  - redirects:
+      redirect_maps: { }
   - search
   - mkdocstrings:
       default_handler: python
@@ -63,66 +72,25 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-
   - Getting Started:
     - Overview: getting-started/index.md
     - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quickstart.md
-    - Command Line Usage: getting-started/cli-usage.md
+    - Quick Start Guide:
+      - Basic Usage: getting-started/quickstart/basic.md
+      - Data Import: getting-started/quickstart/import.md
+      - Data Processing: getting-started/quickstart/processing.md
 
   - User Guide:
-    - Overview: user-guide/index.md
-    - Understanding Data Types:
-      - Overview: user-guide/data-types/index.md
-      - CGM Data: user-guide/data-types/cgm.md
-      - Insulin Data: user-guide/data-types/insulin.md
-      - Carbohydrate Data: user-guide/data-types/carbs.md
-      - Notes & Events: user-guide/data-types/notes.md
-    - Supported Devices:
-      - Overview: user-guide/devices/index.md
-      - Dexcom: user-guide/devices/dexcom.md
-      - Libre: user-guide/devices/libre.md
-      - XDrip+: user-guide/devices/xdrip.md
-    - Data Processing:
-      - Overview: user-guide/processing/index.md
-      - Data Alignment: user-guide/processing/alignment.md
-      - Data Validation: user-guide/processing/validation.md
-      - Error Handling: user-guide/processing/errors.md
+    - Data Types & Processing: user-guide/data-types.md
+    - Supported Formats: user-guide/formats.md
+    - Error Handling: user-guide/errors.md
 
   - API Reference:
-    - Overview: api/index.md
-    - Core Components:
-      - Data Types: api/core/data-types.md
-      - Format Registry: api/core/format-registry.md
-      - Data Alignment: api/core/alignment.md
-      - Exceptions: api/core/exceptions.md
-    - File Parsing:
-      - Overview: api/file-parsing/index.md
-      - Format Detection: api/file-parsing/format-detection.md
-      - Readers: api/file-parsing/readers.md
-    - Data Processing:
-      - Overview: api/processing/index.md
-      - Base Processor: api/processing/base-processor.md
-      - CGM Processing: api/processing/cgm.md
-      - Insulin Processing: api/processing/insulin.md
-      - Carbs Processing: api/processing/carbs.md
-      - Notes Processing: api/processing/notes.md
+    - Core API: api/core.md
+    - Readers API: api/readers.md
+    - Processors API: api/processors.md
 
-  - Developer Guide:
-    - Overview: dev-guide/index.md
-    - Contributing: dev-guide/contributing.md
-    - Project Structure: dev-guide/project-structure.md
-    - Adding New Formats:
-      - Overview: dev-guide/formats/index.md
-      - Format Definition: dev-guide/formats/definition.md
-      - Format Validation: dev-guide/formats/validation.md
-      - Testing Formats: dev-guide/formats/testing.md
-    - Adding New Processors:
-      - Overview: dev-guide/processors/index.md
-      - Processor Development: dev-guide/processors/development.md
-      - Testing Processors: dev-guide/processors/testing.md
-
-  - About:
-    - Project Goals: about/index.md
-    - Changelog: about/changelog.md
-    - License: about/license.md
+  - Contributing:
+    - Development Guide: contributing/guide.md
+    - Adding New Formats: contributing/formats.md
+    - Adding New Processors: contributing/processors.md
