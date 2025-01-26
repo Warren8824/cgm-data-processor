@@ -26,6 +26,8 @@ theme:
     - navigation.expand
     - content.code.copy
     - content.code.annotate
+extra_css:
+  - stylesheets/extra.css
 
 plugins:
   - git-revision-date-localized

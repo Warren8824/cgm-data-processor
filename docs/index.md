@@ -11,6 +11,7 @@
 ![Status](https://img.shields.io/badge/status-in%20progress-yellow)
 ![Maintenance](https://img.shields.io/badge/maintenance-active-brightgreen.svg)
 
+
 A powerful Python tool for processing and analyzing Continuous Glucose Monitoring (CGM) data from various diabetes devices. This tool automatically detects file formats, processes data, and aligns multiple data streams for comprehensive diabetes data analysis.
 
 ## Features
