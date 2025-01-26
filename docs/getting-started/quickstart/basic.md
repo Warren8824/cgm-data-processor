@@ -1,38 +1,82 @@
 <div class="hero">
   <h1>Basic Usage</h1>
-  <p>Getting started with your diabetes data</p>
+  <p>Understanding and configuring data processing</p>
 </div>
 
-## 🚀 Quick Start 
+## 📊 Core Usage
 
 <div class="feature-card">
-<p>Basic steps:</p>
+
+```python
+from pathlib import Path
+from src.core.aligner import Aligner
+from src.core.format_registry import FormatRegistry
+from src.core.exceptions import ProcessingError
+from src.file_parser.format_detector import FormatDetector
+from src.processors import DataProcessor
+
+def process_data(file_path: str, 
+                interpolation_limit: int = 4,
+                bolus_limit: float = 8.0,
+                max_dose: float = 15.0):
+    """
+    Process diabetes device data with custom parameters
+    
+    Args:
+        file_path: Path to data file
+        interpolation_limit: Max CGM gaps to interpolate (4 = 20 mins)
+        bolus_limit: Max insulin units for bolus classification
+        max_dose: Maximum valid insulin dose
+    """
+    registry = FormatRegistry()
+    detector = FormatDetector(registry)
+    
+    # Detect format
+    format, error, _ = detector.detect_format(Path(file_path))
+    if not format:
+        raise ProcessingError(f"No valid format detected: {error}")
+        
+    # Process with custom parameters
+    processor = DataProcessor()
+    processed_data = processor.process_tables(
+        table_data=table_data, 
+        detected_format=format,
+        cgm_params={'interpolation_limit': interpolation_limit},
+        insulin_params={
+            'bolus_limit': bolus_limit,
+            'max_limit': max_dose
+        }
+    )
+    
+    return processed_data
+```
+
+</div>
+
+## ⚙️ Configuration Options
+
+<div class="feature-card">
 <ul>
-    <li>Download this tool from GitHub</li>
-    <li>Install Python 3.10 or newer</li>
-    <li>Open a terminal/command prompt in the downloaded folder</li>
-    <li>Run: <code>python -m src.cli your_data_file.sqlite</code></li>
+    <li>interpolation_limit: Number of missing CGM readings to interpolate</li>
+    <li>bolus_limit: Threshold for classifying insulin as bolus vs basal</li>
+    <li>max_dose: Maximum valid insulin dose (higher values flagged)</li>
 </ul>
 </div>
 
-## 📁 Output Options
+## 🚀 Command Line Usage
 
 <div class="feature-card">
-<p>Choose where to save your processed data:</p>
-<ul>
-    <li>Default location: <code>./data/exports</code></li>
-    <li>Custom location: <code>python -m src.cli your_data_file.sqlite --output path/to/folder</code></li>
-</ul>
-</div>
 
-## 💡 Example
+```bash
+# Basic usage
+python -m src.cli data.sqlite
 
-<div class="feature-card">
-<p>XDrip+ workflow:</p>
-<ul>
-    <li>Export SQLite file from XDrip+</li>
-    <li>Place file in tool folder</li>
-    <li>Run: <code>python -m src.cli xdrip_data.sqlite --output my_analysis</code></li>
-    <li>Find processed data in the 'my_analysis' folder</li>
-</ul>
+# With custom parameters
+python -m src.cli data.sqlite 
+# Optional arguments
+    --interpolation-limit 6 
+    --bolus-limit 10.0 
+    --max-dose 20.0 
+    --output ./my_analysis
+```
 </div>
