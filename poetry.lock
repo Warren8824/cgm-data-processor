@@ -955,7 +955,7 @@ version = "1.2.2"
 description = "A MkDocs plugin for dynamic page redirects to prevent broken links"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main", "dev"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "mkdocs_redirects-1.2.2-py3-none-any.whl", hash = "sha256:7dbfa5647b79a3589da4401403d69494bd1f4ad03b9c15136720367e1f340ed5"},
@@ -1978,4 +1978,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "ebf649127797297c38dcb735a847ffc4022a5e4382c93627206a0faca5a48b81"
+content-hash = "19fa3fec246080d6c090f33eeb3da80fcd9393b4a6b6af6f923fd0f390489f72"
