@@ -146,7 +146,7 @@ class DataProcessor:
             Any
         ] = None,  # Optional parameter for CGM processor
         bolus_limit: Optional[Any] = None,  # Optional parameters for insulin processor
-        max_limit: Optional[Any] = None,
+        max_dose: Optional[Any] = None,
     ) -> Dict[DataType, ProcessedTypeData]:
         """
         Process all tables according to their configuration.
@@ -204,7 +204,7 @@ class DataProcessor:
                 if data_type == DataType.CGM and interpolation_limit is not None:
                     result = processor.process_type(columns, interpolation_limit)
                 elif data_type == DataType.INSULIN:
-                    result = processor.process_type(columns, bolus_limit, max_limit)
+                    result = processor.process_type(columns, bolus_limit, max_dose)
                 else:
                     result = processor.process_type(columns)
 

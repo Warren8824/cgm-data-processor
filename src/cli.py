@@ -124,7 +124,7 @@ def main():
             file_path,
             interpolation_limit=args.interpolation_limit,
             bolus_limit=args.bolus_limit,
-            max_limit=args.max_dose,
+            max_dose=args.max_dose,
         )
 
         for key, item in results.items():
