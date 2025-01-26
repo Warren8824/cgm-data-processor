@@ -1,9 +1,4 @@
-"""Command line interface for diabetes data processing.
-
-This module provides the command-line interface for processing diabetes device data files.
-It handles format detection, reader selection, and data processing while providing
-informative output about the process.
-"""
+"""Command line interface for diabetes data processing."""
 
 import argparse
 import logging
@@ -44,15 +39,13 @@ def validate_file(file_path: Path):
         raise ValueError(f"Path is not a file: {file_path}")
 
 
-def process_file(file_path: Path):
-    """Process diabetes device data file.
-
-    Returns:
-        Dict containing processed data by DataType
-    """
+def process_file(
+    file_path: Path,
+    **kwargs,
+):
+    """Process diabetes device data file with configurable parameters."""
     logger.debug("\nAnalyzing file: %s", file_path)
 
-    # Load registered formats and detect matches
     registry = FormatRegistry()
     detector = FormatDetector(registry)
 
@@ -63,7 +56,6 @@ def process_file(file_path: Path):
     print("    \u2713 Format Detection Successful.")
     print(f"      Currently processing file with {detected_format.name} Format. \n")
 
-    # Get appropriate reader and process data
     print("\u2171 Data Reading Initialised.")
     reader = BaseReader.get_reader_for_format(detected_format, file_path)
     with reader:
@@ -72,13 +64,13 @@ def process_file(file_path: Path):
             raise DataProcessingError("No valid data found in file")
         print("    \u2713 Data Reading Successful. \n")
 
-        # Initialize data processor
         print("\u2172 Data Processing Initialised.")
         processor = DataProcessor()
         try:
-
             processed_data = processor.process_tables(
-                table_data=table_data, detected_format=detected_format
+                table_data=table_data,
+                detected_format=detected_format,
+                **kwargs,
             )
             if not processed_data:
                 raise ProcessingError("No data could be processed")
@@ -86,68 +78,6 @@ def process_file(file_path: Path):
 
         except ProcessingError as e:
             raise ProcessingError(f"Failed to process data: {str(e)}") from e
-
-
-def display_results(results, debug: bool = False):
-    """Display processed data results."""
-    for _, processed_data in results.items():
-        df = processed_data.dataframe
-
-        if debug:
-            print(f"{_.name} Processing Analysis")
-
-            print("\nDetailed Analysis:")
-
-            # Data completeness
-            null_counts = df.isnull().sum()
-            print("\nMissing Values by Column:")
-            print(
-                null_counts[null_counts > 0]
-                if any(null_counts > 0)
-                else "No missing values"
-            )
-
-            # Value distributions
-            print("\nValue Counts for Non-Numeric Columns:")
-            for col in df.select_dtypes(exclude=["number"]).columns:
-                print(f"\n{col}:")
-                print(df[col].value_counts().head())
-
-            # Time-based analysis
-            print("\nTemporal Analysis:")
-            print(f"Date Range: {df.index.min()} to {df.index.max()}")
-            print(f"Total Duration: {df.index.max() - df.index.min()}")
-
-            # Data density
-            readings_per_day = df.groupby(df.index.date).size()
-            print("\nReadings per Day:")
-            print(f"Mean: {readings_per_day.mean():.2f}")
-            print(f"Min: {readings_per_day.min()}")
-            print(f"Max: {readings_per_day.max()}")
-
-            # Numeric column statistics
-            numeric_cols = df.select_dtypes(include=["number"]).columns
-            if len(numeric_cols) > 0:
-                print("\nDetailed Numeric Analysis:")
-                for col in numeric_cols:
-                    print(f"\n{col}:")
-                    print(f"Skewness: {df[col].skew():.2f}")
-                    print(f"Kurtosis: {df[col].kurtosis():.2f}")
-                    print("Quantiles:")
-                    print(df[col].quantile([0.1, 0.25, 0.5, 0.75, 0.9]))
-
-            # Memory usage
-            print("\nMemory Usage:")
-            print(df.memory_usage(deep=True))
-
-            # Unit information
-            print("\nUnit Information:")
-            for col, unit in processed_data.source_units.items():
-                print(f"{col}: {unit.value}")
-
-            print("\nProcessing Notes:")
-            for note in processed_data.processing_notes:
-                print(f"- {note}")
 
 
 def main():
@@ -165,7 +95,21 @@ def main():
         "--output",
         type=str,
         help="Output directory for exported data",
-        default="./data/exports",
+    )
+    parser.add_argument(
+        "--interpolation-limit",
+        type=int,
+        help="Maximum number of CGM gaps to interpolate (4 = 20 mins)",
+    )
+    parser.add_argument(
+        "--bolus-limit",
+        type=float,
+        help="Maximum insulin units for bolus classification",
+    )
+    parser.add_argument(
+        "--max-dose",
+        type=float,
+        help="Maximum valid insulin dose",
     )
     args = parser.parse_args()
 
@@ -176,13 +120,16 @@ def main():
         file_path = Path(args.file_path)
         validate_file(file_path)
 
-        results = process_file(file_path)
-        display_results(results, args.debug)
-        # Display dataframe shapes
+        results = process_file(
+            file_path,
+            interpolation_limit=args.interpolation_limit,
+            bolus_limit=args.bolus_limit,
+            max_limit=args.max_dose,
+        )
+
         for key, item in results.items():
             print("     ", key.name, " Dataframe Shape: ", item.dataframe.shape)
 
-        # Created Aligned data
         print("\n\u2173 Data Alignment Initialised.")
         try:
             aligned = aligner.align(results)
@@ -190,10 +137,13 @@ def main():
             print("      Aligned Dataframe Shape: ", aligned.dataframe.shape, "\n")
 
         except AlignmentError as e:
-
             logger.error(str(e))
+
         print("\u2174 Data Export Initialised.")
-        exporter = create_csv_exporter(args.output)
+        if args.output is None:
+            exporter = create_csv_exporter()
+        else:
+            exporter = create_csv_exporter(args.output)
         exporter.export_data(results, aligned)
         print("    \u2713 Data Export Successful.")
 

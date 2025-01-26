@@ -16,7 +16,7 @@ from src.processors.base import ProcessedTypeData
 class ExportConfig:
     """Configuration for data export."""
 
-    output_dir: Path
+    output_dir: Path = Path("data/exports")  # Default exports directory
     split_by_month: bool = True
     include_processing_notes: bool = True
     date_in_filename: bool = True

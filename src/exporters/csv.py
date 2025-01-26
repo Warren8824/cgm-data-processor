@@ -72,7 +72,9 @@ class CSVExporter(BaseExporter):
             json.dump(common_data, f, indent=2)
 
 
-def create_csv_exporter(output_dir: str | Path) -> CSVExporter:
+def create_csv_exporter(
+    output_dir: str | Path = ExportConfig.output_dir,
+) -> CSVExporter:
     """Factory function for CSV exporter."""
     config = ExportConfig(output_dir=Path(output_dir))
     return CSVExporter(config)

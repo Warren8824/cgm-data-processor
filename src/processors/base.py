@@ -3,7 +3,7 @@
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Type
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 import pandas as pd
 
@@ -139,7 +139,14 @@ class DataProcessor:
             raise ProcessingError("Failed to create table configurations") from e
 
     def process_tables(
-        self, table_data: Dict[str, TableData], detected_format: DeviceFormat
+        self,
+        table_data: Dict[str, TableData],
+        detected_format: DeviceFormat,
+        interpolation_limit: Optional[
+            Any
+        ] = None,  # Optional parameter for CGM processor
+        bolus_limit: Optional[Any] = None,  # Optional parameters for insulin processor
+        max_limit: Optional[Any] = None,
     ) -> Dict[DataType, ProcessedTypeData]:
         """
         Process all tables according to their configuration.
@@ -147,6 +154,9 @@ class DataProcessor:
         Args:
             table_data: Dictionary mapping table names to their data
             detected_format: Format object containing table configurations
+            interpolation_limit: Max length of gaps to interpolate
+            bolus_limit: Maximum insulin dose to be classified as bolus(default = 8)
+            max_limit: Maximum insulin dose - all over will be discarded
 
         Returns:
             Dict[DataType, ProcessedTypeData]: Processed data organized by type
@@ -189,7 +199,14 @@ class DataProcessor:
         for data_type, columns in type_data.items():
             try:
                 processor = self.get_processor_for_type(data_type)
-                result = processor.process_type(columns)
+
+                # Inject optional parameters based on processor type
+                if data_type == DataType.CGM and interpolation_limit is not None:
+                    result = processor.process_type(columns, interpolation_limit)
+                elif data_type == DataType.INSULIN:
+                    result = processor.process_type(columns, bolus_limit, max_limit)
+                else:
+                    result = processor.process_type(columns)
 
                 if not result.dataframe.empty:
                     results[data_type] = result
