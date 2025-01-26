@@ -3,6 +3,27 @@
   <p>Understanding and configuring data processing</p>
 </div>
 
+## 🚀 Command Line Usage
+
+The simplest way to get started with CGM Data Processor is to install the application and run the cli.py from the terminal.
+<div class="feature-card">
+
+```bash
+# Basic usage
+python -m src.cli path/your_data_export.sqlite
+
+# With custom parameters
+python -m src.cli path/your_data_export.sqlite --debug --bolus-limit 12 --output export/path 
+
+# Optional arguments
+    --debug # Show additional processing information
+    --interpolation-limit 6 # Set the max CGM gap size to be interpolated(default = 4)
+    --bolus-limit 10.0 # Set a limit on what insulin doses are classed as bolus(default = 8)
+    --max-dose 20 # Set the maximum insulin dose, all over will be discarded(default = 15)
+    --output ./my_analysis # Set the output directory to save your processed data
+```
+</div>
+
 ## 📊 Core Usage
 
 <div class="feature-card">
@@ -59,24 +80,6 @@ def process_data(file_path: str,
 <ul>
     <li>interpolation_limit: Number of missing CGM readings to interpolate</li>
     <li>bolus_limit: Threshold for classifying insulin as bolus vs basal</li>
-    <li>max_dose: Maximum valid insulin dose (higher values flagged)</li>
+    <li>max_dose: Maximum valid insulin dose (higher values discarded)</li>
 </ul>
-</div>
-
-## 🚀 Command Line Usage
-
-<div class="feature-card">
-
-```bash
-# Basic usage
-python -m src.cli data.sqlite
-
-# With custom parameters
-python -m src.cli data.sqlite 
-# Optional arguments
-    --interpolation-limit 6 
-    --bolus-limit 10.0 
-    --max-dose 20.0 
-    --output ./my_analysis
-```
 </div>
