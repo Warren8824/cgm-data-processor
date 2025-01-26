@@ -16,7 +16,7 @@
   <p>Analyze data from multiple diabetes management systems including XDrip+, Dexcom, and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
 </div>
 
-## ❤️ CGM Analysis
+## :drop_of_blood: CGM Analysis
 - Gap detection
 - Noise filtering
 - Quality metrics
