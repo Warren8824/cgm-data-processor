@@ -1,88 +1,66 @@
-![CGM Logo](assets/logo_main.png)
-# 
+<div class="hero">
+  <h1>CGM Data Processor</h1>
+  <p>A robust Python framework for processing and analyzing diabetes device data</p>
+</div>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
 ![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
-![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
-![Docs](https://img.shields.io/badge/docs-MkDocs-blue)
-![Status](https://img.shields.io/badge/status-in%20progress-yellow)
-![Maintenance](https://img.shields.io/badge/maintenance-active-brightgreen.svg)
 
+## 📈 Process Your Diabetes Data
 
-A powerful Python tool for processing and analyzing Continuous Glucose Monitoring (CGM) data from various diabetes devices. This tool automatically detects file formats, processes data, and aligns multiple data streams for comprehensive diabetes data analysis.
+<div class="feature-card">
+  <p>Analyze data from multiple diabetes management systems including XDrip+, Dexcom, and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
+</div>
 
-## Features
+## ❤️ CGM Analysis
+- Gap detection
+- Noise filtering
+- Quality metrics
 
-- **Automatic Format Detection**: Intelligently identifies data formats from different CGM devices
-- **Multi-Device Support**: 
-    - Dexcom CGM systems
-    - Libre CGM systems
-    - XDrip+ data
-- **Flexible Data Processing**:
-    - CGM readings
-    - Insulin doses
-    - Carbohydrate intake
-    - Notes and events
-- **Smart Data Alignment**: Automatically aligns different data streams by timestamp
-- **Extensible Architecture**: Easy to add support for new devices and data formats
+## 💉 Treatment Data
+- Insulin doses
+- Carb intake
+- Event notes
+
+## 🚀 Advanced Features
+- Automated format detection
+- Data alignment
+- Flexible export options
 
 ## Quick Start
 
-### Installation
+```python
+from src.core.format_registry import FormatRegistry
+from src.file_parser.format_detector import FormatDetector
+from src.processors import DataProcessor
 
-```bash
-pip install cgm-data-processor
+# Initialize format detection
+registry = FormatRegistry()
+detector = FormatDetector(registry)
+
+# Process file
+format, _, _ = detector.detect_format("my_data.sqlite")
+processed_data = process_file("my_data.sqlite")
 ```
 
-### Basic Usage
+## 💡 Key Features
 
-Process a single diabetes device data file:
+<div class="feature-card" markdown="1">
+<ul>
+   <li>Automated format detection for multiple data sources</li>
+   <li>Robust data validation and cleaning</li>
+   <li>Gap detection and interpolation for CGM data</li>
+   <li>Treatment classification and verification</li>
+   <li>Flexible data export options</li>
+</ul>
 
-```bash
-cgm-process path/to/your/file.csv
-```
+</div>
 
-Enable detailed analysis with debug mode:
-
-```bash
-cgm-process path/to/your/file.csv --debug
-```
-
-## Processing Pipeline
-
-1. **Format Detection**: Automatically identifies the source device and data format
-2. **Data Reading**: Extracts data using format-specific readers
-3. **Data Processing**: Processes and validates data streams
-4. **Data Alignment**: Aligns multiple data streams by timestamp
-5. **Analysis**: Provides detailed data analysis in debug mode
-
-
-```mermaid
-graph LR
-    A[Your Data File] --> B[Format Detection]
-    B --> C[Data Reading]
-    C --> D[Processing]
-    D --> E[Alignment]
-    E --> F[Export]
-```
-
-## Project Status
-
-The project is under active development. Current focus areas:
-
-
-- Implementation of data exporters
-- Enhanced data visualization
-- Additional device format support
-
-## Documentation
-
-- [Getting Started Guide](getting-started/index.md)
-- [Supported Formats](user-guide/supported-formats/index.md)
-- [API Reference](api/index.md)
-- [Development Guide](development/index.md)
-
-
+## 🛡️ Responsible Use
+<div class="feature-card">
+This tool is designed for data analysis only. Not intended for real-time monitoring or medical decision making. Always consult healthcare providers for medical advice.
+</div>
