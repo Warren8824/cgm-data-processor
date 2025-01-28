@@ -9,10 +9,11 @@
 
 A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
 
+> ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
+
+
 Full documentation including detailed API reference, user guides, and examples can be found at our
 [Documentation Site](https://warren8824.github.io/cgm-data-processor/) hosted Using Github pages.
-
-> ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
 
 ## Call for Device Format Contributors
 
