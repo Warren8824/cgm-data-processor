@@ -1,5 +1,6 @@
 # CGM Data Processor
-
+> ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
+> 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
@@ -8,8 +9,6 @@
 ![Status](https://img.shields.io/badge/status-pre--release-orange)
 
 A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
-
-> ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
 
 
 Full documentation including detailed API reference, user guides, and examples can be found at our
