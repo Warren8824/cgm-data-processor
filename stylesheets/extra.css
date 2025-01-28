@@ -23,6 +23,7 @@
   text-align: center;
   padding: 3rem 1rem;
   background: linear-gradient(45deg, #004d40, #009688);
+  border-radius: 10px;
   color: white;
   margin: -2rem -1rem 1rem -1rem;
 }
