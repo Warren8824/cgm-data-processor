@@ -33,6 +33,19 @@
 
 ## Quick Start
 
+The simplest way to use the CGM Data Processor is to run `python -m src.cli path/to/data/export.file` from the root directory. The following arguments can be supllied:
+
+```bash
+python -m src.cli data.sqlite \
+    --interpolation-limit 6   # Max CGM gaps to fill (6 = 30 mins)
+    --bolus-limit 10.0       # Max bolus insulin units
+    --max-dose 20.0          # Max valid insulin dose
+    --output ./my_analysis   # Output location
+```
+
+For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/) section.
+
+Example of simple use case:
 ```python
 from src.core.format_registry import FormatRegistry
 from src.file_parser.format_detector import FormatDetector
@@ -44,7 +57,7 @@ detector = FormatDetector(registry)
 
 # Process file
 format, _, _ = detector.detect_format("my_data.sqlite")
-processed_data = process_file("my_data.sqlite")
+processed_data = DataProcessor.process_file("my_data.sqlite")
 ```
 
 ## 💡 Key Features
