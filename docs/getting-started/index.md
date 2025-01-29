@@ -29,7 +29,7 @@
 <div class="feature-card">
 <ul>
     <li><a href="./installation">Installation Guide</a> - Set up the package</li>
-    <li><a href="../quickstart/basic">Basic Usage</a> - Process your first dataset</li>
-    <li><a href="../quickstart/import">Data Import</a> - Learn about supported formats</li>
+    <li><a href="./quickstart/basic">Basic Usage</a> - Process your first dataset</li>
+    <li><a href="./quickstart/import">Data Import</a> - Learn about supported formats</li>
 </ul>
 </div>
