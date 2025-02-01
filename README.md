@@ -7,6 +7,7 @@
 ![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat)
 ![Status](https://img.shields.io/badge/status-pre--release-orange)
+![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
 
 A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
 
