@@ -3,6 +3,22 @@
   <p>Set up CGM Data Processor for development</p>
 </div>
 
+## Simple install
+
+```bash
+# Clone repository
+git clone https://github.com/Warren8824/cgm-data-processor.git
+cd cgm-data-processor
+
+# Install dependencies using pip
+pip install -r requirements.txt
+
+# Or using Poetry 
+poetry install
+```
+
+And as simple as that the system is ready to use. - Check out our [Basic Usage](./quickstart/basic.md) page.
+
 ## 🛠️ Development Setup
 
 <div class="feature-card">
@@ -18,8 +34,8 @@
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
 
-# Install dependencies
-poetry install
+# Install development dependencies 
+poetry install --with dev
 
 # Setup pre-commit hooks
 poetry run pre-commit install
