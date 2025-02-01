@@ -24,7 +24,7 @@ And as simple as that the system is ready to use. - Check out our [Basic Usage](
 <div class="feature-card">
 <ul>
     <li>Python 3.10+ required</li>
-    <li>Poetry for dependency management</li>
+    <li>Poetry for dependency management (Preferred)</li>
     <li>Git for version control</li>
 </ul>
 </div>
@@ -34,11 +34,33 @@ And as simple as that the system is ready to use. - Check out our [Basic Usage](
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
 
-# Install development dependencies 
+# Install Poetry (if not installed)
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Create and activate new environment
+
+# macOS/Linux:
+poetry env activate
+source $(poetry env info --path)/bin/activate
+
+# Windows(Powershell):
+poetry env activate
+(Invoke-Expression "$(poetry env info --path)\Scripts\Activate")
+
+# Install development dependencies
+
+# Using poetry:
 poetry install --with dev
+
+# or using venv:
+pip install -r requirements-dev.txt
+
 
 # Setup pre-commit hooks
 poetry run pre-commit install
+
+# Run tests
+poetry run pytest
 ```
 
 ✅ Verify Installation
