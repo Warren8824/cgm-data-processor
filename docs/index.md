@@ -14,7 +14,7 @@
 ## 📈 Process Your Diabetes Data
 
 <div class="feature-card">
-  <p>Analyze data from multiple diabetes management systems including XDrip+, Dexcom, and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
+  <p>Analyse data from multiple diabetes management systems including XDrip+, Dexcom, and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
 </div>
 
 ## 🩸 CGM Analysis
@@ -55,7 +55,7 @@ from src.core.format_registry import FormatRegistry
 from src.file_parser.format_detector import FormatDetector
 from src.processors import DataProcessor
 
-# Initialize format detection
+# Initialise format detection
 registry = FormatRegistry()
 detector = FormatDetector(registry)
 
