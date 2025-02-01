@@ -12,9 +12,21 @@ theme:
   favicon: assets/logo_padded.png
   name: material
   palette:
-    scheme: slate
-    primary: teal
-    accent: teal
+    # Add media toggle for light/dark mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
     - announce.dismiss
     - header.autohide
@@ -24,18 +36,24 @@ theme:
     - navigation.tabs
     - navigation.sections
     - navigation.expand
+    - navigation.top        # Add back-to-top button
+    - search.highlight     # Highlight search results
+    - search.share        # Add search sharing
     - content.code.copy
     - content.code.annotate
+
 extra_css:
   - stylesheets/extra.css
 
 plugins:
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      enable_creation_date: true  # Also show when files were created
   - minify:
       minify_html: true
   - redirects:
-      redirect_maps: { }
-  - search
+      redirect_maps: {}
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])' # Better search
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -48,6 +66,8 @@ plugins:
             show_root_full_path: true
             show_if_no_docstring: true
             show_signature_annotations: true
+            members_order: source  # Order members as they appear in source
+            heading_level: 2      # Start at h2 for better hierarchy
 
 markdown_extensions:
   - pymdownx.superfences:
@@ -55,6 +75,7 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
   - attr_list
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -63,14 +84,18 @@ markdown_extensions:
       anchor_linenums: true
       use_pygments: true
       auto_title: false
+      linenums: true           # Add line numbers to code blocks
+      linenums_style: table    # Table style for line numbers
   - admonition
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.superfences
-  - pymdownx.details  # This is needed for the ??? expandable sections
+  - pymdownx.details
   - tables
   - footnotes
   - def_list
+  - toc:                       # Add table of contents support
+      permalink: true
+      toc_depth: 3
 
 nav:
   - Home: index.md
@@ -81,17 +106,16 @@ nav:
       - Basic Usage: getting-started/quickstart/basic.md
       - Data Import: getting-started/quickstart/import.md
       - Data Processing: getting-started/quickstart/processing.md
-
   - User Guide:
     - Data Types & Processing: user-guide/data-types.md
     - Supported Formats: user-guide/formats.md
     - Error Handling: user-guide/errors.md
-
   - API Reference:
     - Core API: api/core.md
+    - Format Detection API: api/file_parser.md
     - Readers API: api/readers.md
     - Processors API: api/processors.md
-
+    - Exporters API: api/exporters.md
   - Contributing:
     - Development Guide: contributing/guide.md
     - Adding New Formats: contributing/formats.md
