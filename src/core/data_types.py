@@ -78,8 +78,7 @@ class ColumnMapping:
 
     Args:
         source_name: Original column name in the data source
-        data_type: Type of data this column contains (if applicable - Any column can be
-        used for confirming device.)
+        data_type: Type of data this column contains (if applicable - Any column can be used for confirming device.)
         unit: Unit of measurement (if applicable)
         requirement: Type of requirement - default = REQUIRED_WITH_DATA
         is_primary: Whether this is the primary column - default = True
