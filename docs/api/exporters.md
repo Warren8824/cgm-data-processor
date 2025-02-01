@@ -1,6 +1,6 @@
 ## Complete Reference
 
-::: src.processors
+::: src.exporters
     options:
       show_root_heading: true
       show_source: true
