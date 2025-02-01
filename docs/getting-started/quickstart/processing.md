@@ -38,4 +38,31 @@ python -m src.cli data.sqlite --bolus-limit 6.0 --max-dose 12.0
     <li>monthly/: Split data maintaining processing settings</li>
     <li>processing_notes.json: Configuration and quality metrics</li>
 </ul>
+Example Output Structure:
+
+```bash
+data/exports
+├── 2023-06-03_to_2024-09-28_complete
+│   ├── aligned_data.csv
+│   ├── carbs.csv
+│   ├── cgm.csv
+│   ├── insulin.csv
+│   ├── notes.csv
+│   └── processing_notes.json
+└── monthly
+    ├── 2023-06
+    │   ├── aligned_data.csv
+    │   ├── carbs.csv
+    │   ├── cgm.csv
+    │   ├── insulin.csv
+    │   ├── notes.csv
+    │   └── processing_notes.json
+    ├── 2023-07
+    │   ├── aligned_data.csv
+    │   ├── carbs.csv
+    │   ├── cgm.csv
+    │   ├── insulin.csv
+    │   ├── notes.csv
+    │   └── processing_notes.json
+```
 </div>
