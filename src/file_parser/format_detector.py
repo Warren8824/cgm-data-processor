@@ -62,7 +62,7 @@ class FormatDetector:
         """Detect format of provided file.
 
         Args:
-            file_path: Path to the file to check
+            path: Path to the file to check
 
         Returns:
             Tuple containing:
