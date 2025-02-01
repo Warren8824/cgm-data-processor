@@ -1,14 +1,15 @@
 <div class="hero">
   <h1>CGM Data Processor</h1>
-  <p>A robust Python framework for processing and analyzing diabetes device data</p>
+  <p>A robust Python framework for processing and analysing diabetes device data</p>
 </div>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Status](https://img.shields.io/badge/status-pre--release-orange)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
 ![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📈 Process Your Diabetes Data
 
@@ -18,7 +19,7 @@
 
 ## 🩸 CGM Analysis
 - Gap detection
-- Noise filtering
+- Configurable Interpolation
 - Quality metrics
 
 ## 💉 Treatment Data
@@ -30,8 +31,11 @@
 - Automated format detection
 - Data alignment
 - Flexible export options
+- Complete metadata carried through to output format
 
 ## Quick Start
+
+Install CGM Data Processor - [Installation Guide](./getting-started/installation.md)
 
 The simplest way to use the CGM Data Processor is to run `python -m src.cli path/to/data/export.file` from the root directory. The following arguments can be supllied:
 
@@ -70,7 +74,37 @@ processed_data = DataProcessor.process_file("my_data.sqlite")
    <li>Treatment classification and verification</li>
    <li>Flexible data export options</li>
 </ul>
+</div>
 
+## 📊 Example Output Structure
+
+<div class="feature-card">
+
+```bash
+data/exports
+├── 2023-06-03_to_2024-09-28_complete
+│   ├── aligned_data.csv
+│   ├── carbs.csv
+│   ├── cgm.csv
+│   ├── insulin.csv
+│   ├── notes.csv
+│   └── processing_notes.json
+└── monthly
+    ├── 2023-06
+    │   ├── aligned_data.csv
+    │   ├── carbs.csv
+    │   ├── cgm.csv
+    │   ├── insulin.csv
+    │   ├── notes.csv
+    │   └── processing_notes.json
+    ├── 2023-07
+    │   ├── aligned_data.csv
+    │   ├── carbs.csv
+    │   ├── cgm.csv
+    │   ├── insulin.csv
+    │   ├── notes.csv
+    │   └── processing_notes.json
+```
 </div>
 
 ## 🛡️ Responsible Use
