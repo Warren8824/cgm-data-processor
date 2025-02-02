@@ -128,6 +128,10 @@ class DataProcessor:
 
     _type_processors: Dict[DataType, Type[BaseTypeProcessor]] = {}
 
+    # Define defaults for insulin classification centrally
+    DEFAULT_INSULIN_BOLUS_LIMIT: float = 8.0
+    DEFAULT_INSULIN_MAX_DOSE: float = 15.0
+
     @staticmethod
     def create_table_configs(
         detected_format: DeviceFormat,
@@ -158,8 +162,10 @@ class DataProcessor:
         interpolation_limit: Optional[
             Any
         ] = None,  # Optional parameter for CGM processor
-        bolus_limit: Optional[Any] = None,  # Optional parameters for insulin processor
-        max_dose: Optional[Any] = None,
+        bolus_limit: Optional[
+            float
+        ] = None,  # Optional parameters for insulin processor
+        max_dose: Optional[float] = None,
     ) -> Dict[DataType, ProcessedTypeData]:
         """
         Process all tables according to their configuration.
@@ -217,7 +223,20 @@ class DataProcessor:
                 if data_type == DataType.CGM and interpolation_limit is not None:
                     result = processor.process_type(columns, interpolation_limit)
                 elif data_type == DataType.INSULIN:
-                    result = processor.process_type(columns, bolus_limit, max_dose)
+                    # Use provided values or defaults, but never None
+                    final_bolus_limit = (
+                        bolus_limit
+                        if bolus_limit is not None
+                        else self.DEFAULT_INSULIN_BOLUS_LIMIT
+                    )
+                    final_max_dose = (
+                        max_dose
+                        if max_dose is not None
+                        else self.DEFAULT_INSULIN_MAX_DOSE
+                    )
+                    result = processor.process_type(
+                        columns, final_bolus_limit, final_max_dose
+                    )
                 else:
                     result = processor.process_type(columns)
 
