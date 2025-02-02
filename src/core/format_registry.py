@@ -66,14 +66,14 @@ class FormatRegistry:
             FileAccessError: If manufacturers directory cannot be accessed
             FormatLoadingError: If there's an error loading format files
         """
-        try:
-            manufacturers_dir = Path(__file__).parent / "devices"
-            if not manufacturers_dir.exists():
-                raise FileAccessError(
-                    "Manufacturers directory not found",
-                    details={"directory": str(manufacturers_dir)},
-                )
+        manufacturers_dir = Path(__file__).parent / "devices"
+        if not manufacturers_dir.exists():
+            raise FileAccessError(
+                "Manufacturers directory not found",
+                details={"directory": str(manufacturers_dir)},
+            )
 
+        try:
             # Recursively find all Python files
             for format_file in manufacturers_dir.rglob("*.py"):
                 if format_file.stem == "__init__":
@@ -88,6 +88,9 @@ class FormatRegistry:
                     continue
 
         except Exception as e:
+            # Only wrap non-FileAccessError exceptions in FormatLoadingError
+            if isinstance(e, FileAccessError):
+                raise
             raise FormatLoadingError(
                 "Failed to load formats", details={"error": str(e)}
             ) from e
