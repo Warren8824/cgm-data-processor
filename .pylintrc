@@ -9,6 +9,7 @@ suggestion-mode=yes
 unsafe-load-any-extension=no
 
 [MASTER]
+ignore=src/parser/devices/,tests/
 init-hook='import sys; sys.path.append("/home/ginge/sandbox/cgm_data_processor")'
 ignore=setup.pyclear
 
