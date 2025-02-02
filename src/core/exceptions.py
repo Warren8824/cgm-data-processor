@@ -1,4 +1,6 @@
-"""Base module for all expceptions used in the program"""
+"""This module provides all exceptions used within the system. All exceptions inherit from
+the base class CGMProcessorError or one of the subsequent children classes.
+"""
 
 from typing import Any, Dict, Optional
 
