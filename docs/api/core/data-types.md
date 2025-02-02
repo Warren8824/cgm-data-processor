@@ -1,4 +1,7 @@
-# Core API Reference
+::: src.core.data_types
+    options:
+      show_root_heading: true
+      show_source: true
 
 !!! note "Module Location"
     `src/core/data_types.py`
@@ -199,10 +202,3 @@ class DeviceFormat:
         ]
     )
 ```
-
-## Complete Reference
-
-::: src.core.data_types
-    options:
-      show_root_heading: true
-      show_source: true
