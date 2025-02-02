@@ -73,7 +73,7 @@ class CSVExporter(BaseExporter):
             }
 
         with open(output_path / "processing_notes.json", "w", encoding="utf-8") as f:
-            json.dump(common_data, f, indent=2)
+            json.dump(common_data, f, indent=2, ensure_ascii=False)
 
 
 def create_csv_exporter(
