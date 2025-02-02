@@ -67,6 +67,54 @@ class Aligner:
             all_notes.extend([f"  {note}" for note in data.processing_notes])
         return all_notes
 
+    def _align_bgm(
+        self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
+    ) -> pd.DataFrame:
+        """Align blood glucose meter data.
+
+        Args:
+            df: DataFrame containing BGM data
+            reference_index: Reference timeline to align to
+            freq: Frequency for alignment
+
+        Returns:
+            DataFrame aligned to reference timeline with averaged values
+        """
+        df = df.copy()
+        df.index = df.index.round(freq)
+
+        # Identify value columns and their corresponding clipped flag columns
+        value_cols = [
+            col
+            for col in df.columns
+            if not col.endswith("_clipped") and not col.endswith("_mmol")
+        ]
+        clipped_cols = [f"{col}_clipped" for col in value_cols]
+        mmol_cols = [f"{col}_mmol" for col in value_cols]
+
+        # Initialize result DataFrame
+        result = pd.DataFrame(index=reference_index)
+
+        # Process each set of related columns (value, clipped flag, mmol)
+        for value_col, clipped_col, mmol_col in zip(
+            value_cols, clipped_cols, mmol_cols
+        ):
+            # Calculate means for values within each interval
+            values = df[value_col].resample(freq).mean()
+
+            # For clipped flags, if any reading in the interval was clipped, mark as clipped
+            clipped = df[clipped_col].resample(freq).any()
+
+            # Calculate means for mmol values
+            mmol_values = df[mmol_col].resample(freq).mean()
+
+            # Add to result
+            result[value_col] = values
+            result[clipped_col] = clipped
+            result[mmol_col] = mmol_values
+
+        return result
+
     def _align_insulin(
         self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
     ) -> pd.DataFrame:
@@ -150,6 +198,7 @@ class Aligner:
 
         # Define alignment methods for each data type
         type_methods = {
+            DataType.BGM: self._align_bgm,
             DataType.INSULIN: self._align_insulin,
             DataType.CARBS: self._align_carbs,
             DataType.NOTES: self._align_notes,
