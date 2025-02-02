@@ -24,7 +24,6 @@ disable=raw-checker-failed,
         R1735,  # dict-literal vs dict() is mostly stylistic
         C0301,  # line-too-long handled by black/other formatters
         E0401, # Unable to import will be dealt with using github CI/CD
-        R0801, # Similar code in other files - device formats are very similar
         R0917, # Required to allow more than 5 arguments in processors/base.py
 
 [REPORTS]
