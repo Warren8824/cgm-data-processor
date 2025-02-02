@@ -111,7 +111,11 @@ nav:
     - Supported Formats: user-guide/formats.md
     - Error Handling: user-guide/errors.md
   - API Reference:
-    - Core API: api/core.md
+    - Core API:
+        - Data Types API: api/core/data-types.md
+        - Format Registry API: api/core/format-registry.md
+        - Aligner API: api/core/aligner.md
+        - Exceptions API: api/core/exceptions.md
     - Format Detection API: api/file_parser.md
     - Readers API: api/readers.md
     - Processors API: api/processors.md
