@@ -24,7 +24,6 @@ disable=raw-checker-failed,
         C0301,  # line-too-long handled by black/other formatters
         E0401, # Unable to import will be dealt with using github CI/CD
         R0917, # Required to allow more than 5 arguments in processors/base.py
-        W0621,  # Redefining name from outer scope - normal for pytest fixtures
         R0801   # Similar lines in different files - required for formats
 
 [REPORTS]
