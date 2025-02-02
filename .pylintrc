@@ -1,7 +1,7 @@
 [MAIN]
 py-version=3.10
 recursive=no
-ignore=src/parser/devices/,tests/,setup.pyclear
+ignore=src/parser/devices/,tests,setup.pyclear
 jobs=1
 limit-inference-results=100
 persistent=yes
