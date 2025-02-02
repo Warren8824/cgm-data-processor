@@ -1,7 +1,7 @@
 [MAIN]
 py-version=3.10
 recursive=no
-ignore=CVS
+ignore=src/parser/devices/,tests/,setup.pyclear
 jobs=1
 limit-inference-results=100
 persistent=yes
@@ -9,9 +9,7 @@ suggestion-mode=yes
 unsafe-load-any-extension=no
 
 [MASTER]
-ignore=src/parser/devices/,tests/
 init-hook='import sys; sys.path.append("/home/ginge/sandbox/cgm_data_processor")'
-ignore=setup.pyclear
 
 [MESSAGES CONTROL]
 disable=raw-checker-failed,
@@ -26,6 +24,8 @@ disable=raw-checker-failed,
         C0301,  # line-too-long handled by black/other formatters
         E0401, # Unable to import will be dealt with using github CI/CD
         R0917, # Required to allow more than 5 arguments in processors/base.py
+        W0621,  # Redefining name from outer scope - normal for pytest fixtures
+        R0801   # Similar lines in different files - required for formats
 
 [REPORTS]
 output-format=text
