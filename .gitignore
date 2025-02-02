@@ -102,7 +102,7 @@ site/
 static/
 
 # Ignore dynamic data files
-data/
+/data/
 *.db
 *.sqlite3
 *.sqlite
