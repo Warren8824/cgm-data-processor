@@ -9,7 +9,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Type
+from typing import Callable, Dict, List, Optional, Tuple, Type, TypeVar
 
 import pandas as pd
 
@@ -29,6 +29,9 @@ from src.core.exceptions import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Create a type variable for the reader class at module level
+T = TypeVar("T")
 
 
 @dataclass
@@ -52,17 +55,17 @@ class BaseReader(ABC):
     _readers: Dict[FileType, Type["BaseReader"]] = {}
 
     @classmethod
-    def register(cls, file_type: FileType):
+    def register(cls, file_type: FileType) -> Callable[[Type[T]], Type[T]]:
         """Register a reader class for a specific file type.
 
         Args:
             file_type: FileType enum value to associate with the reader
 
         Returns:
-            Decorator function that registers the reader class
+            Callable: Decorator function that registers the reader class
         """
 
-        def wrapper(reader_cls):
+        def wrapper(reader_cls: Type[T]) -> Type[T]:
             cls._readers[file_type] = reader_cls
             return reader_cls
 

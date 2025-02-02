@@ -1,5 +1,3 @@
-## Complete Reference
-
 ::: src.exporters
     options:
       show_root_heading: true

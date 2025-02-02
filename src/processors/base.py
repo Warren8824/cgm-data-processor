@@ -56,8 +56,19 @@ class BaseTypeProcessor(ABC):
             return f"{base_name}_primary"
         return f"{base_name}_{index + 1}"
 
-    def _validate_units(self, data_type: DataType, source_unit: Unit) -> None:
-        """Validate that units are compatible with data type."""
+    def validate_units(self, data_type: DataType, source_unit: Unit) -> None:
+        """Validate that units are compatible with data type.
+
+        Args:
+            data_type: Type of data being validated
+            source_unit: Unit to validate for the data type
+
+        Raises:
+            ProcessingError: If the unit is not valid for the given data type
+
+        Returns:
+            None
+        """
         valid_units = {
             DataType.CGM: [Unit.MGDL, Unit.MMOL],
             DataType.BGM: [Unit.MGDL, Unit.MMOL],
@@ -118,7 +129,9 @@ class DataProcessor:
     _type_processors: Dict[DataType, Type[BaseTypeProcessor]] = {}
 
     @staticmethod
-    def create_table_configs(detected_format) -> Dict[str, TableStructure]:
+    def create_table_configs(
+        detected_format: DeviceFormat,
+    ) -> Dict[str, TableStructure]:
         """
         Creates a table configuration dictionary from detected format.
 
@@ -156,7 +169,7 @@ class DataProcessor:
             detected_format: Format object containing table configurations
             interpolation_limit: Max length of gaps to interpolate
             bolus_limit: Maximum insulin dose to be classified as bolus(default = 8)
-            max_limit: Maximum insulin dose - all over will be discarded
+            max_dose: Maximum insulin dose - all over will be discarded
 
         Returns:
             Dict[DataType, ProcessedTypeData]: Processed data organized by type

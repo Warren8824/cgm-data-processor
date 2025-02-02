@@ -1,5 +1,3 @@
-## Complete Reference
-
 ::: src.readers
     options:
       show_root_heading: true
