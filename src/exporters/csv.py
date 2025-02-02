@@ -54,6 +54,7 @@ class CSVExporter(BaseExporter):
             "export_date": pd.Timestamp.now().isoformat(),
             "date_range": f"{data.dataframe.index.min().strftime('%Y-%m-%d')} to {data.dataframe.index.max().strftime('%Y-%m-%d')}",
             "record_count": len(data.dataframe),
+            "columns_present": list(data.dataframe.columns),
             "notes": data.processing_notes,
         }
 
@@ -66,6 +67,9 @@ class CSVExporter(BaseExporter):
             common_data["completeness"] = {
                 col: f"{(data.dataframe[col].notna().mean() * 100):.2f}%"
                 for col in data.dataframe.columns
+            }
+            common_data["source_units"] = {
+                k: v.value for k, v in data.source_units.items()
             }
 
         with open(output_path / "processing_notes.json", "w", encoding="utf-8") as f:
