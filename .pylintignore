@@ -1,3 +1,2 @@
-setup.py
 src/parser/devices/
-tests/
+tests/*
