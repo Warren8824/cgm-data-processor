@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project Discussions
+    url: https://github.com/Warren8824/cgm-data-processor/discussions
+    about: For general questions and discussions about diabetes data processing and format support

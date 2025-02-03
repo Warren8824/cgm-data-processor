@@ -1,0 +1,111 @@
+name: New Device Format Submission
+description: Submit sample data files and information for a new diabetes device/app format
+title: "[New Format]: "
+labels: ["new-format-sample"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping us expand our supported device formats! This template will guide you through providing the necessary information about your device's data format.
+        
+        **Important**: Please ensure all sample data has been anonymized before submission.
+
+  - type: input
+    id: device-name
+    attributes:
+      label: Device/App Name
+      placeholder: e.g., Dexcom G6, Freestyle Libre 2
+    validations:
+      required: true
+
+  - type: input
+    id: software-version
+    attributes:
+      label: Software/Firmware Version
+      placeholder: e.g., App version 1.2.3 or Device firmware 2.4.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: export-steps
+    attributes:
+      label: Export Process
+      description: Please describe the exact steps taken to export this data
+      placeholder: |
+        1. Open the app
+        2. Navigate to settings
+        3. Select export options
+        4. Choose file format (if applicable)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: file-type
+    attributes:
+      label: Primary File Type
+      description: What is the main file format of the export?
+      options:
+        - CSV
+        - SQLite
+        - JSON
+        - XML
+        - Excel
+        - Other (please specify in additional info)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: data-types
+    attributes:
+      label: Data Types Included
+      multiple: true
+      options:
+        - CGM Readings
+        - Insulin Doses
+        - Carbohydrates
+        - Notes/Events
+        - Device Settings
+        - Device Status/Alerts
+        - Other (please specify in additional info)
+    validations:
+      required: true
+
+  - type: textarea
+    id: format-structure
+    attributes:
+      label: Data Format Structure
+      description: Please describe what you know about how the data is structured
+      placeholder: |
+        Example for a CSV:
+        - timestamp column format: YYYY-MM-DD HH:mm:ss
+        - glucose values in mg/dL or mmol/L
+        - insulin doses in units
+        - any special column names or data formats
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Any other details that might be helpful
+      placeholder: |
+        - Special handling requirements
+        - Known quirks or limitations
+        - Unique features of this device/app
+        - Multiple file formats in export
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Data Privacy Confirmation
+      description: Please confirm the following
+      options:
+        - label: I have removed all personal identifying information from the sample files
+          required: true
+        - label: I have the right to share these sample files
+          required: true
+        - label: I understand these files will be used to improve the project's format support
+          required: true

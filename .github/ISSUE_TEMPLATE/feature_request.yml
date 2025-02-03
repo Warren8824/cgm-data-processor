@@ -1,0 +1,83 @@
+name: Feature Request
+description: Suggest an enhancement or new capability for the diabetes data processor
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please help us understand your needs and the problem you're trying to solve.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What problem or limitation are you trying to address?
+      placeholder: |
+        For example:
+        - I'm having difficulty processing data from [specific device]
+        - I need to analyze patterns in my diabetes data that aren't currently supported
+        - The current output format doesn't work well with my analysis tools
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: |
+        What would the ideal solution look like? Consider:
+        - New data processing capabilities needed
+        - Changes to existing functionality
+        - New output formats or analysis options
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Type of Enhancement
+      options:
+        - New Device Format Support
+        - Data Processing Feature
+        - Analysis Capability
+        - Export Format
+        - Performance Improvement
+        - Documentation
+        - Other (please describe)
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Current Workarounds
+      description: How are you currently handling this limitation, if at all?
+      placeholder: |
+        - Manual data processing steps
+        - Using other tools
+        - Alternative approaches you've considered
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that might help us understand your request
+      placeholder: |
+        - Links to related issues or discussions
+        - Screenshots or examples
+        - Impact on your diabetes management workflow
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: considerations
+    attributes:
+      label: Additional Considerations
+      options:
+        - label: This feature would be useful for other users too, not just my specific case
+        - label: I'd be willing to help test this feature if implemented
+        - label: I have ideas about how this could be implemented

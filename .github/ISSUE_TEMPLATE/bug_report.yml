@@ -1,0 +1,102 @@
+name: Bug Report
+description: Report an issue with data processing or format handling
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. The more detail you can provide, the better we can help resolve the issue.
+        
+        Before submitting, please check if a similar issue already exists.
+
+  - type: input
+    id: device-format
+    attributes:
+      label: Device/Data Format
+      description: Which device or data format were you working with?
+      placeholder: e.g., XDrip+ SQLite backup, Dexcom CSV export
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please describe the issue you encountered
+      placeholder: |
+        1. I ran this command: `python -m src.cli file.sqlite`
+        2. With these parameters: `--interpolation-limit 4`
+        3. The error message was: [paste error here]
+        
+        Or if no error but unexpected results:
+        - Expected: [what you thought would happen]
+        - Actual: [what actually happened]
+    validations:
+      required: true
+
+  - type: textarea
+    id: data-sample
+    attributes:
+      label: Data Sample
+      description: If possible, provide a small anonymized sample of the data that triggers this issue
+      placeholder: |
+        - File format/structure details
+        - Small excerpt of problematic data
+        - Any specific patterns that trigger the issue
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: Please copy and paste any relevant error messages or logs
+      render: shell
+      placeholder: |
+        Paste your terminal output here.
+        If you used --debug flag, include that output too.
+    validations:
+      required: false
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What version of Python are you using?
+      placeholder: e.g., Python 3.9.5
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system and version are you using?
+      placeholder: e.g., Ubuntu 22.04, Windows 11, macOS 13.4
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package-manager
+    attributes:
+      label: Package Manager
+      description: Which package manager did you use to install the project?
+      options:
+        - Poetry (recommended)
+        - pip
+        - Other (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other information that might help us understand the issue
+      placeholder: |
+        - Special circumstances when the bug occurs
+        - Things you've already tried
+        - Related issues or documentation you consulted
+    validations:
+      required: false
