@@ -1,167 +1,200 @@
-# CGM Data Processor - Code Style Guide
+# Contributing to Diabetes Data Processing Project
 
-This document outlines our project's coding standards and lint rules. We use pylint to maintain code quality and consistency across the project.
+Welcome to our diabetes data processing project! We're working to create a unified tool that can process and analyze data from various diabetes management devices and applications. Your contributions can help make diabetes data more accessible and useful for everyone.
 
-## Quick Start
+## Setting Up Your Development Environment
 
-1. Install development dependencies:
-```bash
-pip install pylint black isort
-```
+We use Poetry for dependency management to ensure consistent development environments. If you haven't used Poetry before, it's a modern Python package manager that handles dependencies and virtual environments automatically.
 
-2. Run the linter:
-```bash
-pylint src/
-```
+1. First, install Poetry if you haven't already:
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
 
-## Core Principles
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/[username]/diabetes-data-processing.git
+   cd diabetes-data-processing
+   ```
 
-Our code style is guided by these principles:
-- Readability over cleverness
-- Consistency across the codebase
-- Maintainable and well-documented code
-- Pragmatic approach to style rules
+3. Install dependencies using Poetry:
+   ```bash
+   poetry install
+   ```
+   This will create a virtual environment and install all required dependencies.
 
-## Naming Conventions
+If you prefer using pip, you can alternatively:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   pip install -r requirements-dev.txt
+   ```
+
+## Code Style and Quality Standards
+
+Our project maintains high code quality standards through consistent style and thorough testing. We follow these core principles:
+
+1. Readability takes precedence over clever solutions
+2. Consistency across the entire codebase
+3. Well-documented and maintainable code
+4. Pragmatic approach to style rules
+
+### Code Style Specifications
 
 We follow standard Python naming conventions:
-- Functions and variables: `snake_case`
-- Classes: `PascalCase`
-- Constants: `UPPER_CASE`
-- Protected/private attributes: `_leading_underscore`
 
-Allowed short names: `i`, `j`, `k`, `ex`, `id`, `df`, `_`
+- Functions and variables use `snake_case`
+- Classes use `PascalCase`
+- Constants use `UPPER_CASE`
+- Protected/private attributes use `_leading_underscore`
 
-## Code Structure
+File and Function Structure:
 
-### File Organization
-- Maximum file length: 1000 lines
 - Maximum line length: 100 characters
-- Imports should be grouped and sorted (handled by isort)
+- Maximum file length: 1000 lines
+- Functions should have no more than 5 arguments
+- Classes should have no more than 7 attributes and 20 public methods
 
-### Function and Class Design
-- Maximum function arguments: 5
-- Maximum local variables: 25
-- Maximum return statements: 6
-- Maximum branches: 12
-- Maximum statements: 50
-- Classes should have:
-  - Maximum parents: 7
-  - Maximum attributes: 7
-  - Minimum public methods: 1
-  - Maximum public methods: 20
+Documentation Requirements:
 
-## Documentation
+- All modules must have docstrings
+- Public methods require docstrings; private methods (starting with `_`) do not
+- Type hints are required for function parameters and return values
 
-- All modules should have docstrings
-- Minimum docstring length: 10 characters
-- TODO/FIXME/XXX comments are tracked
-- Docstrings are required except for private methods (starting with `_`)
-
-## Disabled Rules
-
-We've disabled certain pylint rules where they conflict with our tooling or preferences:
-
-1. `R1735`: Dict literals vs dict()
-   - Both `{"key": "value"}` and `dict(key="value")` are acceptable
-   - Choose based on readability in context
-
-2. `C0301`: Line length
-   - Handled by Black formatter
-   - Maximum line length is 100 characters
-   - URLs are exempt from line length limits
-
-3. `E0401`: Import errors
-   - Handled in CI/CD pipeline
-   - Local development may show these warnings depending on environment setup
-
-## Type Checking
-
-We allow generated members for common libraries:
-- numpy.*
-- torch.*
-- cv2.*
-- pd.*
-
-## Code Similarity
-
-- Minimum similarity lines: 4
-- Ignores comments, docstrings, and imports when checking for duplicates
-- Focus on identifying actual code duplication
-
-## Error Handling
-
-- Avoid catching generic exceptions (use specific exception classes)
-- Exception handlers can be found in `core/exceptions.py` and new exceptions should be meaningful and documented in this file.
-
-## Quality Metrics
-
-Our code is evaluated on a 10-point scale using the formula:
-```
-10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+We use pre-commit hooks to maintain code quality. After setting up your environment, install the pre-commit hooks:
+```bash
+poetry run pre-commit install
 ```
 
-## Pre-commit Hooks
+## How You Can Help
 
-We recommend setting up pre-commit hooks:
+### 1. Share Sample Data Files
 
-```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-  - repo: https://github.com/pycqa/pylint
-    rev: v2.17.0
-    hooks:
-      - id: pylint
-        args: [--rcfile=.pylintrc]
-```
+We currently need sample data files from various diabetes management devices and applications. This helps us understand different data formats and ensure our tool works correctly.
 
-## Common Issues and Solutions
+#### Currently Supported Formats:
+- XDrip+ SQLite backup files
 
-1. Import errors (E0401):
+#### Priority Formats We'd Like to Support:
+
+- Dexcom G6/G7 exports
+- Freestyle Libre 1/2/3 exports
+- Medtronic pump data
+- Tandem t:slim pump data
+- Nightscout database exports
+- Tidepool platform exports
+
+#### Data Submission Guidelines
+
+When submitting sample files:
+
+1. Remove Personal Information:
+   - Anonymize all personal identifiers
+   - Replace actual names with placeholder text
+   - Remove medical ID numbers and device serial numbers
+   - Ensure timestamps are within a reasonable timeframe (e.g., last 7 days)
+
+2. Prepare Your Files:
+   - Export data using standard export features
+   - Document your export process
+   - Note software/firmware versions
+   - Include relevant export settings
+
+3. Submit Your Contribution:
+   - Create an issue with tag `new-format-sample`
+   - Attach anonymized sample files
+   - Include device/application details and export method
+
+### 2. Format Definition Contributions
+
+To contribute a new format definition:
+
+1. Study our existing XDrip+ SQLite format as a template:
+
    ```python
-   # Incorrect
-   from readers.base import BaseReader
-   
-   # Correct
-   from src.readers.base import BaseReader
-   ```
-
-2. Too many local variables:
-   ```python
-   # Consider breaking large functions into smaller ones
-   def complex_function():
-       result1 = process_part1()
-       result2 = process_part2()
-       return combine_results(result1, result2)
-   ```
-
-3. Line length:
-   ```python
-   # Break long lines at logical points
-   long_function_call(
-       argument1,
-       argument2,
-       argument3
+   XDRIP_SQLITE_FORMAT = DeviceFormat(
+       name="xdrip_sqlite",
+       files=[
+           FileConfig(
+               name_pattern="*.sqlite",
+               file_type=FileType.SQLITE,
+               tables=[...]
+           )
+       ],
    )
    ```
 
-## Contributing
+2. Create your format definition:
+   - Place new formats in `src/core/devices/`
+   - Include comprehensive documentation
+   - Define table structures and column mappings
+   - Specify data types and units
+   - Document timestamp formats
 
-1. Run the linter before committing:
+3. Submit your contribution:
+   - Fork the repository
+   - Create a branch: `git checkout -b new-format/[device-name]`
+   - Add your format definition
+   - Include sample data files that demonstrate the format structure
+   - Create a pull request
+
+## Quality Assurance
+
+When contributing new code or format definitions, ensure quality through these steps:
+
+1. Run the test suite:
    ```bash
-   pylint src/
+   poetry run pytest
    ```
 
-2. Address any issues or document why they should be ignored
-3. Ensure your code passes all checks in CI/CD
-4. Include tests for new functionality
+2. Ensure code quality:
+   ```bash
+   poetry run pylint src/
+   poetry run black src/
+   poetry run isort src/
+   ```
 
-Remember: These rules are guidelines, not rigid requirements. If you have a good reason to deviate from them, document why in your code or pull request.
+
+
+## Error Handling
+
+When adding new functionality:
+- Use specific exception classes from `core/exceptions.py`
+- Avoid catching generic exceptions
+- Add meaningful error messages
+- Document error conditions in docstrings
+
+## Commit Guidelines
+
+Write clear, descriptive commit messages:
+
+```
+Add Dexcom G6 format definition
+
+- Implements basic CSV parsing for Dexcom clarity exports
+- Adds unit conversion for mmol/L to mg/dL
+- Includes timestamp standardization
+- Fixes #123
+```
+
+## Getting Help
+
+- Create an issue with tag `question` for general queries
+- Join our discussions in the GitHub Discussions tab
+- Check existing issues and pull requests for similar topics
+
+## Code of Conduct
+
+We are committed to providing a welcoming and inclusive experience for everyone. Please:
+
+- Be respectful and considerate in communications
+- Focus on the technical aspects of contributions
+- Help others learn and grow
+- Report inappropriate behavior to project maintainers
+
+## License
+
+By contributing to this project, you agree that your contributions will be licensed under the same terms as the project (see LICENSE file).
+
+Thank you for helping make diabetes data more accessible and useful for everyone!
