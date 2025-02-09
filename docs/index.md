@@ -3,12 +3,12 @@
   <p>A robust Python framework for processing and analysing diabetes device data</p>
 </div>
 
-![Status](https://img.shields.io/badge/status-pre--release-orange)
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/Warren8824/cgm-data-processor)
+![Release Status](https://img.shields.io/badge/status-pre--release-orange)
+![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
-![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
+![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📈 Process Your Diabetes Data
