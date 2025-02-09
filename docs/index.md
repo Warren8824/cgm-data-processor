@@ -27,13 +27,14 @@
 - Carb intake
 - Event notes
 
-## 🚀 Advanced Features
+## 🧑‍🔬 Advanced Features
+
 - Automated format detection
 - Data alignment
 - Flexible export options
 - Complete metadata carried through to output format
 
-## Quick Start
+## 🚀 Quick Start
 
 Install CGM Data Processor - [Installation Guide](./getting-started/installation.md)
 
@@ -47,21 +48,39 @@ python -m src.cli data.sqlite \
     --output ./my_analysis   # Output location
 ```
 
-For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/data-types) section.
+The cli script, performs multiple processing steps and outputs standardised CSV data. The library can be used in many different configurations depending on your use case. For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/data-types) section.
 
 Example of simple use case:
 ```python
+from src.core.exceptions import DataProcessingError, ReaderError
 from src.core.format_registry import FormatRegistry
 from src.file_parser.format_detector import FormatDetector
 from src.processors import DataProcessor
+from src.readers import BaseReader
 
 # Initialise format detection
 registry = FormatRegistry()
 detector = FormatDetector(registry)
+processor = DataProcessor()
+file_path = "example_data.sqlite"
 
 # Process file
-format, _, _ = detector.detect_format("my_data.sqlite")
-processed_data = DataProcessor.process_file("my_data.sqlite")
+detected_format, _, _ = detector.detect_format(file_path)
+reader = BaseReader.get_reader_for_format(detected_format, file_path)
+    with reader:
+        table_data = reader.read_all_tables()
+        if not table_data:
+            raise ReaderError("No valid data found in file")
+        try:
+            processed_data = processor.process_tables(
+                table_data=table_data,
+                detected_format=detected_format,
+            )
+            if not processed_data:
+                raise DataProcessingError("No data could be processed")
+
+        except DataProcessingError as e:
+            raise DataProcessingError(f"Failed to process data: {str(e)}") from e
 ```
 
 ## 💡 Key Features
