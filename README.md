@@ -26,8 +26,10 @@ We're looking for T1D developers and users to help expand our device format supp
 Currently supporting:
 
 - XDrip+ SQLite exports
+- LibreView CSV exports (in progress)
 - More formats coming soon!
 
+If you have basic experience in python and wish to add your own formats, please view our [Contributing page](https://warren8824.github.io/cgm-data-processor/contributing/formats/)
 ## Installation
 
 ### Using Poetry
