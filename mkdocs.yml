@@ -121,5 +121,6 @@ nav:
     - Exporters API: api/exporters.md
   - Contributing:
     - Development Guide: contributing/guide.md
+    - License: contributing/license.md
     - Adding New Formats: contributing/formats.md
     - Adding New Processors: contributing/processors.md
