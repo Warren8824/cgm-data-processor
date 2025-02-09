@@ -198,14 +198,17 @@ class FormatDetector:
 
             # Check required columns
             required_columns = {
-                col.source_name.lower() for col in csv_table.columns if col.required
+                col.source_name.lower()
+                for col in csv_table.columns
+                if col.requirement != ColumnRequirement.OPTIONAL
             }
             missing = required_columns - columns
             if missing:
                 val_result.missing_columns[""] = [
                     col
                     for col in csv_table.columns
-                    if col.required and col.source_name.lower() in missing
+                    if col.requirement != ColumnRequirement.OPTIONAL
+                    and col.source_name.lower() in missing
                 ]
 
             return not val_result.has_errors()
@@ -241,14 +244,15 @@ class FormatDetector:
                 required_fields = {
                     col.source_name.lower()
                     for col in json_table.columns
-                    if col.required
+                    if col.requirement != ColumnRequirement.OPTIONAL
                 }
                 missing = required_fields - fields
                 if missing:
                     val_result.missing_columns[json_table.name] = [
                         col
                         for col in json_table.columns
-                        if col.required and col.source_name.lower() in missing
+                        if col.requirement != ColumnRequirement.OPTIONAL
+                        and col.source_name.lower() in missing
                     ]
 
             return not val_result.has_errors()
@@ -277,14 +281,17 @@ class FormatDetector:
                 fields = {f.lower() for f in fields}
 
                 required_fields = {
-                    col.source_name.lower() for col in xml_table.columns if col.required
+                    col.source_name.lower()
+                    for col in xml_table.columns
+                    if col.requirement != ColumnRequirement.OPTIONAL
                 }
                 missing = required_fields - fields
                 if missing:
                     val_result.missing_columns[xml_table.name] = [
                         col
                         for col in xml_table.columns
-                        if col.required and col.source_name.lower() in missing
+                        if col.requirement != ColumnRequirement.OPTIONAL
+                        and col.source_name.lower() in missing
                     ]
 
             return not val_result.has_errors()
