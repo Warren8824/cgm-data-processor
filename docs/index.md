@@ -47,7 +47,7 @@ python -m src.cli data.sqlite \
     --output ./my_analysis   # Output location
 ```
 
-For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/) section.
+For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/data-types) section.
 
 Example of simple use case:
 ```python
