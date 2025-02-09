@@ -1,13 +1,13 @@
 # CGM Data Processor
 > ⚠️ **Note**: This is a data analysis tool only and is not intended for use as a medical device.
 > 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat)
-![Status](https://img.shields.io/badge/status-pre--release-orange)
-![Pylint](https://img.shields.io/badge/code%20quality-pylint-yellow.svg)
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/Warren8824/cgm-data-processor)
+![Release Status](https://img.shields.io/badge/status-pre--release-orange)
+![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
+![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
+![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
 
