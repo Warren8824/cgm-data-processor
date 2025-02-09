@@ -71,7 +71,7 @@ poetry run pre-commit install
 
 ### 1. Share Sample Data Files
 
-We currently need sample data files from various diabetes management devices and applications. This helps us understand different data formats and ensure our tool works correctly.
+We currently need sample data files from various diabetes management devices and applications. This helps us understand different data formats and ensure our tool works correctly. Please use our [New Device Format Submission](https://github.com/Warren8824/cgm-data-processor/issues/new?template=new_format_submission.yml) issue on Github.
 
 #### Currently Supported Formats:
 - XDrip+ SQLite backup files
