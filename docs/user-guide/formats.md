@@ -44,6 +44,6 @@ notes       -- Treatment notes
 </ul>
 </div>
 
-## Add Custom File Formats
+## :octicons-file-added-24: Add Custom File Formats
 
-Check out our API and developer guide if you would like to add your own formats to the program.
+Check out our [Format Contribution](../contributing/formats.md) guidelines.
