@@ -50,11 +50,9 @@ def process_file(
     detector = FormatDetector(registry)
 
     print("\u2170 Format Detection Initialised.")
-    detected_format, _, _ = detector.detect_format(file_path)
+    detected_format, _, val_results = detector.detect_format(file_path)
     if not detected_format:
-        raise FormatDetectionError(
-            "No valid format detected: Share a sample of this file in our Github Repo."
-        )
+        raise FormatDetectionError(f"No valid format detected: {str(val_results)}")
     print("    \u2713 Format Detection Successful.")
     print(f"      Currently processing file with {detected_format.name} Format. \n")
 
