@@ -52,7 +52,10 @@ def process_file(
     print("\u2170 Format Detection Initialised.")
     detected_format, _, val_results = detector.detect_format(file_path)
     if not detected_format:
-        raise FormatDetectionError(f"No valid format detected: {str(val_results)}")
+        format_names = "\n  - ".join(val_results.keys())
+        raise FormatDetectionError(
+            f"No valid format detected. Attempted formats:\n  - {format_names}"
+        )
     print("    \u2713 Format Detection Successful.")
     print(f"      Currently processing file with {detected_format.name} Format. \n")
 

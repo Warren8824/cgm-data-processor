@@ -189,8 +189,8 @@ class FormatDetector:
     def _validate_csv(self, path: Path, config, val_result: ValidationResult) -> bool:
         """Validate CSV file structure."""
         try:
-            # Read CSV headers only
-            df = pd.read_csv(path, nrows=0)
+            # Read CSV headers only - Checking first five rows as LibreView uses second row in csv files
+            df = pd.read_csv(path, nrows=5)
             columns = {col.lower() for col in df.columns}
 
             # CSV should have exactly one table
