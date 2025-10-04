@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
 from typing import Dict, List, Optional, Union
@@ -42,6 +43,9 @@ class BaseExporter(ABC):
         self.config = config
         self._ensure_directories()
         self.monthly_notes_cache = {}
+        # Ensure attribute exists so linters don't complain when it's set later
+        # This will be set per-run inside export_data()
+        self._current_monthly_base = None
 
     def _ensure_directories(self) -> None:
         """Create necessary directory structure."""
@@ -168,7 +172,10 @@ class BaseExporter(ABC):
         self, data: ProcessedTypeData, data_type: DataType
     ) -> None:
         """Handle monthly data splits and exports."""
-        monthly_base = self.config.output_dir / "monthly"
+        # Use per-run monthly base if set (to avoid collisions between runs)
+        monthly_base = getattr(self, "_current_monthly_base", None)
+        if monthly_base is None:
+            monthly_base = self.config.output_dir / "monthly"
 
         for timestamp, group in data.dataframe.groupby(pd.Grouper(freq="ME")):
             if not group.empty:
@@ -196,13 +203,14 @@ class BaseExporter(ABC):
 
     def _handle_monthly_aligned_exports(self, data: AlignmentResult) -> None:
         """Handle monthly splits for aligned data."""
-        monthly_base = self.config.output_dir / "monthly"
+        monthly_base = getattr(self, "_current_monthly_base", None)
+        if monthly_base is None:
+            monthly_base = self.config.output_dir / "monthly"
 
         for timestamp, group in data.dataframe.groupby(pd.Grouper(freq="ME")):
             if not group.empty:
                 month_str = pd.Timestamp(timestamp).strftime("%Y-%m")
                 month_dir = monthly_base / month_str
-                month_dir.mkdir(parents=True, exist_ok=True)
                 month_dir.mkdir(parents=True, exist_ok=True)
 
                 monthly_notes = [
@@ -280,13 +288,19 @@ class BaseExporter(ABC):
 
         # Reset monthly notes cache
         self.monthly_notes_cache = {}
-
         # Get date range from either source
         date_range = self.get_date_range(
             next(iter(processed_data.values())) if processed_data else aligned_data
         )
-        complete_dir = self.config.output_dir / f"{date_range}_complete"
+
+        # Use a unique complete directory per run to avoid clobbering previous exports
+        run_id = datetime.now().strftime("%Y%m%dT%H%M%S")
+        complete_dir = self.config.output_dir / f"{date_range}_complete_{run_id}"
         complete_dir.mkdir(parents=True, exist_ok=True)
+
+        # Place monthly exports inside the run's complete directory to keep exports self-contained
+        self._current_monthly_base = complete_dir / "monthly"
+        self._current_monthly_base.mkdir(parents=True, exist_ok=True)
 
         # Export individual datasets
         for data_type, type_data in processed_data.items():

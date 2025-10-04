@@ -25,6 +25,7 @@ LIBREVIEW_CSV_FORMAT = DeviceFormat(
                 TableStructure(
                     name="",  # CSV files use empty string for table name
                     timestamp_column="Device Timestamp",
+                    header_row=1,
                     columns=[
                         # Device identification columns
                         ColumnMapping(

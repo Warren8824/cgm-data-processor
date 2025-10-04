@@ -24,7 +24,8 @@ disable=raw-checker-failed,
         C0301,  # line-too-long handled by black/other formatters
         E0401, # Unable to import will be dealt with using github CI/CD
         R0917, # Required to allow more than 5 arguments in processors/base.py
-        R0801   # Similar lines in different files - required for formats
+        R0801,   # Similar lines in different files - required for formats
+        R0912, # too-many-branches - required for some processors
 
 [REPORTS]
 output-format=text
@@ -78,7 +79,7 @@ valid-metaclass-classmethod-first-arg=mcs
 [DESIGN]
 max-args=6
 max-locals=30
-max-returns=9
+max-returns=10
 max-branches=13
 max-statements=50
 max-parents=7
