@@ -4,6 +4,7 @@ This module provides functionality to detect device formats by examining file st
 It validates only the presence of required tables and columns, without checking data content.
 """
 
+import csv  # User python csv for speed and robustness
 import json
 import logging
 import sys
@@ -189,29 +190,87 @@ class FormatDetector:
     def _validate_csv(self, path: Path, config, val_result: ValidationResult) -> bool:
         """Validate CSV file structure."""
         try:
-            # Read CSV headers only - Checking first five rows as LibreView uses second row in csv files
-            df = pd.read_csv(path, nrows=5)
-            columns = {col.lower() for col in df.columns}
-
             # CSV should have exactly one table
             csv_table = config.tables[0]
 
-            # Check required columns
-            required_columns = {
-                col.source_name.lower()
-                for col in csv_table.columns
-                if col.requirement != ColumnRequirement.OPTIONAL
-            }
-            missing = required_columns - columns
-            if missing:
-                val_result.missing_columns[""] = [
-                    col
+            # If the format specifies a header_row use it directly
+            header_row = getattr(csv_table, "header_row", None)
+            if header_row is not None:
+                header_found = False
+                with open(path, encoding="utf-8", newline="") as fh:
+                    reader = csv.reader(fh)
+                    for idx, row in enumerate(reader):
+                        if idx == header_row:
+                            # normalize column names: strip whitespace and lowercase
+                            row_columns = {
+                                str(col).strip().lower()
+                                for col in row
+                                if col is not None
+                            }
+                            header_found = True
+                            break
+
+                if not header_found:
+                    # requested header row does not exist in file
+                    val_result.missing_columns[""] = [
+                        col.source_name
+                        for col in csv_table.columns
+                        if col.requirement != ColumnRequirement.OPTIONAL
+                    ]
+                    return False
+
+                required_columns = {
+                    col.source_name.strip().lower()
                     for col in csv_table.columns
                     if col.requirement != ColumnRequirement.OPTIONAL
-                    and col.source_name.lower() in missing
-                ]
+                }
 
-            return not val_result.has_errors()
+                missing = required_columns - row_columns
+                if missing:
+                    val_result.missing_columns[csv_table.name] = [
+                        col.source_name
+                        for col in csv_table.columns
+                        if col.requirement != ColumnRequirement.OPTIONAL
+                        and col.source_name.strip().lower() in missing
+                    ]
+                    return False
+
+                return True
+
+            # No header_row specified: keep scanning first 4 rows for a header
+            df = pd.read_csv(path, nrows=4, header=None)
+
+            # Check each of the first 4 rows to see if it contains valid column headers
+            found_header_row = None
+            for row_idx in range(min(4, len(df))):
+                # normalize string values: strip whitespace and lowercase
+                row_columns = {str(col).strip().lower() for col in df.iloc[row_idx]}
+                logger.debug("CSV header row %d: %s", row_idx, row_columns)
+
+                required_columns = {
+                    col.source_name.strip().lower()
+                    for col in csv_table.columns
+                    if col.requirement != ColumnRequirement.OPTIONAL
+                }
+
+                missing = required_columns - row_columns
+
+                # If this row has all required columns, treat it as the header
+                if not missing:
+                    found_header_row = row_idx
+                    break
+
+            if found_header_row is None:
+                # No valid header found in first 4 rows
+                val_result.missing_columns[""] = [
+                    col.source_name
+                    for col in csv_table.columns
+                    if col.requirement != ColumnRequirement.OPTIONAL
+                ]
+                return False
+
+            # Successfully found header row
+            return True
 
         except FormatValidationError as e:
             logger.debug("CSV validation error: %s", str(e))

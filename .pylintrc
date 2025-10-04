@@ -78,7 +78,7 @@ valid-metaclass-classmethod-first-arg=mcs
 [DESIGN]
 max-args=6
 max-locals=30
-max-returns=8
+max-returns=9
 max-branches=13
 max-statements=50
 max-parents=7

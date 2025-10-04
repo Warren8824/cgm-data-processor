@@ -46,11 +46,34 @@ class CSVReader(BaseReader):
             # Read data if not already cached
             if self._data is None:
                 try:
-                    self._data = pd.read_csv(
-                        self.file_path,
-                        encoding="utf-8",
-                        low_memory=False,  # Prevent mixed type inference warnings
-                    )
+                    # If the file config/table declares a header_row, use it to skip preamble
+                    header_row = None
+                    if self.file_config and self.file_config.tables:
+                        header_row = getattr(
+                            self.file_config.tables[0], "header_row", None
+                        )
+
+                    if header_row is None:
+                        self._data = pd.read_csv(
+                            self.file_path,
+                            encoding="utf-8",
+                            low_memory=False,  # Prevent mixed type inference warnings
+                        )
+                    else:
+                        # skip rows up to header_row so that header_row becomes the header (first read line)
+                        self._data = pd.read_csv(
+                            self.file_path,
+                            encoding="utf-8",
+                            low_memory=False,
+                            header=0,
+                            skiprows=range(header_row),
+                        )
+
+                    # Normalize column names: strip whitespace from headers
+                    self._data.columns = [
+                        c.strip() if isinstance(c, str) else c
+                        for c in self._data.columns
+                    ]
                 except Exception as e:
                     raise FileAccessError(f"Failed to read CSV file: {e}") from e
 

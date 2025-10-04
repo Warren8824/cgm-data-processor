@@ -64,7 +64,7 @@ def process_file(
     with reader:
         table_data = reader.read_all_tables()
         if not table_data:
-            raise DataProcessingError("No valid data found in file")
+            raise DataProcessingError("Missing vital data in file")
         print("    \u2713 Data Reading Successful. \n")
 
         print("\u2172 Data Processing Initialised.")

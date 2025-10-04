@@ -6,6 +6,7 @@ while allowing automatic mapping of file types to their appropriate readers.
 """
 
 import logging
+import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
@@ -137,7 +138,7 @@ class BaseReader(ABC):
             table_data = self.read_table(table_config)
             if table_data is not None:
                 if table_data.missing_required_columns:
-                    logger.warning(
+                    logger.debug(
                         "Table %s missing required data in columns: %s",
                         table_data.name,
                         table_data.missing_required_columns,
@@ -148,53 +149,100 @@ class BaseReader(ABC):
 
         return results
 
-    def detect_timestamp_format(self, series: pd.Series) -> TimestampType:
+    def detect_timestamp_format(self, series: pd.Series) -> Tuple[TimestampType, dict]:
         """Detect the format of timestamp data, assuming chronological order."""
         try:
             # Sample timestamps without sorting
-            sample = series.dropna().head(10)
+            sample = series.dropna().head(20)
             if sample.empty:
                 logger.warning("No non-null timestamps found in sample")
-                return TimestampType.UNKNOWN
+                return TimestampType.UNKNOWN, {}
 
-            # Check if values are monotonically increasing
+            # Warn if timestamps are not monotonic but continue - files may be unsorted
             if not sample.is_monotonic_increasing:
-                logger.warning("Timestamps are not in chronological order")
-                return TimestampType.UNKNOWN
+                logger.warning(
+                    "Timestamps are not in chronological order; continuing with detection"
+                )
 
-            # pylint: disable=R1705
-            # Supress pylint warning and use elif functionality for efficiency
-            # Check for UNIX epoch formats
-            if all(sample.astype(float) < 1e10):  # Seconds
-                logger.debug("Detected timestamp type: UNIX_SECONDS")
-                return TimestampType.UNIX_SECONDS
-            elif all(sample.astype(float) < 1e13):  # Milliseconds
-                logger.debug("Detected timestamp type: UNIX_MILLISECONDS")
-                return TimestampType.UNIX_MILLISECONDS
-            elif all(sample.astype(float) < 1e16):  # Microseconds
-                logger.debug("Detected timestamp type: UNIX_MICROSECONDS")
-                return TimestampType.UNIX_MICROSECONDS
+            # First, attempt to safely coerce to numeric values to detect epoch timestamps
+            numeric = pd.to_numeric(sample, errors="coerce")
+            if numeric.notna().any():
+                nums = numeric.dropna().astype(float)
+                # Check for UNIX epoch formats using magnitude heuristics
+                if (nums < 1e10).all():  # Seconds
+                    logger.debug("Detected timestamp type: UNIX_SECONDS")
+                    return TimestampType.UNIX_SECONDS, {"unit": "s", "utc": True}
+                if (nums < 1e13).all():  # Milliseconds
+                    logger.debug("Detected timestamp type: UNIX_MILLISECONDS")
+                    return TimestampType.UNIX_MILLISECONDS, {"unit": "ms", "utc": True}
+                if (nums < 1e16).all():  # Microseconds
+                    logger.debug("Detected timestamp type: UNIX_MICROSECONDS")
+                    return TimestampType.UNIX_MICROSECONDS, {"unit": "us", "utc": True}
 
-            # Try ISO 8601 for string timestamps
-            try:
-                pd.to_datetime(sample, utc=True)
-                logger.debug("Detected timestamp type: ISO_8601")
-                return TimestampType.ISO_8601
-            except TimestampProcessingError:
-                pass
+            # Not numeric epochs; try parsing strategies for string datetimes.
+            # 1) Try pandas' infer (fast if inferable)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message=(
+                        "Could not infer format, so each element will be parsed individually, falling back to `dateutil`"
+                    ),
+                )
+                try:
+                    parsed = pd.to_datetime(sample, utc=True)
+                except ReaderError:
+                    parsed = pd.to_datetime(sample, utc=True, errors="coerce")
+
+            parsed_ratio = parsed.notna().mean()
+            if parsed_ratio >= 0.8:
+                logger.debug("Detected timestamp type: ISO_8601 (inferred)")
+                return TimestampType.ISO_8601, {"utc": True}
+
+            # 2) Try dayfirst parsing (common in dd/mm/yy files)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message=(
+                        "Could not infer format, so each element will be parsed individually, falling back to `dateutil`"
+                    ),
+                )
+                parsed_df = pd.to_datetime(
+                    sample, dayfirst=True, utc=True, errors="coerce"
+                )
+            parsed_ratio_df = parsed_df.notna().mean()
+            if parsed_ratio_df >= 0.8:
+                logger.debug("Detected timestamp type: ISO_8601 (dayfirst)")
+                return TimestampType.ISO_8601, {"utc": True, "dayfirst": True}
+
+            # 3) Try a small list of explicit formats (common patterns)
+            common_formats = [
+                "%d/%m/%y %H:%M",
+                "%d/%m/%Y %H:%M",
+                "%Y-%m-%d %H:%M:%S",
+                "%Y-%m-%d %H:%M",
+                "%m/%d/%y %H:%M",
+                "%m/%d/%Y %H:%M",
+            ]
+            for fmt in common_formats:
+                parsed_fmt = pd.to_datetime(
+                    sample, format=fmt, errors="coerce", utc=True
+                )
+                if parsed_fmt.notna().mean() >= 0.8:
+                    logger.debug("Detected timestamp type: ISO_8601 (format=%s)", fmt)
+                    return TimestampType.ISO_8601, {"format": fmt, "utc": True}
 
             logger.warning("Could not determine timestamp format")
-            return TimestampType.UNKNOWN
+            return TimestampType.UNKNOWN, {}
 
-        except TimestampProcessingError as e:
+        except ReaderError as e:
             logger.error("Error during timestamp detection: %s", e)
-            return TimestampType.UNKNOWN
+            return TimestampType.UNKNOWN, {}
 
     def _convert_timestamp_to_utc(
         self, df: pd.DataFrame, timestamp_column: str
     ) -> Tuple[pd.DataFrame, TimestampType]:
         """Convert timestamp column to UTC datetime and set as index."""
-        fmt = self.detect_timestamp_format(df[timestamp_column])
+        fmt, parse_kwargs = self.detect_timestamp_format(df[timestamp_column])
 
         if fmt == TimestampType.UNKNOWN:
             raise TimestampProcessingError(
@@ -202,21 +250,43 @@ class BaseReader(ABC):
             )
 
         try:
-            if fmt == TimestampType.UNIX_SECONDS:
+            # Handle epoch numeric formats uniformly using parse_kwargs
+            if fmt in (
+                TimestampType.UNIX_SECONDS,
+                TimestampType.UNIX_MILLISECONDS,
+                TimestampType.UNIX_MICROSECONDS,
+            ):
                 df[timestamp_column] = pd.to_datetime(
-                    df[timestamp_column], unit="s", utc=True
-                )
-            elif fmt == TimestampType.UNIX_MILLISECONDS:
-                df[timestamp_column] = pd.to_datetime(
-                    df[timestamp_column], unit="ms", utc=True
-                )
-            elif fmt == TimestampType.UNIX_MICROSECONDS:
-                df[timestamp_column] = pd.to_datetime(
-                    df[timestamp_column], unit="us", utc=True
+                    df[timestamp_column], unit=parse_kwargs.get("unit", "s"), utc=True
                 )
             elif fmt == TimestampType.ISO_8601:
-                df[timestamp_column] = pd.to_datetime(df[timestamp_column], utc=True)
-
+                # Use the parse_kwargs discovered earlier to parse consistently.
+                try:
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore",
+                            message=(
+                                "Could not infer format, so each element will be parsed individually, falling back to `dateutil`"
+                            ),
+                        )
+                        df[timestamp_column] = pd.to_datetime(
+                            df[timestamp_column],
+                            **{k: v for k, v in parse_kwargs.items() if k != "format"},
+                        )
+                except ReaderError:
+                    # If parse_kwargs included a format string, try that explicitly
+                    if "format" in parse_kwargs:
+                        df[timestamp_column] = pd.to_datetime(
+                            df[timestamp_column],
+                            format=parse_kwargs["format"],
+                            utc=True,
+                        )
+                    else:
+                        # As a last resort try dayfirst=True
+                        df[timestamp_column] = pd.to_datetime(
+                            df[timestamp_column], dayfirst=True, utc=True
+                        )
+            # set index and return
             return df.set_index(timestamp_column).sort_index(), fmt
 
         except DataProcessingError as e:

@@ -136,6 +136,9 @@ class TableStructure:
     name: str
     timestamp_column: str
     columns: List[ColumnMapping]
+    header_row: Optional[int] = (
+        None  # 0-based index of the header row in CSV files (None = auto-detect)
+    )
 
     def validate_columns(self):
         """Validate that table has at least one column defined.

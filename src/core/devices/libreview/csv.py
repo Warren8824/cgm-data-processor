@@ -37,20 +37,20 @@ LIBREVIEW_CSV_FORMAT = DeviceFormat(
                         ),
                         # Glucose readings
                         ColumnMapping(
-                            source_name="Historic Glucose mg/dL",
+                            source_name="Historic Glucose mmol/L",
                             data_type=DataType.CGM,
-                            unit=Unit.MGDL,
-                        ),
-                        ColumnMapping(
-                            source_name="Scan Glucose mg/dL",
-                            data_type=DataType.CGM,
-                            unit=Unit.MGDL,
+                            unit=Unit.MMOL,
                             is_primary=False,
                         ),
                         ColumnMapping(
-                            source_name="Strip Glucose mg/dL",
+                            source_name="Scan Glucose mmol/L",
+                            data_type=DataType.CGM,
+                            unit=Unit.MMOL,
+                        ),
+                        ColumnMapping(
+                            source_name="Strip Glucose mmol/L",
                             data_type=DataType.BGM,
-                            unit=Unit.MGDL,
+                            unit=Unit.MMOL,
                             requirement=ColumnRequirement.REQUIRED_NULLABLE,
                         ),
                         # Insulin data
@@ -61,28 +61,7 @@ LIBREVIEW_CSV_FORMAT = DeviceFormat(
                             requirement=ColumnRequirement.REQUIRED_NULLABLE,
                         ),
                         ColumnMapping(
-                            source_name="Long-Acting Insulin (units)",
-                            data_type=DataType.INSULIN,
-                            unit=Unit.UNITS,
-                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
-                            is_primary=False,
-                        ),
-                        ColumnMapping(
-                            source_name="Meal Insulin (units)",
-                            data_type=DataType.INSULIN,
-                            unit=Unit.UNITS,
-                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
-                            is_primary=False,
-                        ),
-                        ColumnMapping(
-                            source_name="Correction Insulin (units)",
-                            data_type=DataType.INSULIN,
-                            unit=Unit.UNITS,
-                            requirement=ColumnRequirement.REQUIRED_NULLABLE,
-                            is_primary=False,
-                        ),
-                        ColumnMapping(
-                            source_name="User Change Insulin (units)",
+                            source_name="Long-Acting Insulin Value (units)",
                             data_type=DataType.INSULIN,
                             unit=Unit.UNITS,
                             requirement=ColumnRequirement.REQUIRED_NULLABLE,
