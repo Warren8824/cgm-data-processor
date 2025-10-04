@@ -41,17 +41,10 @@ class BaseExporter(ABC):
 
     def __init__(self, config: ExportConfig):
         self.config = config
-        self._ensure_directories()
         self.monthly_notes_cache = {}
         # Ensure attribute exists so linters don't complain when it's set later
         # This will be set per-run inside export_data()
         self._current_monthly_base = None
-
-    def _ensure_directories(self) -> None:
-        """Create necessary directory structure."""
-        self.config.output_dir.mkdir(parents=True, exist_ok=True)
-        if self.config.split_by_month:
-            (self.config.output_dir / "monthly").mkdir(exist_ok=True)
 
     def _generate_type_stats(
         self, data: pd.DataFrame, data_type: Optional[DataType] = None
