@@ -87,7 +87,7 @@ class Unit(Enum):
 ```python
 @dataclass
 class ColumnMapping:
-    """Maps source columns to standardized data types.
+    """Maps source columns to standardised data types.
     
     Args:
         source_name: Original column name

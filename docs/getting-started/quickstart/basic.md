@@ -1,6 +1,6 @@
 <div class="hero">
   <h1>Basic Usage</h1>
-  <p>Process and analyze your diabetes data</p>
+  <p>Process and analyse your diabetes data</p>
 </div>
 
 ## 🚀 Command Line Usage
