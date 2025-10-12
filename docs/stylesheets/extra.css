@@ -32,3 +32,8 @@
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
+
+.md-copyright {
+  text-align: center;
+  width: 100%;
+}
