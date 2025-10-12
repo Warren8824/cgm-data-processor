@@ -3,6 +3,7 @@
 import argparse
 import logging
 import sys
+import time
 from pathlib import Path
 
 from src.core.aligner import Aligner
@@ -19,6 +20,9 @@ from src.exporters.csv import create_csv_exporter
 from src.file_parser.format_detector import FormatDetectionError, FormatDetector
 from src.processors import DataProcessor
 from src.readers.base import BaseReader
+
+# start timer when we begin running the cli script
+start_time = time.perf_counter()
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +123,7 @@ def main():
     setup_logging(args.debug)
 
     try:
+
         aligner = Aligner()
         file_path = Path(args.file_path)
         validate_file(file_path)
@@ -149,6 +154,10 @@ def main():
             exporter = create_csv_exporter(args.output)
         exporter.export_data(results, aligned)
         print("    \u2713 Data Export Successful.")
+        # print elapsed time if timer was started
+        if start_time is not None:
+            elapsed = time.perf_counter() - start_time
+            print(f"      \u2714 Total processing time: {elapsed:.2f}s")
 
     except (
         FileAccessError,
