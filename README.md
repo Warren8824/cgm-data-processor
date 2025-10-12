@@ -1,7 +1,8 @@
 # CGM Data Processor
 
 ---
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/Warren8824/cgm-data-processor) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) [![Licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue) [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/Warren8824/cgm-data-processor) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) [![Licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > ⚠️ **Medical Disclaimer**: This is a data analysis tool only and is not intended for use as a medical device.
 
