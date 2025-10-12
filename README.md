@@ -153,6 +153,16 @@ src/
 ├── processors/                    # Per-type processing (CGM, insulin, carbs, notes)
 └── exporters/                     # CSV export and processing_notes.json writer
 ```
+### Data Flow of the project
+
+```mermaid
+flowchart LR
+    A[Device Export] --> B[Format Detector]
+    B --> C[Processor]
+    C --> D[Aligner]
+    D --> E[Exporter]
+    E --> F[CSV + JSON Outputs]
+```
 
 ## Adding a New Device Format
 
