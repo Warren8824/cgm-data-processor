@@ -34,6 +34,8 @@ This toolkit provides:
 - **Timeline alignment** onto a reference dataset (default: CGM) with combined aligned CSV export
 - **Comprehensive processing logs** capturing all transformations and data quality metrics
 
+![CLI_Example](docs/assets/cli_screenshot.png)
+
 ## Currently Supported Devices
 
 - ✅ **XDrip+** SQLite exports
