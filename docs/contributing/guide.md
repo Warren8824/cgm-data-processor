@@ -191,10 +191,10 @@ We are committed to providing a welcoming and inclusive experience for everyone.
 - Be respectful and considerate in communications
 - Focus on the technical aspects of contributions
 - Help others learn and grow
-- Report inappropriate behavior to project maintainers
+- Report inappropriate behaviour to project maintainers
 
-## License
+## Licence
 
-By contributing to this project, you agree that your contributions will be licensed under the same terms as the project (see our [License page](license.md)).
+By contributing to this project, you agree that your contributions will be licensed under the same terms as the project (see our [license page](license.md)).
 
 Thank you for helping make diabetes data more accessible and useful for everyone!
