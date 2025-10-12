@@ -178,7 +178,7 @@ class DataProcessor:
             max_dose: Maximum insulin dose - all over will be discarded
 
         Returns:
-            Dict[DataType, ProcessedTypeData]: Processed data organized by type
+            Dict[DataType, ProcessedTypeData]: Processed data organised by type
         """
         table_configs = self.create_table_configs(detected_format)
 

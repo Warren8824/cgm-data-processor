@@ -9,7 +9,7 @@
 ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
 ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📈 Process Your Diabetes Data
 

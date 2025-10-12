@@ -1,8 +1,8 @@
-This project and all attached documentation are available using the MIT License.
+This project and all attached documentation are available using the MIT licence.
 
-Our license file can be found in the root directory of the Github repo. View full license [here](https://github.com/Warren8824/cgm-data-processor/blob/main/LICENSE) or review the copy below.
+Our licence file can be found in the root directory of the Github repo. View full licence [here](https://github.com/Warren8824/cgm-data-processor/blob/main/licence) or review the copy below.
 
-MIT License
+MIT licence
 
 Copyright (c) 2025 Warren Bebbington
 

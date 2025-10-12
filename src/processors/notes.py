@@ -43,7 +43,7 @@ class NotesProcessor(BaseTypeProcessor):
             # Sort columns to ensure primary first
             sorted_columns = sorted(columns, key=lambda x: (not x.is_primary))
 
-            # Initialize result dataframe
+            # initialise result dataframe
             result_df = pd.DataFrame(index=pd.DatetimeIndex([]))
 
             # Process each column

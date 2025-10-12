@@ -1,4 +1,4 @@
-"""Initialize processors package and register all processors."""
+"""initialise processors package and register all processors."""
 
 from src.processors.base import DataProcessor
 from src.processors.bgm import BGMProcessor

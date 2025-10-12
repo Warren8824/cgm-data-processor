@@ -48,7 +48,7 @@ def process_file(
     **kwargs,
 ):
     """Process diabetes device data file with configurable parameters."""
-    logger.debug("\nAnalyzing file: %s", file_path)
+    logger.debug("\nAnalysing file: %s", file_path)
 
     registry = FormatRegistry()
     detector = FormatDetector(registry)
@@ -92,7 +92,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Diabetes Data Format Detection and Processing Tool"
     )
-    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyse")
     parser.add_argument(
         "--debug",
         action="store_true",

@@ -42,7 +42,7 @@ class SQLiteReader(BaseReader):
 
     @property
     def engine(self):
-        """Lazy initialization of database engine."""
+        """Lazy initialisation of database engine."""
         if self._engine is None:
             self._engine = create_engine(f"sqlite:///{self.file_path}")
         return self._engine
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Diabetes Data Format Detection Tool")
-    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyse")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
             logger.error("Path is not a file: %s", file_path)
             sys.exit(1)
 
-        logger.debug("\nAnalyzing file: %s", file_path)
+        logger.debug("\nAnalysing file: %s", file_path)
 
         # Load registered formats and detect any matches
         registry = FormatRegistry()

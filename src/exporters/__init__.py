@@ -1,4 +1,4 @@
-"""Initialize processors package and register all processors."""
+"""initialise processors package and register all processors."""
 
 from .base import BaseExporter
 from .csv import CSVExporter

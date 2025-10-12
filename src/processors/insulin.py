@@ -66,7 +66,7 @@ class InsulinProcessor(BaseTypeProcessor):
             if not any(col.is_primary for col in dose_cols):
                 raise ProcessingError("No primary insulin dose column found")
 
-            # Initialize result DataFrame with dose data
+            # initialise result DataFrame with dose data
             result_df = pd.DataFrame()
             result_units = {}
 

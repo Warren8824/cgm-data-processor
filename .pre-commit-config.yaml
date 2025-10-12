@@ -9,51 +9,30 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3.10
+        language_version: default
         files: '\.py$'
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        files: '\.py$'
-
-  - repo: local
-    hooks:
-      - id: check-uk-english
-        name: check-uk-english
-        entry: python .github/scripts/check_uk_english.py
-        language: system
-        files: '\.(md|py|rst)$'
-        pass_filenames: true
-repos:
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.1.0
-    hooks:
-      - id: codespell
-        files: '\.(md|py|rst)$'
-
-  - repo: local
-    hooks:
-      - id: check-uk-english
-        name: check-uk-english
-        entry: python .github/scripts/check_uk_english.py
-        language: system
-        files: '\.(md|py|rst)$'
-        pass_filenames: true
-repos:
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
         args: ['--exclude', 'src/file_parser/devices/']
+
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
+        files: '\.py$'
         args: ['--skip', 'src/file_parser/devices/']
+
   - repo: https://github.com/pycqa/pylint
     rev: v3.3.3
     hooks:
       - id: pylint
-        args: [ --rcfile=.pylintrc ]
+        args: ['--rcfile=.pylintrc']
+
+  - repo: local
+    hooks:
+      - id: check-uk-english
+        name: check-uk-english
+        entry: python .github/scripts/check_uk_english.py
+        language: python
+        language_version: default
+        files: '\.(md|py|rst)$'
+        exclude: '^\.github/scripts/' # Ignore the script itself
+        pass_filenames: true

@@ -40,7 +40,7 @@ class XMLReader(BaseReader):
         self._root = None
 
     def _init_xml(self):
-        """Initialize XML parsing if not already done."""
+        """initialise XML parsing if not already done."""
         if self._root is None:
             try:
                 self._tree = ET.parse(self.file_path)
