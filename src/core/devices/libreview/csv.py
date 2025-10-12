@@ -41,12 +41,12 @@ LIBREVIEW_CSV_FORMAT = DeviceFormat(
                             source_name="Historic Glucose mmol/L",
                             data_type=DataType.CGM,
                             unit=Unit.MMOL,
-                            is_primary=False,
                         ),
                         ColumnMapping(
                             source_name="Scan Glucose mmol/L",
                             data_type=DataType.CGM,
                             unit=Unit.MMOL,
+                            is_primary=False,
                         ),
                         ColumnMapping(
                             source_name="Strip Glucose mmol/L",

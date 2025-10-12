@@ -94,28 +94,34 @@ class CGMProcessor(BaseTypeProcessor):
 
             # Handle interpolation for each column
             for col in combined_df.columns:
-                # Create groups of consecutive missing values
-                gap_groups = (~combined_df[col].isna()).cumsum()
+                # Save original missing mask BEFORE interpolation so we can
+                # reliably revert fills that span larger-than-allowed gaps.
+                orig_missing = combined_df[col].isna()
 
-                # Within each False group (where missing=True), count the group size
-                gap_size = (
-                    combined_df[combined_df[col].isna()].groupby(gap_groups).size()
-                )
+                # Create groups of consecutive non-missing values (group id per block)
+                gap_groups = (~orig_missing).cumsum()
+
+                # Count missing entries per group (these are the gap sizes)
+                # Use sum on boolean series which counts True as 1
+                gap_size = orig_missing.groupby(gap_groups).sum()
 
                 # Identify gap groups that are larger than interpolation_limit
                 large_gaps = gap_size[gap_size > interpolation_limit].index
 
-                # Interpolate all gaps initially
+                # Interpolate all gaps initially (honours pandas 'limit')
                 combined_df[col] = combined_df[col].interpolate(
                     method="linear",
                     limit=interpolation_limit,
                     limit_direction="forward",
                 )
 
-                # Reset interpolated values back to NaN for large gaps
-                for gap_group in large_gaps:
-                    mask = (gap_groups == gap_group) & combined_df[col].isna()
-                    combined_df.loc[mask, col] = np.nan
+                # Revert interpolated values back to NaN for the large gaps we
+                # identified using the original missing mask. We use the saved
+                # orig_missing mask here because after interpolation those
+                # positions are no longer NaN.
+                if len(large_gaps) > 0:
+                    reset_mask = orig_missing & gap_groups.isin(large_gaps)
+                    combined_df.loc[reset_mask, col] = np.nan
 
                 # Clip values to valid range
                 combined_df[col] = combined_df[col].clip(lower=39.64, upper=360.36)
