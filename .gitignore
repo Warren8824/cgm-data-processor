@@ -110,5 +110,5 @@ static/
 *.sqlite-wal
 *.csv
 
-# Github Actions
-.github/workflows/copilot-instructions.md
+# Copilot instructions file
+.github/copilot-instructions.md
