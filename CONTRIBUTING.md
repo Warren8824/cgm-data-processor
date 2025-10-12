@@ -1,6 +1,6 @@
 # Contributing to Diabetes Data Processing Project
 
-Welcome to our diabetes data processing project! We're working to create a unified tool that can process and analyze data from various diabetes management devices and applications. Your contributions can help make diabetes data more accessible and useful for everyone.
+Welcome to our diabetes data processing project! We're working to create a unified tool that can process and analyse data from various diabetes management devices and applications. Your contributions can help make diabetes data more accessible and useful for everyone.
 
 ## Setting Up Your Development Environment
 
@@ -90,7 +90,7 @@ We currently need sample data files from various diabetes management devices and
 When submitting sample files:
 
 1. Remove Personal Information:
-   - Anonymize all personal identifiers
+   - Anonymise all personal identifiers
    - Replace actual names with placeholder text
    - Remove medical ID numbers and device serial numbers
    - Ensure timestamps are within a reasonable timeframe (e.g., last 7 days)
@@ -103,7 +103,7 @@ When submitting sample files:
 
 3. Submit Your Contribution:
    - Create an issue with tag `new-format-sample`
-   - Attach anonymized sample files
+   - Attach anonymised sample files
    - Include device/application details and export method
 
 ### 2. Format Definition Contributions
@@ -174,7 +174,7 @@ Add Dexcom G6 format definition
 
 - Implements basic CSV parsing for Dexcom clarity exports
 - Adds unit conversion for mmol/L to mg/dL
-- Includes timestamp standardization
+- Includes timestamp standardisation
 - Fixes #123
 ```
 

@@ -9,7 +9,7 @@ The format system consists of several key components:
 1. **Device Formats**: Define how to read and interpret data from specific diabetes devices
 2. **File Configurations**: Specify file types and patterns to match
 3. **Table Structures**: Define the layout of data tables
-4. **Column Mappings**: Map source columns to standardized data types
+4. **Column Mappings**: Map source columns to standardised data types
 
 ## Quick Start
 
@@ -229,7 +229,7 @@ python -m src.cli your_test_file.csv --debug
     - Use `REQUIRED_NULLABLE` for optional data types
     - Use `REQUIRED_WITH_DATA` for essential columns
 
-2. **Data Organization**
+2. **Data Organisation**
     - Group related columns in the same table
     - Keep primary/secondary relationships clear
     - Document any special handling requirements

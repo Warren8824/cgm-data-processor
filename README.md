@@ -80,9 +80,9 @@ Current implementation:
 - Quality Assessment: Evaluate CGM data completeness and identify gaps
 - Data Migration: Convert data between different diabetes management systems
 
-- Retrospective Review: Analyze historical diabetes management data with proper timeline alignment
+- Retrospective Review: Analyse historical diabetes management data with proper timeline alignment
 
-- Research Projects: Process diabetes device data in standardized formats for research studies
+- Research Projects: Process diabetes device data in standardised formats for research studies
 
 - Personal Insights: Track patterns in CGM, insulin, and meal data over time
 

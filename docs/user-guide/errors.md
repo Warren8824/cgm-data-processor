@@ -7,7 +7,7 @@
 
 <div class="feature-card">
 <ul>
-    <li>FormatDetectionError: File format not recognized</li>
+    <li>FormatDetectionError: File format not recognised</li>
     <li>DataProcessingError: Invalid or corrupt data</li>
     <li>AlignmentError: Cannot align datasets</li>
     <li>FileAccessError: Cannot read input file</li>
