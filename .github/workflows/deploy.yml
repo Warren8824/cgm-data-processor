@@ -1,0 +1,26 @@
+name: Deploy MkDocs
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history instead of shallow clone
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install mkdocs
+      - run: pip install mkdocs-material
+      - run: pip install mkdocs-git-revision-date-localized-plugin
+      - run: pip install mkdocs-minify-plugin
+      - run: pip install mkdocs-redirects
+      - run: pip install mkdocstrings[python]  # This installs mkdocstrings with Python handler
+      - run: mkdocs gh-deploy --force
