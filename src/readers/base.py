@@ -150,6 +150,7 @@ class BaseReader(ABC):
         """Detect timestamp format using a small deterministic heuristic.
 
         Strategy (simple & fast):
+
         - sample up to 50 non-null values
         - detect numeric epochs first
         - look for obvious ISO-like markers (T, Z, timezone offsets)
