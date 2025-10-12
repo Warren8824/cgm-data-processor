@@ -54,7 +54,7 @@ class FormatDetector:
     """Detects device formats by examining file structure."""
 
     def __init__(self, format_registry: FormatRegistry):
-        """Initialize detector with format registry."""
+        """initialise detector with format registry."""
         self._registry = format_registry
 
     def detect_format(
@@ -243,7 +243,7 @@ class FormatDetector:
             # Check each of the first 4 rows to see if it contains valid column headers
             found_header_row = None
             for row_idx in range(min(4, len(df))):
-                # normalize string values: strip whitespace and lowercase
+                # normalise string values: strip whitespace and lowercase
                 row_columns = {str(col).strip().lower() for col in df.iloc[row_idx]}
                 logger.debug("CSV header row %d: %s", row_idx, row_columns)
 
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Diabetes Data Format Detection Tool")
-    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyse")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 
     try:
         file_path = Path(args.file_path)
-        logger.debug("\nAnalyzing file: %s", file_path)
+        logger.debug("\nAnalysing file: %s", file_path)
 
         registry = FormatRegistry()
         detector = FormatDetector(registry)

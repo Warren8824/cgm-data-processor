@@ -30,7 +30,7 @@ Patterns and repo-specific conventions
 - Device formats are pure data: modules should create one or more `DeviceFormat` objects (see `XDRIP_SQLITE_FORMAT` and `LIBREVIEW_CSV_FORMAT`) — `FormatRegistry` scans all `.py` files under `src/core/devices` and registers any `DeviceFormat` instances it finds.
 - File pattern matching uses `Path.match(file_pattern)`. Prefer glob-like patterns such as `*.sqlite` or `*.csv` and ensure they match the input path when testing.
 - Readers must be registered with `@BaseReader.register(FileType.<TYPE>)`. Implement `read_table(self, table_structure)` and return `TableData` objects; use `read_all_tables()` to process all declared tables.
-- Timestamp detection: `BaseReader.detect_timestamp_format()` uses a deterministic heuristic (sample up to 50 values, numeric epoch detection, limited explicit formats, fallback to pandas). Be conservative when modifying this — many formats rely on its behavior.
+- Timestamp detection: `BaseReader.detect_timestamp_format()` uses a deterministic heuristic (sample up to 50 values, numeric epoch detection, limited explicit formats, fallback to pandas). Be conservative when modifying this — many formats rely on its behaviour.
 - Registry format key: call sites occasionally expect `format_name + '_' + filetype`, e.g., `registry.get_format('xdrip_sqlite_sqlite')` — use `registry.formats` or helper methods like `get_formats_for_file()` when possible.
 
 Developer workflows & commands

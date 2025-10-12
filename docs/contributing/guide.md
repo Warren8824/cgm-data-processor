@@ -195,6 +195,6 @@ We are committed to providing a welcoming and inclusive experience for everyone.
 
 ## Licence
 
-By contributing to this project, you agree that your contributions will be licensed under the same terms as the project (see our [license page](license.md)).
+By contributing to this project, you agree that your contributions will be licenced under the same terms as the project (see our [licence page](license.md)).
 
 Thank you for helping make diabetes data more accessible and useful for everyone!

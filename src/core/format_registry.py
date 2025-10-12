@@ -54,10 +54,10 @@ class FormatRegistry:
     """
 
     def __init__(self):
-        """Initialize the format registry and load available formats."""
+        """initialise the format registry and load available formats."""
         self._formats: Dict[str, DeviceFormat] = {}
         self._load_formats()
-        logger.debug("Initialized FormatRegistry with %d formats", len(self._formats))
+        logger.debug("Initialised FormatRegistry with %d formats", len(self._formats))
 
     def _load_formats(self) -> None:
         """Load all format definitions from the devices directory structure.
@@ -282,7 +282,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Diabetes Data Format Detection Tool")
-    parser.add_argument("file_path", type=str, help="Path to the file to analyze")
+    parser.add_argument("file_path", type=str, help="Path to the file to analyse")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 

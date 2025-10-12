@@ -92,7 +92,7 @@ class Aligner:
         clipped_cols = [f"{col}_clipped" for col in value_cols]
         mmol_cols = [f"{col}_mmol" for col in value_cols]
 
-        # Initialize result DataFrame
+        # initialise result DataFrame
         result = pd.DataFrame(index=reference_index)
 
         # Process each set of related columns (value, clipped flag, mmol)

@@ -15,7 +15,7 @@ from src.processors.base import ProcessedTypeData
 
 
 class ColumnCategory(Enum):
-    """Categories for organizing columns in exports."""
+    """Categories for organising columns in exports."""
 
     PRIMARY = auto()  # Primary value columns (e.g., bgm_primary)
     SECONDARY = auto()  # Secondary value columns

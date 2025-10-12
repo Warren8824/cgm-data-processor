@@ -95,7 +95,7 @@ class BaseReader(ABC):
         raise ReaderError(f"No matching file configuration found for {file_path}")
 
     def __init__(self, path: Path, file_config: FileConfig):
-        """Initialize reader with file path and configuration.
+        """initialise reader with file path and configuration.
 
         Args:
             path: Path to the data file

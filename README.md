@@ -7,7 +7,7 @@
 ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
 ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Python package for processing and analysing continuous glucose monitor (CGM), insulin, and meal data from diabetes management systems. Features robust gap detection, data alignment, and quality assessment. Built by a T1D developer.
 
@@ -171,7 +171,7 @@ We welcome contributions, especially:
 
 Please open an issue to discuss before submitting PRs.
 
-## License
+## licence
 
 MIT
 
