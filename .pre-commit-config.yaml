@@ -34,5 +34,5 @@ repos:
         language: python
         language_version: default
         files: '\.(md|py|rst)$'
-        exclude: '^\.github/scripts/' # Ignore the script itself
-        pass_filenames: true
+    exclude: '^\.github/(scripts|tools)/'  # Ignore the helper scripts and archived tools
+    pass_filenames: true
