@@ -122,7 +122,7 @@ data/exports/
         ├── 2023-06/insulin.csv
         └── ...
 ```
-![output](docs/assets/output_structure.png) ![output2](docs/assets/output_structure_2.png)
+![output](docs/assets/output_structure.png) 
 
 ## Use Cases
 
