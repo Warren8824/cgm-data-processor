@@ -1,4 +1,4 @@
-"""Command line interface for diabetes data processing."""
+"""Command line interface for diabetes data processing. Main entry point."""
 
 import argparse
 import logging
