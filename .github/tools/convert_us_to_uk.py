@@ -3,7 +3,7 @@
 in Python docstrings/comments only. This script is conservative: it will not
 alter code identifiers or strings judged to be code (best-effort heuristic).
 
-Usage: python .github/scripts/convert_us_to_uk.py [--apply]
+Usage: python .github/tools/convert_us_to_uk.py [--apply]
 --apply will write changes; without it the script prints a dry-run report.
 """
 import re
@@ -59,7 +59,7 @@ def process_markdown(path: Path):
 
 
 # For Python we only attempt replacements in comments and triple-quoted docstrings
-TRIPLE_STR_RE = re.compile(r"(\"\"\"|\'\'\')(.+?)(\1)", re.DOTALL)
+TRIPLE_STR_RE = re.compile(r'("""|\'\'\')(.+?)(\1)', re.DOTALL)
 LINE_COMMENT_RE = re.compile(r"#.*")
 
 
@@ -123,7 +123,7 @@ def find_files(root: Path):
 
 
 def main(argv):
-    """Main run function."""
+    """Main run function"""
     apply_changes = "--apply" in argv
     repo = Path(".").resolve()
     summary = {}
