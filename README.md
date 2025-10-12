@@ -19,7 +19,9 @@ This project solves that problem by:
 - **Providing control over your own health data** without vendor lock-in
 - **Supporting research and personal insights** with clean, consistent datasets
 
-This project would also be suitable for standardising multiple data back-ups from multiple people into one unified format. **Enabling side-by-side comparison and analysis**.
+This project would also be suitable for standardising multiple data back-ups from multiple people into one unified format. 
+
+- **Enabling side-by-side comparison and analysis of numerous patients**.
 
 ## What It Does
 
