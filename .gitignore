@@ -109,3 +109,6 @@ static/
 *.sqlite-shm
 *.sqlite-wal
 *.csv
+
+# Github Actions
+.github/workflows/
