@@ -6,10 +6,8 @@
 
 **Lightweight and fast toolkit for parsing, normalising, and exporting diabetes device data (CGM, insulin, carbs, notes).** Process multiple device backups locally into a consistent output format, enabling long-term unified storage that remains unaffected by device format changes over time. Built by a T1D developer for analysis and research workflows.
 
----
 
 📚 **[Full Documentation](https://warren8824.github.io/cgm-data-processor/)** | 🐛 **[Report Issues](https://github.com/Warren8824/cgm-data-processor/issues)** | 💬 **[Discussions](https://github.com/Warren8824/cgm-data-processor/discussions)**
-
 
 ## Why This Exists
 
@@ -23,8 +21,6 @@ This project solves that problem by:
 
 This project would also be suitable for standardising multiple data back-ups from multiple people into one unified format. **Enabling side-by-side comparison and analysis**.
 
----
-
 ## What It Does
 
 This toolkit provides:
@@ -35,8 +31,6 @@ This toolkit provides:
 - **Deterministic timestamp detection** and conversion to UTC (epoch, explicit formats, inference fallback)
 - **Timeline alignment** onto a reference dataset (default: CGM) with combined aligned CSV export
 - **Comprehensive processing logs** capturing all transformations and data quality metrics
-
----
 
 ## Currently Supported Devices
 
@@ -53,8 +47,6 @@ This toolkit provides:
 3. Providing sample files with dummy data (never share real medical data publicly)
 
 If you have basic Python experience and want to add your own format, see our [Contributing Guide](https://warren8824.github.io/cgm-data-processor/contributing/formats/).
-
----
 
 ## Quick Start
 
@@ -127,8 +119,6 @@ data/exports/
         └── ...
 ```
 
----
-
 ## Use Cases
 
 - **Personal Data Analysis**: Process and clean your diabetes device data for retrospective analysis
@@ -137,8 +127,6 @@ data/exports/
 - **Research Projects**: Generate standardised datasets for diabetes research studies
 - **Long-Term Storage**: Archive your data in a format that survives device upgrades
 - **Pattern Recognition**: Track relationships between CGM, insulin, and meal data over time
-
----
 
 ## Project Architecture
 
@@ -161,8 +149,6 @@ src/
 └── exporters/                     # CSV export and processing_notes.json writer
 ```
 
----
-
 ## Adding a New Device Format
 
 Quick guide for contributors:
@@ -177,8 +163,6 @@ Quick guide for contributors:
 5. Add tests with representative sample files in `tests/data/` and include small, focused unit tests for detection and parsing.
 
 See our [detailed format contribution guide](https://warren8824.github.io/cgm-data-processor/contributing/formats/) for examples and best practices. Example device format modules to inspect: `src/core/devices/xdrip/sqlite.py` and `src/core/devices/libreview/csv.py`.
-
----
 
 ## Development
 
@@ -247,8 +231,6 @@ mkdocs serve
 
 Visit `http://localhost:8000` to view the documentation.
 
----
-
 ## Dependencies
 
 ### Core
@@ -264,8 +246,6 @@ Visit `http://localhost:8000` to view the documentation.
 - MkDocstrings
 
 See `pyproject.toml` or `requirements.txt` for the complete dependency list.
-
----
 
 ## Contributing
 
@@ -286,7 +266,6 @@ Contributions are very welcome! The most valuable contributions are:
 
 Please ensure all contributions use UK English spelling throughout.
 
----
 
 ## Project Status
 
@@ -298,13 +277,9 @@ This project is in **pre-release development**.  Current focus areas:
 - [ ] Adding basic statistics and visualisations
 - [ ] Preparing first stable release
 
----
-
 ## Licence
 
 This project is licenced under the MIT Licence. See the `LICENSE` file for details.
-
----
 
 ## Contact
 
