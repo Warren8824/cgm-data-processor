@@ -3,9 +3,7 @@
   <p>A robust Python framework for processing and analysing diabetes device data</p>
 </div>
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-
-![Release Status](https://img.shields.io/badge/status-pre--release-orange)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange)
 ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
 ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
