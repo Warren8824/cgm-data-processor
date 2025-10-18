@@ -4,7 +4,7 @@
 </div>
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/Warren8824/cgm-data-processor)
+
 ![Release Status](https://img.shields.io/badge/status-pre--release-orange)
 ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
 ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
@@ -14,7 +14,7 @@
 ## 📈 Process Your Diabetes Data
 
 <div class="feature-card">
-  <p>Analyse data from multiple diabetes management systems including XDrip+, Dexcom, and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
+  <p>Analyse data from multiple diabetes management systems including XDrip+ and Freestyle Libre. Handle CGM readings, insulin doses, carbs, and treatment notes with confidence.</p>
 </div>
 
 ## 🩸 CGM Analysis
@@ -42,11 +42,14 @@ The simplest way to use the CGM Data Processor is to run `python -m src.cli path
 
 ```bash
 python -m src.cli data.sqlite \
-    --interpolation-limit 6   # Max CGM gaps to fill (6 = 30 mins)
+    --debug                  # Display verbose output
+    --interpolation-limit 6  # Max CGM gaps to fill (6 = 30 mins)
     --bolus-limit 10.0       # Max bolus insulin units
     --max-dose 20.0          # Max valid insulin dose
     --output ./my_analysis   # Output location
 ```
+
+![cli_script](assets/cli_screenshot.png)
 
 The cli script, performs multiple processing steps and outputs standardised CSV data. The library can be used in many different configurations depending on your use case. For individual use cases check out our [API Reference](https://warren8824.github.io/cgm-data-processor/api/core/data-types) section.
 
@@ -99,31 +102,7 @@ reader = BaseReader.get_reader_for_format(detected_format, file_path)
 
 <div class="feature-card">
 
-```bash
-data/exports
-├── 2023-06-03_to_2024-09-28_complete
-│   ├── aligned_data.csv
-│   ├── carbs.csv
-│   ├── cgm.csv
-│   ├── insulin.csv
-│   ├── notes.csv
-│   └── processing_notes.json
-└── monthly
-    ├── 2023-06
-    │   ├── aligned_data.csv
-    │   ├── carbs.csv
-    │   ├── cgm.csv
-    │   ├── insulin.csv
-    │   ├── notes.csv
-    │   └── processing_notes.json
-    ├── 2023-07
-    │   ├── aligned_data.csv
-    │   ├── carbs.csv
-    │   ├── cgm.csv
-    │   ├── insulin.csv
-    │   ├── notes.csv
-    │   └── processing_notes.json
-```
+![output_example](assets/output_structure.png)
 </div>
 
 ## 🛡️ Responsible Use
