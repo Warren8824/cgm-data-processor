@@ -100,7 +100,7 @@ reader = BaseReader.get_reader_for_format(detected_format, file_path)
 
 <div class="feature-card">
 
-![output_example](assets/output_structure.png)
+![output](assets/output_structure.png)
 </div>
 
 ## 🛡️ Responsible Use
