@@ -156,12 +156,14 @@ src/
 ### Data Flow of the project
 
 ```mermaid
+
 flowchart LR
     A[Device Export] --> B[Format Detector]
-    B --> C[Processor]
-    C --> D[Aligner]
-    D --> E[Exporter]
-    E --> F[CSV + JSON Outputs]
+    B --> C[Reader]
+    C --> D[Processor]
+    D --> E[Aligner]
+    E --> F[Exporter]
+    F --> G[CSV + JSON Outputs]
 ```
 
 ## Adding a New Device Format
