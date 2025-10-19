@@ -10,6 +10,7 @@ unsafe-load-any-extension=no
 
 [MASTER]
 init-hook='import sys; sys.path.append("/home/ginge/sandbox/cgm_data_processor")'
+ignore-patterns=test_.*\.py # Skip test directories as adding docstrings is unnecasary clutter.
 
 [MESSAGES CONTROL]
 disable=raw-checker-failed,

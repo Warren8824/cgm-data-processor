@@ -1,5 +1,3 @@
-"""Unit tests for custom exception classes in src.core.exceptions.py"""
-
 import pytest
 
 from src.core.exceptions import (
@@ -71,7 +69,6 @@ def test_base_exception_details_default():
     ],
 )
 def test_subclass_is_instance_of_base(exception_class):
-    """Test that each exception subclass is an instance of CGMProcessorError"""
     exc = exception_class("Test")
     assert isinstance(exc, CGMProcessorError)
 
@@ -100,5 +97,4 @@ def test_subclass_is_instance_of_base(exception_class):
     ],
 )
 def test_subclass_correct_parent(subclass, parent):
-    """Test that each subclass has the correct parent class"""
     assert issubclass(subclass, parent)
