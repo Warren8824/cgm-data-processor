@@ -96,15 +96,15 @@ class BaseExporter(ABC):
                     stats.extend(
                         [
                             f"BGM Processing Notes ({bgm_col}):",
-                            f"  Processed {total_readings} total BGM readings",
-                            f"  Found {clipped_readings} clipped values ({clipped_percent:.1f}%)",
+                            f"Processed {total_readings} total BGM readings",
+                            f"Found {clipped_readings} clipped values ({clipped_percent:.1f}%)",
                         ]
                     )
                 else:
                     stats.extend(
                         [
                             f"BGM Processing Notes ({bgm_col}):",
-                            f"  Processed {total_readings} total BGM readings",
+                            f"Processed {total_readings} total BGM readings",
                         ]
                     )
 
@@ -122,9 +122,9 @@ class BaseExporter(ABC):
                 stats.extend(
                     [
                         "INSULIN Processing Notes:",
-                        f"  Found {total_count} total doses",
-                        f"  {basal_count} basal doses",
-                        f"  {bolus_count} bolus doses",
+                        f"Found {total_count} total doses",
+                        f"{basal_count} basal doses",
+                        f"{bolus_count} bolus doses",
                     ]
                 )
             else:
@@ -133,9 +133,9 @@ class BaseExporter(ABC):
                 stats.extend(
                     [
                         "INSULIN Processing Notes:",
-                        f"  Found {basal_count + bolus_count} total doses",
-                        f"  {basal_count} basal doses",
-                        f"  {bolus_count} bolus doses",
+                        f"Found {basal_count + bolus_count} total doses",
+                        f"{basal_count} basal doses",
+                        f"{bolus_count} bolus doses",
                     ]
                 )
 
@@ -171,28 +171,38 @@ class BaseExporter(ABC):
             monthly_base = self.config.output_dir / "monthly"
 
         for timestamp, group in data.dataframe.groupby(pd.Grouper(freq="ME")):
-            if not group.empty:
-                month_str = pd.Timestamp(timestamp).strftime("%Y-%m")
-                month_dir = monthly_base / month_str
-                month_dir.mkdir(parents=True, exist_ok=True)
+            if group.empty:
+                continue  # No rows at all — skip
 
-                # Generate fresh stats just for this month's data
-                monthly_stats = [
-                    f"Period: {month_str}",
-                    f"Records: {len(group)}",
-                    *self._generate_type_stats(group, data_type),
-                ]
+            # ✅ Skip months where all non-index columns are empty, NaN, or zero
+            non_empty_cols = group.select_dtypes(include=["number", "object", "bool"])
+            if (
+                non_empty_cols.isna().all().all()
+                or (non_empty_cols.fillna(0) == 0).all().all()
+            ):
+                continue  # Nothing meaningful — skip export entirely
 
-                # Create monthly data with new stats, but keep original source_units
-                monthly_data = ProcessedTypeData(
-                    dataframe=group,
-                    source_units=data.source_units,
-                    processing_notes=monthly_stats,  # Only using the fresh monthly stats
-                )
+            month_str = pd.Timestamp(timestamp).strftime("%Y-%m")
+            month_dir = monthly_base / month_str
+            month_dir.mkdir(parents=True, exist_ok=True)
 
-                if self.config.include_processing_notes:
-                    self.export_processing_notes(monthly_data, month_dir)
-                self.export_monthly_split(monthly_data, data_type, month_dir)
+            # Generate fresh stats just for this month's data
+            monthly_stats = [
+                f"Period: {month_str}",
+                f"Records: {len(group)}",
+                *self._generate_type_stats(group, data_type),
+            ]
+
+            # Create monthly data with new stats, but keep original source_units
+            monthly_data = ProcessedTypeData(
+                dataframe=group,
+                source_units=data.source_units,
+                processing_notes=monthly_stats,  # Only using the fresh monthly stats
+            )
+
+            if self.config.include_processing_notes:
+                self.export_processing_notes(monthly_data, month_dir)
+            self.export_monthly_split(monthly_data, data_type, month_dir)
 
     def _handle_monthly_aligned_exports(self, data: AlignmentResult) -> None:
         """Handle monthly splits for aligned data."""
@@ -201,29 +211,39 @@ class BaseExporter(ABC):
             monthly_base = self.config.output_dir / "monthly"
 
         for timestamp, group in data.dataframe.groupby(pd.Grouper(freq="ME")):
-            if not group.empty:
-                month_str = pd.Timestamp(timestamp).strftime("%Y-%m")
-                month_dir = monthly_base / month_str
-                month_dir.mkdir(parents=True, exist_ok=True)
+            if group.empty:
+                continue
 
-                monthly_notes = [
-                    f"Period: {month_str}",
-                    f"Records: {len(group)}",
-                    *self._generate_type_stats(group),
-                ]
+            # Skip if all data columns are NaN or zero
+            non_empty_cols = group.select_dtypes(include=["number", "object", "bool"])
+            if (
+                non_empty_cols.isna().all().all()
+                or (non_empty_cols.fillna(0) == 0).all().all()
+            ):
+                continue
 
-                monthly_aligned = AlignmentResult(
-                    dataframe=group,
-                    start_time=group.index.min(),
-                    end_time=group.index.max(),
-                    frequency=data.frequency,
-                    processing_notes=monthly_notes,
-                    source_units=data.source_units,
-                )
+            month_str = pd.Timestamp(timestamp).strftime("%Y-%m")
+            month_dir = monthly_base / month_str
+            month_dir.mkdir(parents=True, exist_ok=True)
 
-                self.export_aligned_monthly_split(monthly_aligned, month_dir)
-                if self.config.include_processing_notes:
-                    self.export_processing_notes(monthly_aligned, month_dir)
+            monthly_notes = [
+                f"Period: {month_str}",
+                f"Records: {len(group)}",
+                *self._generate_type_stats(group),
+            ]
+
+            monthly_aligned = AlignmentResult(
+                dataframe=group,
+                start_time=group.index.min(),
+                end_time=group.index.max(),
+                frequency=data.frequency,
+                processing_notes=monthly_notes,
+                source_units=data.source_units,
+            )
+
+            self.export_aligned_monthly_split(monthly_aligned, month_dir)
+            if self.config.include_processing_notes:
+                self.export_processing_notes(monthly_aligned, month_dir)
 
     def _accumulate_monthly_stats(
         self, month_str: str, group: pd.DataFrame, data_type: DataType
@@ -313,7 +333,7 @@ class BaseExporter(ABC):
 
     @staticmethod
     def get_date_range(data: Union[ProcessedTypeData, AlignmentResult]) -> str:
-        """Get date range string from data."""
+        """Get date range string from data, for folder name creation."""
         df = data.dataframe
         if not isinstance(df.index, pd.DatetimeIndex):
             raise ValueError("DataFrame must have DatetimeIndex")
