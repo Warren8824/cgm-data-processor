@@ -101,7 +101,7 @@ site/
 # Ignore static files
 static/
 
-# Ignore dynamic data files
+# Ignore dynamic data files except sample files included in the repository
 /data/
 *.db
 *.sqlite3
@@ -109,6 +109,8 @@ static/
 *.sqlite-shm
 *.sqlite-wal
 *.csv
+
+!tests/data/samples/**
 
 # Copilot instructions file
 .github/copilot-instructions.md
