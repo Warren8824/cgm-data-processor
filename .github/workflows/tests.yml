@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write    # required to push changes
 
     steps:
     # Step 1: Checkout code
@@ -46,9 +48,10 @@ jobs:
       run: |
         poetry run coverage-badge -o docs/assets/coverage.svg -f
 
-    # Step 8: Upload badge as artifact so we can inspect it in CI
-    - name: Upload coverage badge artifact
-      uses: actions/upload-artifact@v4
+    # Step 8: Commit updated badge back to repo (auto)
+    - name: Commit coverage badge
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        name: coverage-badge
-        path: docs/assets/coverage.svg
+        commit_message: "chore(ci): update coverage badge"
+        file_pattern: docs/assets/coverage.svg
+
