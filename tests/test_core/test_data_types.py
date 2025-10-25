@@ -75,6 +75,22 @@ def test_tablestructure_duplicate_source_names_raises():
         )
 
 
+def test_tablestructure_single_primary_per_datatype_valid():
+    """Test that having one or zero primary columns per data type is valid."""
+    col1 = ColumnMapping(source_name="glucose", data_type=DataType.CGM, is_primary=True)
+    col2 = ColumnMapping(
+        source_name="insulin", data_type=DataType.INSULIN, is_primary=True
+    )
+    col3 = ColumnMapping(
+        source_name="raw_glucose", data_type=DataType.CGM, is_primary=False
+    )
+    # Should not raise - different data types can each have a primary
+    table = TableStructure(
+        name="readings", timestamp_column="timestamp", columns=[col1, col2, col3]
+    )
+    assert table.name == "readings"
+
+
 def test_tablestructure_multiple_primary_for_same_datatype_raises():
     col1 = ColumnMapping(
         source_name="glucose1", data_type=DataType.CGM, is_primary=True
@@ -88,6 +104,19 @@ def test_tablestructure_multiple_primary_for_same_datatype_raises():
         )
 
 
+def test_tablestructure_one_primary_one_non_primary_same_datatype_valid():
+    """Test that having one primary and one non-primary of same data type is valid."""
+    col1 = ColumnMapping(source_name="glucose", data_type=DataType.CGM, is_primary=True)
+    col2 = ColumnMapping(
+        source_name="raw_glucose", data_type=DataType.CGM, is_primary=False
+    )
+    # Should not raise - only one primary CGM column
+    table = TableStructure(
+        name="readings", timestamp_column="timestamp", columns=[col1, col2]
+    )
+    assert table.name == "readings"
+
+
 # ------------------- FILECONFIG TESTS ------------------- #
 def test_fileconfig_valid_initialization():
     col = ColumnMapping(source_name="glucose", data_type=DataType.CGM)
@@ -96,6 +125,24 @@ def test_fileconfig_valid_initialization():
         name_pattern="*.sqlite", file_type=FileType.SQLITE, tables=[table]
     )
     assert file_config.file_type == FileType.SQLITE
+
+
+def test_fileconfig_csv_with_empty_name_valid():
+    """Test that CSV files can have a table with an empty name (valid case)."""
+    col = ColumnMapping(source_name="glucose", data_type=DataType.CGM)
+    table = TableStructure(
+        name="",  # Empty string is valid for CSV
+        timestamp_column="timestamp",
+        columns=[col],
+    )
+
+    # Should not raise - this is the correct way to configure CSV
+    file_config = FileConfig(
+        name_pattern="glucose.csv",
+        file_type=FileType.CSV,
+        tables=[table],
+    )
+    assert file_config.file_type == FileType.CSV
 
 
 def test_fileconfig_no_tables_raises():
@@ -160,3 +207,22 @@ def test_deviceformat_str_includes_primary_data_types():
     output = str(device_format)
     assert "CGM" in output
     assert "INSULIN" in output
+
+
+def test_deviceformat_str_excludes_non_primary_data_types():
+    """Test that __str__ only includes primary columns in output."""
+    col1 = ColumnMapping(source_name="glucose", data_type=DataType.CGM, is_primary=True)
+    col2 = ColumnMapping(
+        source_name="raw_glucose", data_type=DataType.BGM, is_primary=False
+    )
+    table = TableStructure(
+        name="readings", timestamp_column="timestamp", columns=[col1, col2]
+    )
+    file_config = FileConfig(
+        name_pattern="*.sqlite", file_type=FileType.SQLITE, tables=[table]
+    )
+    device_format = DeviceFormat(name="my_device", files=[file_config])
+
+    output = str(device_format)
+    assert "CGM" in output
+    assert "BGM" not in output  # Should not appear because is_primary=False

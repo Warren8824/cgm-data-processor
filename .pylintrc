@@ -5,7 +5,6 @@ ignore=src/parser/devices/,*/tests/*,setup.pyclear
 jobs=1
 limit-inference-results=100
 persistent=yes
-suggestion-mode=yes
 unsafe-load-any-extension=no
 
 [MASTER]
