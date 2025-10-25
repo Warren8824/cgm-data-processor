@@ -109,7 +109,7 @@ class Aligner:
                 raise AlignmentError(f"Missing expected column(s) for {value_col}")
 
             values = df[value_col].resample(freq).mean()
-            clipped = df[clipped_col].resample(freq).any()
+            clipped = df[clipped_col].resample(freq).apply(lambda x: x.any())
             mmol_values = df[mmol_col].resample(freq).mean()
 
             result[value_col] = values
