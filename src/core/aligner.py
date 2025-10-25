@@ -81,34 +81,37 @@ class Aligner:
             DataFrame aligned to reference timeline with averaged values
         """
         df = df.copy()
+        # If index is empty or not DatetimeIndex, raise
+        if df.empty or not isinstance(df.index, pd.DatetimeIndex):
+            raise AlignmentError("Input DataFrame is empty or index is not datetime")
+
         df.index = df.index.round(freq)
 
-        # Identify value columns and their corresponding clipped flag columns
         value_cols = [
             col
             for col in df.columns
             if not col.endswith("_clipped") and not col.endswith("_mmol")
         ]
+
+        if not value_cols:
+            return pd.DataFrame(index=reference_index)  # nothing to align
+
         clipped_cols = [f"{col}_clipped" for col in value_cols]
         mmol_cols = [f"{col}_mmol" for col in value_cols]
 
-        # initialise result DataFrame
         result = pd.DataFrame(index=reference_index)
 
-        # Process each set of related columns (value, clipped flag, mmol)
         for value_col, clipped_col, mmol_col in zip(
             value_cols, clipped_cols, mmol_cols
         ):
-            # Calculate means for values within each interval
+            # If any column is missing, raise error
+            if clipped_col not in df.columns or mmol_col not in df.columns:
+                raise AlignmentError(f"Missing expected column(s) for {value_col}")
+
             values = df[value_col].resample(freq).mean()
-
-            # For clipped flags, if any reading in the interval was clipped, mark as clipped
             clipped = df[clipped_col].resample(freq).any()
-
-            # Calculate means for mmol values
             mmol_values = df[mmol_col].resample(freq).mean()
 
-            # Add to result
             result[value_col] = values
             result[clipped_col] = clipped
             result[mmol_col] = mmol_values
