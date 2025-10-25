@@ -163,11 +163,35 @@ class Aligner:
     def _align_carbs(
         self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
     ) -> pd.DataFrame:
-        """Align carbohydrate data."""
+        """Align carbohydrate data.
+
+        Args:
+            df: DataFrame containing carbohydrate data with column: carbs_primary
+            reference_index: Reference timeline to align to
+            freq: Frequency for alignment
+
+        Returns:
+            DataFrame aligned to reference timeline with summed carbohydrate values
+
+        Raises:
+            AlignmentError: If DataFrame is empty, index is not datetime, or required column is missing
+        """
         df = df.copy()
+
+        # Validate input DataFrame
+        if df.empty or not isinstance(df.index, pd.DatetimeIndex):
+            raise AlignmentError("Input DataFrame is empty or index is not datetime")
+
+        # Check for required column
+        if "carbs_primary" not in df.columns:
+            raise AlignmentError("Missing required column: carbs_primary")
+
+        # Round timestamps to frequency
         df.index = df.index.round(freq)
 
+        # Resample and sum carbohydrate values
         result = df["carbs_primary"].resample(freq).sum()
+
         return (
             pd.DataFrame({"carbs_primary": result}).reindex(reference_index).fillna(0)
         )
