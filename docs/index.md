@@ -36,7 +36,7 @@
 
 Install CGM Data Processor - [Installation Guide](./getting-started/installation.md)
 
-The simplest way to use the CGM Data Processor is to run `python -m src.cli path/to/data/export.file` from the root directory. The following arguments can be supllied:
+The simplest way to use the CGM Data Processor is to run `python -m src.cli path/to/data/export.file` from the root directory. The following arguments can be supplied:
 
 ```bash
 python -m src.cli data.sqlite \
