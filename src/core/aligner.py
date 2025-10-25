@@ -121,21 +121,42 @@ class Aligner:
     def _align_insulin(
         self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
     ) -> pd.DataFrame:
-        """Align insulin data."""
+        """Align insulin data.
+
+        Args:
+            df: DataFrame containing insulin data with columns: dose, is_basal, is_bolus
+            reference_index: Reference timeline to align to
+            freq: Frequency for alignment
+
+        Returns:
+            DataFrame aligned to reference timeline with summed basal and bolus doses
+
+        Raises:
+            AlignmentError: If DataFrame is empty, index is not datetime, or required columns are missing
+        """
         df = df.copy()
+
+        # Validate input DataFrame
+        if df.empty or not isinstance(df.index, pd.DatetimeIndex):
+            raise AlignmentError("Input DataFrame is empty or index is not datetime")
+
+        # Check for required columns
+        required_columns = ["dose", "is_basal", "is_bolus"]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise AlignmentError(
+                f"Missing required column(s): {', '.join(missing_columns)}"
+            )
+
+        # Round timestamps to frequency
         df.index = df.index.round(freq)
 
-        # Split and sum basal/bolus doses separately
-        basal_doses = df["dose"].where(df["is_basal"], 0)
-        bolus_doses = df["dose"].where(df["is_bolus"], 0)
+        # Create separate columns for basal and bolus doses
+        df["basal_dose"] = df["dose"].where(df["is_basal"], 0)
+        df["bolus_dose"] = df["dose"].where(df["is_bolus"], 0)
 
-        # Resample each type
-        result = pd.DataFrame(
-            {
-                "basal_dose": basal_doses.resample(freq).sum(),
-                "bolus_dose": bolus_doses.resample(freq).sum(),
-            }
-        )
+        # Resample and sum both dose types
+        result = df[["basal_dose", "bolus_dose"]].resample(freq).sum()
 
         return result.reindex(reference_index).fillna(0)
 
