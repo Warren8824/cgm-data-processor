@@ -1,5 +1,6 @@
 [run]
 source = src
+branch = True
 
 [report]
 omit =

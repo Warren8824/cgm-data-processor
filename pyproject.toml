@@ -44,6 +44,7 @@ mkdocs-redirects = "^1.2.2"
 pytest-mock = "^3.14.0"
 isort = "^5.13.2"
 coverage = "^7.6.10"
+codecov = "^2.1.13"
 
 [tool.isort]
 profile = "black"
