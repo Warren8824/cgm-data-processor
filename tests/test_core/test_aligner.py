@@ -46,6 +46,18 @@ def valid_insulin_data():
     )
 
 
+@pytest.fixture
+def valid_carbs_data():
+    """Create valid carbs data."""
+    index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="15min")
+    return pd.DataFrame(
+        {
+            "carbs_primary": [30.0, 0.0, 45.0, 20.0, 15.0],
+        },
+        index=index,
+    )
+
+
 # ------------------- VALIDATE TIMELINE TESTS ------------------- #
 
 # Sample reference data for tests
@@ -808,3 +820,250 @@ class TestAlignInsulinEdgeCases:
         assert "type" not in result.columns
         assert result.loc["2024-01-01 00:00:00", "bolus_dose"] == 5.0
         assert result.loc["2024-01-01 00:10:00", "basal_dose"] == 10.0
+
+
+# ------------------- ALIGN CARBS TESTS ------------------- #
+
+
+class TestAlignCarbsBasic:
+    """Test basic functionality and validation."""
+
+    def test_empty_dataframe_raises_error(self, aligner, reference_index):
+        """Empty DataFrame should raise AlignmentError."""
+        empty_df = pd.DataFrame(index=pd.DatetimeIndex([]))
+
+        with pytest.raises(AlignmentError, match="Input DataFrame is empty"):
+            aligner._align_carbs(empty_df, reference_index, "5min")
+
+    def test_non_datetime_index_raises_error(self, aligner, reference_index):
+        """Non-DatetimeIndex should raise AlignmentError."""
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0],
+            },
+            index=[0, 1],  # Integer index
+        )
+
+        with pytest.raises(AlignmentError, match="index is not datetime"):
+            aligner._align_carbs(df, reference_index, "5min")
+
+    def test_missing_carbs_primary_column_raises_error(self, aligner, reference_index):
+        """Missing carbs_primary column should raise AlignmentError."""
+        index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_secondary": [30.0, 45.0, 20.0],
+            },
+            index=index,
+        )
+
+        with pytest.raises(
+            AlignmentError, match="Missing required column: carbs_primary"
+        ):
+            aligner._align_carbs(df, reference_index, "5min")
+
+
+class TestAlignCarbsAlignment:
+    """Test alignment and resampling behaviour."""
+
+    def test_basic_alignment(self, aligner, valid_carbs_data, reference_index):
+        """Basic alignment with valid data works correctly."""
+        result = aligner._align_carbs(valid_carbs_data, reference_index, "5min")
+
+        assert len(result) == len(reference_index)
+        assert result.index.equals(reference_index)
+        assert "carbs_primary" in result.columns
+        assert len(result.columns) == 1
+
+    def test_carbs_summed_in_resample_window(self, aligner, reference_index):
+        """Carbs in same resample window are summed."""
+        index = pd.DatetimeIndex(
+            [
+                "2024-01-01 00:00:00",
+                "2024-01-01 00:01:00",
+                "2024-01-01 00:02:00",
+            ]
+        )
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 15.0, 20.0],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        # All three entries round to 00:00, should sum to 65.0
+        assert result.loc["2024-01-01 00:00:00", "carbs_primary"] == 65.0
+
+    def test_empty_resample_windows_have_zero(self, aligner, reference_index):
+        """Empty resample windows result in 0 values (not NaN)."""
+        index = pd.DatetimeIndex(["2024-01-01 00:00:00", "2024-01-01 01:00:00"])
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        # Middle windows should be 0, not NaN
+        assert result.loc["2024-01-01 00:05:00", "carbs_primary"] == 0.0
+        assert result.loc["2024-01-01 00:30:00", "carbs_primary"] == 0.0
+        assert not result["carbs_primary"].isna().any()
+
+    def test_zero_carb_entries_preserved(self, aligner, reference_index):
+        """Zero carb entries are treated as valid data."""
+        index = pd.DatetimeIndex(
+            [
+                "2024-01-01 00:00:00",
+                "2024-01-01 00:10:00",
+                "2024-01-01 00:20:00",
+            ]
+        )
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 0.0, 45.0],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        # Zero should be summed like any other value
+        assert result.loc["2024-01-01 00:00:00", "carbs_primary"] == 30.0
+        assert result.loc["2024-01-01 00:10:00", "carbs_primary"] == 0.0
+        assert result.loc["2024-01-01 00:20:00", "carbs_primary"] == 45.0
+
+
+class TestAlignCarbsReferenceIndex:
+    """Test different reference index scenarios."""
+
+    def test_reference_index_longer_than_data(self, aligner):
+        """Reference index extending beyond data results in 0."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0, 20.0],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="5min")
+
+        result = aligner._align_carbs(df, ref_index, "5min")
+
+        assert len(result) == len(ref_index)
+        # Later times should be 0
+        assert result.loc["2024-01-01 00:30:00", "carbs_primary"] == 0.0
+
+    def test_reference_index_shorter_than_data(self, aligner):
+        """Reference index shorter than data only returns overlapping period."""
+        data_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0, 20.0, 35.0, 40.0, 25.0, 50.0],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 00:20", freq="5min")
+
+        result = aligner._align_carbs(df, ref_index, "5min")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+
+class TestAlignCarbsFrequencies:
+    """Test different frequency parameters."""
+
+    def test_15min_frequency(self, aligner):
+        """Alignment works with 15-minute frequency."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=5, freq="7min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0, 20.0, 35.0, 40.0],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="15min")
+
+        result = aligner._align_carbs(df, ref_index, "15min")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+    def test_1hour_frequency(self, aligner):
+        """Alignment works with 1-hour frequency."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=7, freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [30.0, 45.0, 20.0, 35.0, 40.0, 25.0, 50.0],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 03:00", freq="1h")
+
+        result = aligner._align_carbs(df, ref_index, "1h")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+
+class TestAlignCarbsEdgeCases:
+    """Test edge cases and special scenarios."""
+
+    def test_all_zero_carbs(self, aligner, reference_index):
+        """Data with all zero carbs works correctly."""
+        index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [0.0, 0.0, 0.0],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        assert result["carbs_primary"].sum() == 0.0
+        assert not result["carbs_primary"].isna().any()
+
+    def test_large_carb_values(self, aligner, reference_index):
+        """Large carb values are handled correctly."""
+        index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [200.0, 150.0, 300.0],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        assert result.loc["2024-01-01 00:00:00", "carbs_primary"] == 200.0
+        assert result.loc["2024-01-01 00:10:00", "carbs_primary"] == 150.0
+        assert result.loc["2024-01-01 00:20:00", "carbs_primary"] == 300.0
+
+    def test_fractional_carb_values(self, aligner, reference_index):
+        """Fractional carb values sum correctly."""
+        index = pd.DatetimeIndex(
+            [
+                "2024-01-01 00:00:00",
+                "2024-01-01 00:01:00",
+            ]
+        )
+        df = pd.DataFrame(
+            {
+                "carbs_primary": [15.5, 20.3],
+            },
+            index=index,
+        )
+
+        result = aligner._align_carbs(df, reference_index, "5min")
+
+        # Should sum to 35.8
+        assert result.loc["2024-01-01 00:00:00", "carbs_primary"] == pytest.approx(35.8)
