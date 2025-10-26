@@ -22,7 +22,7 @@ copyright: |
 
 theme:
   logo: assets/cgm_logo_200x113.png 
-  favicon: assets/cgm_logo_200x113.png
+  favicon: assets/line_favicon.png
   name: material
   palette:
     # Add media toggle for light/dark mode
