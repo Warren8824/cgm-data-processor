@@ -7,7 +7,7 @@
   <img src="assets/cgm_logo_780x441.png" alt="CGM Data Processor Logo">
 </div>
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) ![Coverage](assets/coverage.svg) [![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) [![Tests & Coverage](https://github.com/Warren8824/cgm-data-processor/actions/workflows/tests.yml/badge.svg)](https://github.com/Warren8824/cgm-data-processor/actions/workflows/tests.yml) ![Coverage](assets/coverage.svg) [![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
