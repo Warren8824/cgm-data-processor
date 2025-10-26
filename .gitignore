@@ -110,7 +110,7 @@ static/
 *.sqlite-wal
 *.csv
 
-!tests/data/samples/**
+!sample_data/**
 
 # Copilot instructions file
 .github/copilot-instructions.md
