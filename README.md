@@ -56,7 +56,7 @@ If you have basic Python experience and want to add your own format, see our [Co
 
 ### Installation
 
-**Recommended: Use a virtual environment.** Examples below use Windows PowerShell.
+Examples below use Windows PowerShell.
 
 #### Using Poetry (recommended for development)
 
@@ -68,16 +68,13 @@ poetry install --with dev
 pre-commit install
 ```
 
-#### Using pip + venv
+#### Using pip quick test using sample data
 
 ```powershell
 git clone https://github.com/Warren8824/cgm-data-processor.git
 cd cgm-data-processor
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pip install -r requirements-dev.txt
-pre-commit install
+python -m src.cli sample_data/sample_libreview.csv
 ```
 
 ### Basic Usage
@@ -85,7 +82,7 @@ pre-commit install
 Process a device export and generate CSV outputs:
 
 ```powershell
-python -m src.cli path\to\export.file --debug
+python -m src.cli sample_data/sample_libreview.csv
 ```
 
 #### Key CLI Options
