@@ -1,4 +1,4 @@
-# CGM Data Processor
+![project logo](docs/assets/cgm_logo_780x441.png)
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) ![Coverage](docs/assets/coverage.svg) [![Licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
