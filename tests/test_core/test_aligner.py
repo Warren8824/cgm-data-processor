@@ -58,6 +58,18 @@ def valid_carbs_data():
     )
 
 
+@pytest.fixture
+def valid_notes_data():
+    """Create valid notes data."""
+    index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="20min")
+    return pd.DataFrame(
+        {
+            "notes_primary": ["breakfast", "feeling low", "exercise", "dinner"],
+        },
+        index=index,
+    )
+
+
 # ------------------- VALIDATE TIMELINE TESTS ------------------- #
 
 # Sample reference data for tests
@@ -1067,3 +1079,279 @@ class TestAlignCarbsEdgeCases:
 
         # Should sum to 35.8
         assert result.loc["2024-01-01 00:00:00", "carbs_primary"] == pytest.approx(35.8)
+
+
+# ---------------- Align Notes Tests ---------------- #
+
+
+class TestAlignNotesBasic:
+    """Test basic functionality and validation."""
+
+    def test_empty_dataframe_raises_error(self, aligner, reference_index):
+        """Empty DataFrame should raise AlignmentError."""
+        empty_df = pd.DataFrame(index=pd.DatetimeIndex([]))
+
+        with pytest.raises(AlignmentError, match="Input DataFrame is empty"):
+            aligner._align_notes(empty_df, reference_index, "5min")
+
+    def test_non_datetime_index_raises_error(self, aligner, reference_index):
+        """Non-DatetimeIndex should raise AlignmentError."""
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["breakfast", "lunch"],
+            },
+            index=[0, 1],  # Integer index
+        )
+
+        with pytest.raises(AlignmentError, match="index is not datetime"):
+            aligner._align_notes(df, reference_index, "5min")
+
+    def test_missing_notes_primary_column_raises_error(self, aligner, reference_index):
+        """Missing notes_primary column should raise AlignmentError."""
+        index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_secondary": ["breakfast", "lunch", "dinner"],
+            },
+            index=index,
+        )
+
+        with pytest.raises(
+            AlignmentError, match="Missing required column: notes_primary"
+        ):
+            aligner._align_notes(df, reference_index, "5min")
+
+
+class TestAlignNotesAlignment:
+    """Test alignment and resampling behaviour."""
+
+    def test_basic_alignment(self, aligner, valid_notes_data, reference_index):
+        """Basic alignment with valid data works correctly."""
+        result = aligner._align_notes(valid_notes_data, reference_index, "5min")
+
+        assert len(result) == len(reference_index)
+        assert result.index.equals(reference_index)
+        assert "notes_primary" in result.columns
+        assert len(result.columns) == 1
+
+    def test_last_note_kept_in_resample_window(self, aligner, reference_index):
+        """When multiple notes in same window, last one is kept."""
+        index = pd.DatetimeIndex(
+            [
+                "2024-01-01 00:00:00",
+                "2024-01-01 00:01:00",
+                "2024-01-01 00:02:00",
+            ]
+        )
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["first note", "second note", "last note"],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        # All three round to 00:00, should keep last one
+        assert result.loc["2024-01-01 00:00:00", "notes_primary"] == "last note"
+
+    def test_empty_resample_windows_have_nan(self, aligner, reference_index):
+        """Empty resample windows result in NaN values."""
+        index = pd.DatetimeIndex(["2024-01-01 00:00:00", "2024-01-01 01:00:00"])
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["breakfast", "dinner"],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        # Middle windows should be NaN
+        assert pd.isna(result.loc["2024-01-01 00:05:00", "notes_primary"])
+        assert pd.isna(result.loc["2024-01-01 00:30:00", "notes_primary"])
+
+    def test_notes_not_combined_or_concatenated(self, aligner, reference_index):
+        """Notes in same window are not combined, only last is kept."""
+        index = pd.DatetimeIndex(
+            [
+                "2024-01-01 00:00:00",
+                "2024-01-01 00:02:00",
+            ]
+        )
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["ate breakfast", "feeling good"],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        # Should only have the last note, not both
+        note = result.loc["2024-01-01 00:00:00", "notes_primary"]
+        assert note == "feeling good"
+        assert "ate breakfast" not in note
+
+
+class TestAlignNotesReferenceIndex:
+    """Test different reference index scenarios."""
+
+    def test_reference_index_longer_than_data(self, aligner):
+        """Reference index extending beyond data results in NaN."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["breakfast", "snack", "lunch"],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="5min")
+
+        result = aligner._align_notes(df, ref_index, "5min")
+
+        assert len(result) == len(ref_index)
+        # Later times should be NaN
+        assert pd.isna(result.loc["2024-01-01 00:30:00", "notes_primary"])
+
+    def test_reference_index_shorter_than_data(self, aligner):
+        """Reference index shorter than data only returns overlapping period."""
+        data_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": [
+                    "note1",
+                    "note2",
+                    "note3",
+                    "note4",
+                    "note5",
+                    "note6",
+                    "note7",
+                ],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 00:20", freq="5min")
+
+        result = aligner._align_notes(df, ref_index, "5min")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+
+class TestAlignNotesFrequencies:
+    """Test different frequency parameters."""
+
+    def test_15min_frequency(self, aligner):
+        """Alignment works with 15-minute frequency."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=5, freq="7min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["note1", "note2", "note3", "note4", "note5"],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="15min")
+
+        result = aligner._align_notes(df, ref_index, "15min")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+    def test_1hour_frequency(self, aligner):
+        """Alignment works with 1-hour frequency."""
+        data_index = pd.date_range("2024-01-01 00:00", periods=7, freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": [
+                    "note1",
+                    "note2",
+                    "note3",
+                    "note4",
+                    "note5",
+                    "note6",
+                    "note7",
+                ],
+            },
+            index=data_index,
+        )
+
+        ref_index = pd.date_range("2024-01-01 00:00", "2024-01-01 03:00", freq="1h")
+
+        result = aligner._align_notes(df, ref_index, "1h")
+
+        assert len(result) == len(ref_index)
+        assert result.index.equals(ref_index)
+
+
+class TestAlignNotesEdgeCases:
+    """Test edge cases and special scenarios."""
+
+    def test_single_note(self, aligner, reference_index):
+        """Single note aligns correctly."""
+        index = pd.DatetimeIndex(["2024-01-01 00:00:00"])
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["single note"],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        assert result.loc["2024-01-01 00:00:00", "notes_primary"] == "single note"
+        # Other times should be NaN
+        assert pd.isna(result.loc["2024-01-01 00:05:00", "notes_primary"])
+
+    def test_notes_with_special_characters(self, aligner, reference_index):
+        """Notes with special characters are preserved."""
+        index = pd.date_range("2024-01-01 00:00", periods=3, freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": [
+                    "breakfast @ home",
+                    "feeling low :(",
+                    "exercise - 30min",
+                ],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        assert result.loc["2024-01-01 00:00:00", "notes_primary"] == "breakfast @ home"
+        assert result.loc["2024-01-01 00:10:00", "notes_primary"] == "feeling low :("
+        assert result.loc["2024-01-01 00:20:00", "notes_primary"] == "exercise - 30min"
+
+    def test_long_notes(self, aligner, reference_index):
+        """Long text notes are handled correctly."""
+        index = pd.DatetimeIndex(["2024-01-01 00:00:00"])
+        long_note = "This is a very long note that contains a lot of information about the meal and how I'm feeling and what activities I did"
+        df = pd.DataFrame(
+            {
+                "notes_primary": [long_note],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        assert result.loc["2024-01-01 00:00:00", "notes_primary"] == long_note
+
+    def test_notes_with_numbers(self, aligner, reference_index):
+        """Notes containing numbers are treated as strings."""
+        index = pd.date_range("2024-01-01 00:00", periods=2, freq="10min")
+        df = pd.DataFrame(
+            {
+                "notes_primary": ["walked 5000 steps", "temp was 98.6"],
+            },
+            index=index,
+        )
+
+        result = aligner._align_notes(df, reference_index, "5min")
+
+        assert result.loc["2024-01-01 00:00:00", "notes_primary"] == "walked 5000 steps"
+        assert result.loc["2024-01-01 00:10:00", "notes_primary"] == "temp was 98.6"

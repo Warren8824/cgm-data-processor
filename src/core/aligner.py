@@ -199,11 +199,40 @@ class Aligner:
     def _align_notes(
         self, df: pd.DataFrame, reference_index: pd.DatetimeIndex, freq: str
     ) -> pd.DataFrame:
-        """Align notes data."""
+        """Align notes data.
+
+        Args:
+            df: DataFrame containing notes data with column: notes_primary
+            reference_index: Reference timeline to align to
+            freq: Frequency for alignment
+
+        Returns:
+            DataFrame aligned to reference timeline with last note in each window.
+            Empty windows will have NaN (not filled with any default value).
+
+        Raises:
+            AlignmentError: If DataFrame is empty, index is not datetime, or required column is missing
+        """
         df = df.copy()
+
+        # Validate DataFrame structure first
+        if not isinstance(df.index, pd.DatetimeIndex):
+            raise AlignmentError("Input DataFrame is empty or index is not datetime")
+
+        if df.empty:
+            raise AlignmentError("Input DataFrame is empty or index is not datetime")
+
+        # Check for required column
+        if "notes_primary" not in df.columns:
+            raise AlignmentError("Missing required column: notes_primary")
+
+        # Round timestamps to frequency
         df.index = df.index.round(freq)
 
+        # Resample and take last note in each window
         result = df["notes_primary"].resample(freq).last()
+
+        # Reindex to reference timeline (NaN for empty windows)
         return pd.DataFrame({"notes_primary": result}).reindex(reference_index)
 
     def align(
