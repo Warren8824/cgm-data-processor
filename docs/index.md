@@ -1,13 +1,8 @@
 <div class="hero">
-  <h1>CGM Data Processor</h1>
-  <p>A robust Python framework for processing and analysing diabetes device data</p>
+  <img src="assets/cgm_logo_780x441.png" alt="logo_780x441.png">
 </div>
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange)
-![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg)
-![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg)
-![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg)
-[![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Release Status](https://img.shields.io/badge/status-pre--release-orange) ![Black](https://img.shields.io/badge/code%20style-black-4B8BBE.svg) ![isort](https://img.shields.io/badge/imports-isort-4B8BBE.svg) ![Pylint](https://img.shields.io/badge/code%20quality-pylint-4B8BBE.svg) ![Coverage](docs/assets/coverage.svg) [![licence: MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📈 Process Your Diabetes Data
 
