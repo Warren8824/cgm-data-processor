@@ -59,10 +59,10 @@ This project is currently in **pre-release**, actively developed with the goal o
 
 📘 Install CGM Data Processor — see: 👉 [Installation Guide](./getting-started/installation.md)
 
-The quickest way to run the tool during development is via the CLI entry point:
+The quickest way to run the tool during development is via the CLI entry point, using either the sample data, or your own backup files:
 
 ```bash
-python -m src.cli data.sqlite \
+python -m src.cli sample_data/sample_libreview.csv \
     --debug                  # Display verbose output
     --interpolation-limit 6  # Max CGM gaps to fill (6 = 30 mins)
     --bolus-limit 10.0       # Max bolus insulin units
