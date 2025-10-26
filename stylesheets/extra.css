@@ -1,7 +1,13 @@
 /* Custom CSS aligned with teal theme */
 :root {
-  --md-primary-fg-color: #009688;
-  --md-accent-fg-color: #009688;
+  --md-primary-fg-color: #78b2a3;
+  --md-primary-fg-color--light: #8fc4b5;
+  --md-primary-fg-color--dark: #679a8d;
+
+  --md-accent-fg-color: #78b2a3;
+  --md-accent-fg-color--transparent: rgba(120, 178, 163, 0.1);
+  --md-accent-bg-color: #ffffff;
+  --md-accent-bg-color--light: #f5f5f5;
 }
 
 .feature-card {
@@ -22,7 +28,6 @@
 .hero {
   text-align: center;
   padding: 3rem 1rem;
-  background: linear-gradient(45deg, #004d40, #009688);
   border-radius: 4px;
   color: white;
   margin: -2rem -1rem 1rem -1rem;
