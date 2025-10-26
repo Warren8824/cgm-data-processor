@@ -1,10 +1,18 @@
 import pandas as pd
 import pytest
 
-from src.core.aligner import Aligner, AlignmentError, DataType, ProcessedTypeData
-
+from src.core.aligner import (
+    Aligner,
+    AlignmentError,
+    AlignmentResult,
+    DataType,
+    ProcessedTypeData,
+    Unit,
+)
 
 # ------------------- FIXTURES ------------------- #
+
+
 @pytest.fixture
 def aligner():
     """Create an Aligner instance."""
@@ -15,6 +23,62 @@ def aligner():
 def reference_index():
     """Create a reference timeline (5-minute intervals)."""
     return pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="5min")
+
+
+@pytest.fixture
+def valid_cgm_data():
+    """Create valid CGM data as reference timeline."""
+    index = pd.date_range("2024-01-01 00:00", "2024-01-01 01:00", freq="5min")
+    return pd.DataFrame(
+        {
+            "cgm_primary": [
+                100.0,
+                110.0,
+                105.0,
+                115.0,
+                120.0,
+                110.0,
+                105.0,
+                115.0,
+                120.0,
+                110.0,
+                105.0,
+                115.0,
+                120.0,
+            ],
+            "cgm_primary_mmol": [
+                5.55,
+                6.11,
+                5.83,
+                6.38,
+                6.66,
+                6.11,
+                5.83,
+                6.38,
+                6.66,
+                6.11,
+                5.83,
+                6.38,
+                6.66,
+            ],
+            "missing": [
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+            ],
+        },
+        index=index,
+    )
 
 
 @pytest.fixture
@@ -70,9 +134,63 @@ def valid_notes_data():
     )
 
 
-# ------------------- VALIDATE TIMELINE TESTS ------------------- #
+@pytest.fixture
+def processed_cgm_data(valid_cgm_data):
+    """Create ProcessedTypeData for CGM."""
+    return ProcessedTypeData(
+        dataframe=valid_cgm_data,
+        source_units={
+            "cgm_primary": Unit.MGDL,
+            "cgm_primary_mmol": Unit.MMOL,
+        },
+        processing_notes=["Processed 13 total CGM readings"],
+    )
 
-# Sample reference data for tests
+
+@pytest.fixture
+def processed_bgm_data(valid_bgm_data):
+    """Create ProcessedTypeData for BGM."""
+    return ProcessedTypeData(
+        dataframe=valid_bgm_data,
+        source_units={
+            "bgm_primary": Unit.MGDL,
+            "bgm_primary_mmol": Unit.MMOL,
+        },
+        processing_notes=["Processed 7 total BGM readings"],
+    )
+
+
+@pytest.fixture
+def processed_insulin_data(valid_insulin_data):
+    """Create ProcessedTypeData for insulin."""
+    return ProcessedTypeData(
+        dataframe=valid_insulin_data,
+        source_units={"dose": Unit.UNITS},
+        processing_notes=["Final dataset contains 5 insulin records"],
+    )
+
+
+@pytest.fixture
+def processed_carbs_data(valid_carbs_data):
+    """Create ProcessedTypeData for carbs."""
+    return ProcessedTypeData(
+        dataframe=valid_carbs_data,
+        source_units={"carbs_primary": Unit.GRAMS},
+        processing_notes=["Final dataset contains 5 entries from 5 original records"],
+    )
+
+
+@pytest.fixture
+def processed_notes_data(valid_notes_data):
+    """Create ProcessedTypeData for notes."""
+    return ProcessedTypeData(
+        dataframe=valid_notes_data,
+        source_units={},
+        processing_notes=["Final dataset contains 4 notes entries"],
+    )
+
+
+# ------------------- VALIDATE TIMELINE TESTS ------------------- #
 
 # Valid path: 5-minute increasing timeline
 valid_index = pd.date_range("2025-10-20 00:00", periods=5, freq="5min")
@@ -207,6 +325,8 @@ def test_single_type_no_notes():
 
 
 # ------------------- ALIGN BGM TESTS ------------------- #
+
+
 class TestAlignBGMBasic:
     """Test basic functionality and validation."""
 
@@ -1355,3 +1475,341 @@ class TestAlignNotesEdgeCases:
 
         assert result.loc["2024-01-01 00:00:00", "notes_primary"] == "walked 5000 steps"
         assert result.loc["2024-01-01 00:10:00", "notes_primary"] == "temp was 98.6"
+
+
+# --------------------- TEST ALIGN ---------------------- #
+
+
+class TestAlignBasic:
+    """Test basic functionality and validation."""
+
+    def test_align_with_no_cgm_raises_error(self, aligner):
+        """Align with no CGM data should raise AlignmentError."""
+        processed_data = {}
+
+        with pytest.raises(AlignmentError, match="No CGM data available for alignment"):
+            aligner.align(processed_data)
+
+    def test_align_with_empty_cgm_raises_error(self, aligner):
+        """Align with empty CGM DataFrame should raise AlignmentError."""
+        empty_cgm = ProcessedTypeData(
+            dataframe=pd.DataFrame(index=pd.DatetimeIndex([])),
+            source_units={},
+            processing_notes=[],
+        )
+        processed_data = {DataType.CGM: empty_cgm}
+
+        with pytest.raises(AlignmentError, match="No CGM data available for alignment"):
+            aligner.align(processed_data)
+
+    def test_align_cgm_only(self, aligner, processed_cgm_data):
+        """Align with only CGM data works correctly."""
+        processed_data = {DataType.CGM: processed_cgm_data}
+
+        result = aligner.align(processed_data)
+
+        assert isinstance(result, AlignmentResult)
+        assert len(result.dataframe) == len(processed_cgm_data.dataframe)
+        assert result.frequency == "5min"
+        assert "missing_cgm" in result.dataframe.columns  # Renamed from 'missing'
+        assert "cgm_primary" in result.dataframe.columns
+
+    def test_align_with_custom_reference(
+        self, aligner, processed_cgm_data, processed_bgm_data
+    ):
+        """Align with custom reference DataFrame works."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+        }
+
+        # Use CGM as custom reference
+        result = aligner.align(
+            processed_data, reference_df=processed_cgm_data.dataframe
+        )
+
+        assert isinstance(result, AlignmentResult)
+        assert len(result.dataframe) == len(processed_cgm_data.dataframe)
+
+
+class TestAlignMultipleDataTypes:
+    """Test alignment with multiple data types."""
+
+    def test_align_cgm_and_bgm(self, aligner, processed_cgm_data, processed_bgm_data):
+        """Align CGM and BGM data together."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        assert "cgm_primary" in result.dataframe.columns
+        assert "bgm_primary" in result.dataframe.columns
+        assert "bgm_primary_clipped" in result.dataframe.columns
+        assert "bgm_primary_mmol" in result.dataframe.columns
+        assert len(result.dataframe) == len(processed_cgm_data.dataframe)
+
+    def test_align_cgm_and_insulin(
+        self, aligner, processed_cgm_data, processed_insulin_data
+    ):
+        """Align CGM and insulin data together."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.INSULIN: processed_insulin_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        assert "cgm_primary" in result.dataframe.columns
+        assert "basal_dose" in result.dataframe.columns
+        assert "bolus_dose" in result.dataframe.columns
+
+    def test_align_all_data_types(
+        self,
+        aligner,
+        processed_cgm_data,
+        processed_bgm_data,
+        processed_insulin_data,
+        processed_carbs_data,
+        processed_notes_data,
+    ):
+        """Align all data types together."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+            DataType.INSULIN: processed_insulin_data,
+            DataType.CARBS: processed_carbs_data,
+            DataType.NOTES: processed_notes_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        # Check all data types are present
+        assert "cgm_primary" in result.dataframe.columns
+        assert "bgm_primary" in result.dataframe.columns
+        assert "basal_dose" in result.dataframe.columns
+        assert "bolus_dose" in result.dataframe.columns
+        assert "carbs_primary" in result.dataframe.columns
+        assert "notes_primary" in result.dataframe.columns
+
+
+class TestAlignResult:
+    """Test AlignmentResult structure and metadata."""
+
+    def test_alignment_result_structure(
+        self, aligner, processed_cgm_data, processed_bgm_data
+    ):
+        """AlignmentResult has correct structure."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        assert hasattr(result, "dataframe")
+        assert hasattr(result, "start_time")
+        assert hasattr(result, "end_time")
+        assert hasattr(result, "frequency")
+        assert hasattr(result, "processing_notes")
+        assert hasattr(result, "source_units")
+
+    def test_alignment_result_timestamps(self, aligner, processed_cgm_data):
+        """AlignmentResult has correct start and end times."""
+        processed_data = {DataType.CGM: processed_cgm_data}
+
+        result = aligner.align(processed_data)
+
+        assert result.start_time == processed_cgm_data.dataframe.index[0]
+        assert result.end_time == processed_cgm_data.dataframe.index[-1]
+
+    def test_alignment_result_frequency(self, aligner, processed_cgm_data):
+        """AlignmentResult has correct frequency."""
+        processed_data = {DataType.CGM: processed_cgm_data}
+
+        result = aligner.align(processed_data, freq="5min")
+
+        assert result.frequency == "5min"
+
+    def test_alignment_result_processing_notes(
+        self, aligner, processed_cgm_data, processed_bgm_data
+    ):
+        """AlignmentResult includes processing notes from all sources."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        assert len(result.processing_notes) > 0
+        # Should include notes from processors and alignment
+        assert any("CGM Processing Notes" in note for note in result.processing_notes)
+        assert any("BGM Processing Notes" in note for note in result.processing_notes)
+        assert any(
+            "Reference timeline established" in note for note in result.processing_notes
+        )
+
+    def test_alignment_result_source_units(
+        self, aligner, processed_cgm_data, processed_bgm_data
+    ):
+        """AlignmentResult preserves source units."""
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: processed_bgm_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        assert "cgm_primary" in result.source_units
+        assert "bgm_primary" in result.source_units
+        assert result.source_units["cgm_primary"] == Unit.MGDL
+        assert result.source_units["bgm_primary"] == Unit.MGDL
+
+
+class TestAlignErrorHandling:
+    """Test error handling during alignment."""
+
+    def test_failed_alignment_continues_processing(self, aligner, processed_cgm_data):
+        """Failed alignment of one type doesn't stop others."""
+        # Create invalid BGM data (empty)
+        invalid_bgm = ProcessedTypeData(
+            dataframe=pd.DataFrame(index=pd.DatetimeIndex([])),
+            source_units={},
+            processing_notes=[],
+        )
+
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: invalid_bgm,
+        }
+
+        result = aligner.align(processed_data)
+
+        # Should still succeed with CGM only
+        assert "cgm_primary" in result.dataframe.columns
+        # Should note the failure in processing notes
+        assert any("Failed to align BGM" in note for note in result.processing_notes)
+
+    def test_missing_column_handled_gracefully(self, aligner, processed_cgm_data):
+        """Missing columns in data types handled gracefully."""
+        # Create BGM data without required columns
+        invalid_bgm_df = pd.DataFrame(
+            {"some_other_column": [1, 2, 3]},
+            index=pd.date_range("2024-01-01", periods=3, freq="10min"),
+        )
+        invalid_bgm = ProcessedTypeData(
+            dataframe=invalid_bgm_df,
+            source_units={},
+            processing_notes=[],
+        )
+
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.BGM: invalid_bgm,
+        }
+
+        result = aligner.align(processed_data)
+
+        # Should succeed with CGM, note BGM failure
+        assert "cgm_primary" in result.dataframe.columns
+        assert any("Failed to align BGM" in note for note in result.processing_notes)
+
+
+class TestAlignMissingColumn:
+    """Test the missing_cgm column renaming."""
+
+    def test_missing_column_renamed(self, aligner, processed_cgm_data):
+        """CGM 'missing' column is renamed to 'missing_cgm'."""
+        processed_data = {DataType.CGM: processed_cgm_data}
+
+        result = aligner.align(processed_data)
+
+        assert "missing_cgm" in result.dataframe.columns
+        assert "missing" not in result.dataframe.columns
+
+    def test_missing_cgm_values_preserved(self, aligner):
+        """Values in missing_cgm column are preserved."""
+        cgm_df = pd.DataFrame(
+            {
+                "cgm_primary": [100.0, 110.0, 105.0],
+                "cgm_primary_mmol": [5.55, 6.11, 5.83],
+                "missing": [True, False, True],
+            },
+            index=pd.date_range("2024-01-01 00:00", periods=3, freq="5min"),
+        )
+        cgm_data = ProcessedTypeData(
+            dataframe=cgm_df,
+            source_units={"cgm_primary": Unit.MGDL},
+            processing_notes=[],
+        )
+        processed_data = {DataType.CGM: cgm_data}
+
+        result = aligner.align(processed_data)
+
+        assert result.dataframe["missing_cgm"].tolist() == [True, False, True]
+
+
+class TestAlignFrequency:
+    """Test alignment with different frequencies."""
+
+    def test_align_with_15min_frequency(self, aligner, processed_cgm_data):
+        """Alignment works with 15-minute frequency."""
+        # Create CGM data with 15-minute intervals
+        cgm_df = pd.DataFrame(
+            {
+                "cgm_primary": [100.0, 110.0, 105.0, 115.0, 120.0],
+                "cgm_primary_mmol": [5.55, 6.11, 5.83, 6.38, 6.66],
+                "missing": [False, False, False, False, False],
+            },
+            index=pd.date_range("2024-01-01 00:00", periods=5, freq="15min"),
+        )
+        cgm_data = ProcessedTypeData(
+            dataframe=cgm_df,
+            source_units={"cgm_primary": Unit.MGDL},
+            processing_notes=[],
+        )
+        processed_data = {DataType.CGM: cgm_data}
+
+        result = aligner.align(processed_data, freq="15min")
+
+        assert result.frequency == "15min"
+        assert len(result.dataframe) == 5
+
+
+class TestAlignUnknownDataTypes:
+    """Test handling of unknown/unsupported data types."""
+
+    def test_unknown_data_type_skipped(self, aligner, processed_cgm_data):
+        """Unknown data types without alignment methods are silently skipped."""
+        unknown_df = pd.DataFrame(
+            {"some_data": [1, 2, 3]},
+            index=pd.date_range("2024-01-01 00:00", periods=3, freq="10min"),
+        )
+        unknown_data = ProcessedTypeData(
+            dataframe=unknown_df,
+            source_units={},
+            processing_notes=["Some unknown data type"],
+        )
+
+        # Use INSULIN_META which exists but has no alignment method
+        processed_data = {
+            DataType.CGM: processed_cgm_data,
+            DataType.INSULIN_META: unknown_data,
+        }
+
+        result = aligner.align(processed_data)
+
+        # Should succeed with just CGM, unknown type silently skipped
+        assert "cgm_primary" in result.dataframe.columns
+        assert "some_data" not in result.dataframe.columns
+        # Should NOT have "Successfully aligned" note for the unknown type
+        assert not any(
+            "Successfully aligned INSULIN_META" in note
+            for note in result.processing_notes
+        )
+        # Should NOT have "Failed to align" note either (silently skipped)
+        assert not any(
+            "Failed to align INSULIN_META" in note for note in result.processing_notes
+        )
