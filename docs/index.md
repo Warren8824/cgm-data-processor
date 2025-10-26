@@ -1,4 +1,6 @@
+---
 title: ""
+---
 
 <div>
   <img src="assets/cgm_logo_780x441.png" alt="CGM Data Processor Logo">
