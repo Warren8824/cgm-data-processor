@@ -36,9 +36,9 @@ This toolkit provides:
 
 ![CLI_Example](docs/assets/cli_screenshot.png)
 
-## Currently Supported Devices
-
 **CGM Data Processor** supports multiple CGM formats through **format definitions**. To add support for a new device, create a format definition file that describes its data structure.
+
+## Currently Supported Devices
 
 - ✅ **XDrip+** SQLite exports
 - ✅ **LibreView** CSV exports
